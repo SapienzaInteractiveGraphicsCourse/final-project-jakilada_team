@@ -7,8 +7,16 @@ var Colors = {
 	brownDark:0x23190f,
 	blue:0x68c3c0,
 	grey:0x696969,
-	lightgrey:0xB8B8B8
+	lightgrey:0xB8B8B8,
+
+	orange: 0xffa500,
+	sienna:	0xa0522d,
+	seagreen: 0x2e8b57,	
+	black: 0x000000,
+	sand: 0xf2d16b,
+	gray: 0x202020,
 };
+
 
 var keyCode = {"D": 68} //da rifinire, per gestire meglio il movimento
 
@@ -18,8 +26,45 @@ var scene, camera, fieldOfView, aspectRatio, nearPlane,
     farPlane, HEIGHT, WIDTH, renderer, container;
 //variables fo the light
 var hemisphereLight, shadowLight;
+
+
 //object variables
-var sea, cloud, sky, airplane;
+
+var Desert;
+var desert;
+var geom;
+var mat;
+
+var Cactus;
+var cactus;
+
+var nBlocs;  //clouds group 1
+var nBlocs2; //clouds gropu 2
+
+var Cloud;
+
+var sky;
+var Sky;
+
+var AirPlane;
+var airplane;
+
+var Condor;
+var condor;
+
+var SkyCondors;
+var skyCondors;
+
+var geomCondorRightWing;
+var matCondorRightWing;
+var condorRightWing;
+
+var geomCondorLeftWing;    
+var matCondorLeftWing;
+var condorLeftWing;
+
+
+
 //animation support variables
 var posHor = 0, posVert = 0; //register the arrowkey position
 //animation Array
@@ -33,12 +78,16 @@ window.addEventListener('load', init, false);
 function init() {
 	// create the scene, with all its subpart
 	createScene();
-	// create the lights
-	createLights();
+	createLights();   // create the lights
+	
 	// create the objects
 	createPlane();
-	createSea();
+	createDesert();
 	createSky();
+	createSkyCondors();
+	//createCondor(); //solo per il modello
+
+
 	// animation function used for updating objects position
 	var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 	renderer.domElement.setAttribute("tabIndex", "0");
@@ -175,8 +224,28 @@ function loop(){
 	// Rotate the propeller, the sea and the sky
 	airplane.propeller1.rotation.x += 0.3;
 	airplane.propeller2.rotation.x += 0.3;
-	sea.mesh.rotation.z += .005;
-	sky.mesh.rotation.z += .01;
+	desert.mesh.rotation.z += .005;
+	sky.mesh.rotation.z += .0004;
+
+	skyCondors.mesh.rotation.z += .0015;
+	/*
+	if(condorLeftWing.rotation.x > 54 && condorLeftWing.rotation.x < 59.4){
+		condorLeftWing.rotation.x += 0.7;
+		
+	}
+	if(condorLeftWing.rotation.x <= 54 || condorLeftWing.rotation.x >= 59){
+		condorLeftWing.rotation.x -= 0.02;
+	}
+
+	if(condorRightWing.rotation.x <= -5|| condorRightWing.rotation.x >= 0.3){
+		condorRightWing.rotation.x -= 0.7;
+	}
+	if(condorRightWing.rotation.x > -5 && condorRightWing.rotation.x < 0.3){
+		condorRightWing.rotation.x += 0.02;
+	}
+    */
+
+
 	// render the scene
 	renderer.render(scene, camera);
 	// call the loop function again
@@ -187,7 +256,7 @@ function createLights() {
 	// A hemisphere light is a gradient colored light; 
 	// the first parameter is the sky color, the second parameter is the ground color, 
 	// the third parameter is the intensity of the light
-	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, 2)
+	hemisphereLight = new THREE.HemisphereLight(0xaaaaaa,0x000000, .9)
 	
 	// A directional light shines from a specific direction. 
 	// It acts like the sun, that means that all the rays produced are parallel. 
@@ -217,26 +286,25 @@ function createLights() {
 	scene.add(shadowLight);
 
 	// an ambient light modifies the global color of a scene and makes the shadows softer
-	ambientLight = new THREE.AmbientLight(0xdc8874, .5);
+	ambientLight = new THREE.AmbientLight(0xdc8874, .4);
 	scene.add(ambientLight);
 }
 
 // First let's define a Sea object :
-Sea = function(){
+Desert = function(){
 	
+	this.mesh = new THREE.Object3D();
 	// create the geometry (shape) of the cylinder;
 	// the parameters are: 
 	// radius top, radius bottom, height, number of segments on the radius, number of segments vertically
-	var geom = new THREE.CylinderGeometry(600,60,400,100,10);
+	geom = new THREE.CylinderGeometry(600,600,800,40,10);  //FORSE DA CAMBIARE
 	
 	// rotate the geometry on the x axis
 	geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 	
 	// create the material 
 	var mat = new THREE.MeshPhongMaterial({
-		color:Colors.blue,
-		transparent:false,
-		opacity:.6,
+		color:Colors.sand,
 		shading:THREE.FlatShading,
 	});
 
@@ -246,7 +314,215 @@ Sea = function(){
 
 	// Allow the sea to receive shadows
 	this.mesh.receiveShadow = true; 
+
+
+
+
+
+	this.nCactus= 10;
+	
+	// To distribute the clouds consistently,
+	// we need to place them according to a uniform angle
+	var stepCactusAngle = Math.PI*2 / this.nCactus;
+
+	// create the cactus
+	for(var i=0; i<this.nCactus; i++){
+		var c = new Cactus();
+	
+		// set the rotation and the position of each cloud using trigonometry
+		var a = stepCactusAngle*i; // this is the final angle of the cloud
+		var h = 610; // this is the distance between the center of the axis and the cloud itself
+
+		// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
+		c.mesh.position.y = Math.sin(a)*h;
+		c.mesh.position.x = Math.cos(a)*h;
+
+		// rotate the cloud according to its position
+		c.mesh.rotation.z = a + Math.PI/2;
+
+		// for a better result, we position the cactus 
+		// at fixed depths inside of the scene
+		c.mesh.position.z = -400+ Math.random()*270;
+		
+		// we also set a random scale for each cloud
+		var s = 1+Math.random()*2;
+		c.mesh.scale.set(s,s,s);
+
+		// do not forget to add the mesh of each cloud in the scene
+		this.mesh.add(c.mesh); 
+	}
+
+
+	
+	this.nCactus2= 7;
+	
+	// To distribute the cactus consistently, we need to place them according to a uniform angle
+	var stepCactusAngle2 = Math.PI*2 / this.nCactus2;
+
+	// create the cactus
+	for(var i=0; i<this.nCactus2; i++){
+		var c = new Cactus();
+	
+		// set the rotation and the position of each cactus using trigonometry
+		var a = stepCactusAngle2*i; // this is the final angle of the cloud
+		var h = 610; // this is the distance between the center of the axis and the cloud itself
+
+		// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
+		c.mesh.position.y = Math.sin(a)*h;
+		c.mesh.position.x = Math.cos(a)*h;
+
+		// rotate the cactus according to its position
+		c.mesh.rotation.z = a + Math.PI/2;
+
+		// for a better result, we position the cactus 
+		// at fixed depths inside of the scene
+		c.mesh.position.z = -400+ Math.random()*270;
+		
+		// we also set a random scale for each cactus
+		var s = 1+Math.random()*2;
+		c.mesh.scale.set(s,s,s);
+
+		// do not forget to add the mesh of each cactus in the scene
+		this.mesh.add(c.mesh); 
+	}
 }
+
+// Instantiate the desert and add it to the scene:
+function createDesert(){
+	desert = new Desert();
+	desert.mesh.position.y = -600;
+	scene.add(desert.mesh);
+}
+
+
+//cactus class ****************************************************************************************************************************************
+Cactus= function(){
+	this.mesh = new THREE.Object3D();
+
+	const length = 30, width = 20;
+
+	const shape = new THREE.Shape();
+	shape.moveTo( 0, 0 );
+	shape.lineTo( 0, width );
+	shape.lineTo( length, width );
+	shape.lineTo( length, 0 );
+	shape.lineTo( 0, 0 );
+
+
+	const extrudeSettings = {
+		steps: 2,   // Number of points used for subdividing segments along the depth of the extruded spline. Default is 1.
+		depth: 50,  //Depth to extrude the shape. Default is 100.
+		bevelEnabled: true,
+		bevelThickness: 55, // How deep into the original shape the bevel (smussatura) goes. Default is 6.
+		bevelSize: 4,  //Distance from the shape outline that the bevel extends. Default is bevelThickness - 2.
+		bevelOffset: 2,  //Distance from the shape outline that the bevel starts. Default is 0.
+		bevelSegments: 2  //Number of bevel layers. Default is 3.
+	};
+
+    //torso
+	var geomCactTorso = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matCactTorso= new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
+	var cactTorso = new THREE.Mesh(geomCactTorso, matCactTorso);
+	cactTorso.position.set(10,-10,10);
+	cactTorso.rotation.set(0,1.5,0);
+	cactTorso.castShadow = true;
+	cactTorso.receiveShadow = true;
+	cactTorso.scale.set(0.08,0.9,0.02);
+	this.mesh.add(cactTorso);
+
+    //left horizontal branch of the cactus
+	var geomCactLeftBranch = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matCactLeftBranch= new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
+	var cactLeftBranch = new THREE.Mesh(geomCactLeftBranch, matCactLeftBranch);
+	cactLeftBranch.position.set(14,-6,10);
+	cactLeftBranch.rotation.set(0,1.5,0);
+	cactLeftBranch.castShadow = true;
+	cactLeftBranch.receiveShadow = true;
+	cactLeftBranch.scale.set(0.08,0.08,0.02);
+	this.mesh.add(cactLeftBranch);
+
+	//left vertical branch
+	var geomCactLeftVertBranch = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matCactLeftVertBranch= new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
+	var cactLeftVertBranch = new THREE.Mesh(geomCactLeftVertBranch, matCactLeftVertBranch);
+	cactLeftVertBranch.position.set(16,-11,10);
+	cactLeftVertBranch.rotation.set(0,1.5,0);
+	cactLeftVertBranch.castShadow = true;
+	cactLeftVertBranch.receiveShadow = true;
+	cactLeftVertBranch.scale.set(0.02,0.3,0.015);
+	this.mesh.add(cactLeftVertBranch);
+
+	//right horizontal branch of the cactus
+	var geomCactRightBranch = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matCactRightBranch = new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
+	var cactRightBranch = new THREE.Mesh(geomCactRightBranch, matCactRightBranch);
+	cactRightBranch.position.set(6,-3,10);
+	cactRightBranch.rotation.set(0,1.5,0);
+	cactRightBranch.castShadow = true;
+	cactRightBranch.receiveShadow = true;
+	cactRightBranch.scale.set(0.09,0.08,0.02);
+	this.mesh.add(cactRightBranch);
+
+
+
+	//second cactus
+	var geomCactTorso2 = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matCactTorso2= new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
+	var cactTorso2 = new THREE.Mesh(geomCactTorso2, matCactTorso2);
+	cactTorso2.position.set(40,-2,80);
+	cactTorso2.rotation.set(0,1.5,0);
+	cactTorso2.castShadow = true;
+	cactTorso2.receiveShadow = true;
+	cactTorso2.scale.set(0.08,0.9,0.02);
+	this.mesh.add(cactTorso2);
+
+	//left horizontal branch of the cactus
+	var geomCactLeftBranch2 = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matCactLeftBranch2= new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
+	var cactLeftBranch2 = new THREE.Mesh(geomCactLeftBranch2, matCactLeftBranch2);
+	cactLeftBranch2.position.set(44,-1,80);
+	cactLeftBranch2.rotation.set(0,1.5,0);
+	cactLeftBranch2.castShadow = true;
+	cactLeftBranch2.receiveShadow = true;
+	cactLeftBranch2.scale.set(0.08,0.08,0.02);
+	this.mesh.add(cactLeftBranch2);
+
+	//right horizontal branch of the cactus
+	var geomCactRightBranch2 = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matCactRightBranch2 = new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
+	var cactRightBranch2 = new THREE.Mesh(geomCactRightBranch2, matCactRightBranch2);
+	cactRightBranch2.position.set(36,4,80);
+	cactRightBranch2.rotation.set(0,1.5,0);
+	cactRightBranch2.castShadow = true;
+	cactRightBranch2.receiveShadow = true;
+	cactRightBranch2.scale.set(0.08,0.08,0.02);
+	this.mesh.add(cactRightBranch2);
+
+
+   //Rock
+	var geomRock = new THREE.BoxGeometry(60,50,50,1,1,1);
+	var matRock= new THREE.MeshPhongMaterial({color:Colors.sand, shading:THREE.FlatShading});
+	var rock = new THREE.Mesh(geomRock, matRock);
+	rock.position.set(80,22,10);
+	rock.rotation.set(1,1.5,0);
+	rock.castShadow = true;
+	rock.receiveShadow = true;
+	rock.scale.set(0.2,0.2,0.4);
+	this.mesh.add(rock);
+
+
+
+}
+
+function createCactus(){
+	cactus = new Cactus();
+	cactus.mesh.position.y = -600;
+	scene.add(cactus.mesh);
+}
+
+//***************************************************************************************************************************
+
+
 //Object Classes
 AirPlane = function() {
 
@@ -462,6 +738,11 @@ AirPlane = function() {
 	this.mesh.add(this.propeller2);
 };
 
+
+
+
+/*
+
 Cloud = function(){
 	// Create an empty container that will hold the different parts of the cloud
 	this.mesh = new THREE.Object3D();
@@ -500,13 +781,85 @@ Cloud = function(){
 		this.mesh.add(m);
 	} 
 }
+*/
+
+
+
+Cloud = function(){
+	// Create an empty container that will hold the different parts of the cloud
+	this.mesh = new THREE.Object3D();
+	
+	// create a cube geometry;
+	// this shape will be duplicated to create the cloud
+	geom = new THREE.SphereGeometry(17,32,32);
+	mat = new THREE.MeshPhongMaterial({color:Colors.white, }); // create a material; a simple white material will do the trick
+	
+	// duplicate the geometry a random number of times
+	nBlocs = 5 + Math.floor(Math.random()*3);
+	
+	//var nBlocs = 3;
+	for (var i=0; i<nBlocs; i++ ){
+		
+		// create the mesh by cloning the geometry
+		var m = new THREE.Mesh(geom, mat); 
+		
+		// set the position and the rotation of each cube randomly
+		m.position.x = i*15;
+		m.position.y = Math.random()*10;
+		m.position.z = Math.random()*10;
+		m.rotation.z = Math.random()*Math.PI*2;
+		m.rotation.y = Math.random()*Math.PI*2;
+		
+		// set the size of the cube randomly
+		var s = .1 + Math.random()*.9;
+		m.scale.set(s,s,s);
+		
+		// allow each cube to cast and to receive shadows
+		m.castShadow = true;
+		m.receiveShadow = true;
+		
+		// add the cube to the container we first created
+		this.mesh.add(m);
+	} 
+	
+
+
+	//momentaneamente commentato perche altrimenti non funziona il gioco
+	nBlocs2 = 3;
+	for (var i=0; i<nBlocs2; i++ ){
+		
+		// create the mesh by cloning the geometry
+		var m2 = new THREE.Mesh(geom, mat); 
+		
+		// set the position and the rotation of each cube randomly
+		m2.position.x = i*15;
+		m2.position.y = Math.random()*10;
+		m2.position.z = Math.random()*10;
+		m2.rotation.z = Math.random()*Math.PI*2;
+		m2.rotation.y = Math.random()*Math.PI*2;
+		
+		// set the size of the cube randomly
+		var s = .1 + Math.random()*.9;
+		m2.scale.set(s,s,s);
+		
+		// allow each cube to cast and to receive shadows
+		m2.castShadow = true;
+		m2.receiveShadow = true;
+		
+		// add the cube to the container we first created
+		this.mesh.add(m2);
+	} 
+}
+
+
+
 
 Sky = function(){
 	// Create an empty container
 	this.mesh = new THREE.Object3D();
 	
 	// choose a number of clouds to be scattered in the sky
-	this.nClouds = 40;
+	this.nClouds = 10;
 	
 	// To distribute the clouds consistently,
 	// we need to place them according to a uniform angle
@@ -519,7 +872,7 @@ Sky = function(){
 		// set the rotation and the position of each cloud;
 		// for that we use a bit of trigonometry
 		var a = stepAngle*i; // this is the final angle of the cloud
-		var h = 800 + Math.random()*200; // this is the distance between the center of the axis and the cloud itself
+		var h = 760 + Math.random()*250; // this is the distance between the center of the axis and the cloud itself
 
 		// Trigonometry!!! I hope you remember what you've learned in Math :)
 		// in case you don't: 
@@ -543,24 +896,16 @@ Sky = function(){
 	}  
 }
 
-//object creation functions
-
-//terrain
-function createSea(){
-	sea = new Sea();
-
-	// push it a little bit at the bottom of the scene
-	sea.mesh.position.y = -600;
-
-	// add the mesh of the sea to the scene
-	scene.add(sea.mesh);
-}
-//sky
 function createSky(){
 	sky = new Sky();
 	sky.mesh.position.y = -600;
 	scene.add(sky.mesh);
 }
+
+
+
+
+
 //airplane
 function createPlane(){ 
 	airplane = new AirPlane();
@@ -569,3 +914,243 @@ function createPlane(){
 	airplane.mesh.position.y = 120;
 	scene.add(airplane.mesh);
 }
+
+
+
+
+SkyCondors= function(){
+	this.mesh = new THREE.Object3D();
+
+	//number of ducks
+	this.nCondors= 15; // era 60, lo abbasso per fare le prove
+
+
+	var stepAngleCondor = Math.PI*2 / this.nCondors;
+	
+	// create the clouds
+	for(var i=0; i<this.nCondors; i++){
+		var c4 = new Condor();
+        
+	 
+		// set the rotation and the position of each cloud using trigonometry
+		var a4 = stepAngleCondor*i; // this is the final angle of the cloud
+		var h4 = 600 + Math.random()*200; // this is the distance between the center of the axis and the cloud itself
+		
+		// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
+		c4.mesh.position.y = Math.sin(a4)*h4;
+		c4.mesh.position.x = Math.cos(a4)*h4;
+
+		// rotate the condors according to its position
+		c4.mesh.rotation.z = a4 + Math.PI/2;
+
+		
+
+		// for a better result, we position the clouds 
+		// at random depths inside of the scene
+
+	    //c2.mesh.position.z = -400-Math.random()*400;
+		
+		
+		// we also set a random scale for each cloud
+		//var s2 = 1+Math.random()*2;
+	
+		
+		c4.mesh.scale.set(0.3,0.3,0.3);
+
+
+		// do not forget to add the mesh of each cloud in the scene
+		this.mesh.add(c4.mesh);
+	}
+	
+}
+
+
+//create ducks on the screen
+function createSkyCondors(){
+	skyCondors = new SkyCondors();
+	skyCondors.mesh.position.y = -600;
+	scene.add(skyCondors.mesh);
+}
+
+
+
+//Condor class *************************************************************************************************
+Condor = function() {
+	
+	this.mesh = new THREE.Object3D();
+	
+	// Create the body
+	//number of points on the curve, default 12
+	const length = 30, width = 20;
+
+	const shape = new THREE.Shape();
+	shape.moveTo( 0, 0 );
+	shape.lineTo( 0, width );
+	shape.lineTo( length, width );
+	shape.lineTo( length, 0 );
+	shape.lineTo( 0, 0 );
+
+
+	const extrudeSettings = {
+		steps: 2,   // Number of points used for subdividing segments along the depth of the extruded spline. Default is 1.
+		depth: 50,  //Depth to extrude the shape. Default is 100.
+		bevelEnabled: true,
+		bevelThickness: 55, // How deep into the original shape the bevel (smussatura) goes. Default is 6.
+		bevelSize: 4,  //Distance from the shape outline that the bevel extends. Default is bevelThickness - 2.
+		bevelOffset: 2,  //Distance from the shape outline that the bevel starts. Default is 0.
+		bevelSegments: 2  //Number of bevel layers. Default is 3.
+	};
+
+	var geomBody = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matBody = new THREE.MeshPhongMaterial({color:Colors.gray, shading:THREE.FlatShading});
+	var body = new THREE.Mesh(geomBody, matBody);
+	body.position.set(-20,-6,10);
+	body.rotation.set(0,1.5,0);
+	body.castShadow = true;
+	body.receiveShadow = true;
+	body.scale.set(0.5,0.7,0.25);
+	this.mesh.add(body);
+
+
+	//create the white neck
+	var geomNeck = new THREE.CylinderGeometry(8,8,6,32);
+	var matNeck= new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
+	var neck = new THREE.Mesh(geomNeck, matNeck);
+	neck.rotation.z= 30;
+	neck.position.x = 22;
+	neck.castShadow = true;
+	neck.receiveShadow = true;
+	this.mesh.add(neck);
+
+	// Create the face
+	var geomFace = new THREE.CylinderGeometry(5,5,10,32);
+	var matFace= new THREE.MeshPhongMaterial({color:Colors.pink, shading:THREE.FlatShading});
+	var face = new THREE.Mesh(geomFace, matFace);
+	face.rotation.z= 30;
+	face.position.x = 30;
+	face.position.y = 2;
+	face.castShadow = true;
+	face.receiveShadow = true;
+	this.mesh.add(face);
+
+	// Create the beak
+	var geomBeak = new THREE.CylinderGeometry(0,5,10,10);
+	var matBeak= new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+	var beak = new THREE.Mesh(geomBeak, matBeak);
+	beak.position.set(40,4,-1);
+	beak.rotation.set(5,0,250);
+	beak.castShadow = true;
+	beak.receiveShadow = true;
+	this.mesh.add(beak);
+
+    //tail
+	var geomTail = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matTail = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+	var tail = new THREE.Mesh(geomTail, matTail);
+	tail.position.set(-40,-3,-5);
+	tail.castShadow = true;
+	tail.receiveShadow = true;
+	tail.scale.set(0.2,0.2,0.05);
+	this.mesh.add(tail);
+
+
+	// Create the R lower wing
+	/*//si puo usare solo con create duck e senza variabili globali
+	var geomDuckRightLowerWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
+	var matDuckRightLowerWing = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
+	this.duckRightLowerWing = new THREE.Mesh(geomDuckRightLowerWing, matDuckRightLowerWing);
+    this.duckRightLowerWing.position.set(-9, -1, 14);
+	this.duckRightLowerWing.rotation.set(0,0,0);
+	this.duckRightLowerWing.castShadow = true;
+	this.duckRightLowerWing.receiveShadow = true;
+	this.duckRightLowerWing.scale.set(0.5,0.2,0.3);
+	this.mesh.add(this.duckRightLowerWing);
+	*/ 
+    geomCondorRightWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
+	matCondorRightWing = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+	condorRightWing = new THREE.Mesh(geomCondorRightWing, matCondorRightWing);
+    condorRightWing.position.set(-9, -1, 14);
+	condorRightWing.rotation.set(0,0,0);
+	condorRightWing.castShadow = true;
+	condorRightWing.receiveShadow = true;
+    condorRightWing.scale.set(0.5,0.3,0.3);
+	this.mesh.add(condorRightWing);
+
+
+    // Create the L lower wing
+/*
+	var geomDuckLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
+	var matDuckLeftWing = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
+	this.duckLeftWing = new THREE.Mesh(geomDuckLeftWing, matDuckLeftWing);
+    this.duckLeftWing.position.set(-9, 0, -14);
+	this.duckLeftWing.rotation.set(59.7,0,0);
+	this.duckLeftWing.castShadow = true;
+	this.duckLeftWing.receiveShadow = true;
+	this.duckLeftWing.scale.set(0.5,0.2,0.3);
+	this.mesh.add(this.duckLeftWing);
+*/
+	geomCondorLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
+	matCondorLeftWing = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+	condorLeftWing = new THREE.Mesh(geomCondorLeftWing, matCondorLeftWing);
+	condorLeftWing.position.set(-9, 0, -14);
+	condorLeftWing.rotation.set(59.7,0,0);
+	condorLeftWing.castShadow = true;
+	condorLeftWing.receiveShadow = true;
+	condorLeftWing.scale.set(0.5,0.3,0.3);
+	this.mesh.add(condorLeftWing);
+
+	//create eyes
+    var geomCondorEye1 = new THREE.BoxGeometry(4,3,3,1,1,1);
+	var matCondorEye1 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+	var condorEye1 = new THREE.Mesh(geomCondorEye1, matCondorEye1);
+	condorEye1.position.set(33,0,4);
+	condorEye1.castShadow = true;
+	condorEye1.receiveShadow = true;
+	this.mesh.add(condorEye1);
+
+	var geomCondorEye2 = new THREE.BoxGeometry(4,3,3,1,1,1);
+	var matCondorEye2 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+	var condorEye2 = new THREE.Mesh(geomCondorEye2, matCondorEye2);
+	condorEye2.position.set(32,0,-4);
+	condorEye2.castShadow = true;
+	condorEye2.receiveShadow = true;
+	this.mesh.add(condorEye2);
+
+
+	//create duck legs
+    var geomRightLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matRightLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+	var rightLeg = new THREE.Mesh(geomRightLeg, matRightLeg);
+	rightLeg.position.set(-15,11,4);
+	rightLeg.rotation.set(0,0,2.4);
+	rightLeg.castShadow = true;
+	rightLeg.receiveShadow = true;
+	rightLeg.scale.set(0.2,0.1,0.05);
+	this.mesh.add(rightLeg);
+
+	var geomLeftLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+	var matLeftLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+	var leftLeg = new THREE.Mesh(geomLeftLeg, matLeftLeg);
+	leftLeg.position.set(-15,11,-8);
+	leftLeg.rotation.set(0,0,2.4);
+	leftLeg.castShadow = true;
+	leftLeg.receiveShadow = true;
+	leftLeg.scale.set(0.2,0.1,0.05);
+	this.mesh.add(leftLeg);
+
+};
+
+
+
+function createCondor(){ 
+	condor = new Condor();
+	condor.mesh.scale.set(.25,.25,.25);
+	condor.mesh.position.y = 60;
+
+	condor.mesh.rotation.x= 41;  //era 41
+	//condor.mesh.rotation.y= 20.4;  //20.4
+	//condor.mesh.rotation.z= 41;
+	scene.add(condor.mesh);
+
+}
+
