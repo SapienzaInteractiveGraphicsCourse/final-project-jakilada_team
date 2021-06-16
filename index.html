@@ -1,26 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Jakilada Fly | IG Project</title>
 		<link rel="stylesheet" type="text/css" href="style/index.css" />
         <script type="text/javascript" src="javascript/three.js"></script>
         <script type="text/javascript" src='javascript/threex.keyboardstate.js'></script>
-        <!-- <script src="https://cdn.bootcdn.net/ajax/libs/tween.js/18.6.3/tween.amd.js"></script> -->
-        <!-- <script src="https://code.createjs.com/1.0.0/tweenjs.min.js"></script> -->
         <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.0/TweenMax.min.js"></script>
-        <!-- <script type="text/javascript" src="javascript/tween.umd.js"></script> -->
         <script type = "text/javascript" src="javascript/index.js"></script>
 
         <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>-->
     </head>
     <body>
-        <div class="game-holder" id="world">
-            <div class="menu">
+        <div class="game-holder" id="gameHolder" display= "block">
+            <div id="menu" class="menu">
                 <h1>Jakilada Fly</h1>
                 <div class="manu-option">
-                    
+                    <h1 id="start">START GAME!</h1>
                 </div>
             </div>
-            <div class="message message--replay" id="replayMessage">Click to Replay</div>
+            <div class="world" id="world"></div>
+            <div id="pausedspan" class="pausedspan">
+               <p><h1>PAUSED</h1></p>
+               <p><h6>press "m" or "p" to unpause!</h6></p>
+            </div>
         </div>
     </body>
 </html>
