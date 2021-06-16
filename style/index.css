@@ -1,11 +1,3 @@
-#world {
-	position: absolute;
-	width: 100%;
-	height: 100%;
-	overflow: hidden;
-	background: linear-gradient(#84dbf1, rgb(127, 226, 243));
-}
-
 .message--replay {
 	font-size: 1.25vw;
 	bottom: 40vh;
@@ -25,7 +17,6 @@
 }
 
 .menu {
-		cursor: context-menu;
 		position: absolute;
 		top: 35%;
 		left: 45%;
@@ -38,7 +29,6 @@
 		margin-top: -200px;
 		border-radius: 10px;
 		text-align: center;
-		visibility: visible;
 		padding: 20px;
 }
 
@@ -48,4 +38,31 @@
 	height: 100%;
 	background: -webkit-linear-gradient(#e4e0ba, #f7d9aa);
 	background: linear-gradient(#e4e0ba, #f7d9aa);
+}
+
+.world {
+	position: absolute;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+}
+
+body{
+	font-family: 'Avenir Next', Avenir, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	margin: 0;
+	color: #444;
+	background: #f6f6f6;
+}
+
+.pausedspan{
+	font-family: 'Avenir Next', Avenir, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	font-size: 4.5vh;
+	bottom: 40%;
+	left: 25%;
+	position: absolute;
+	display: none;
+	text-align: center;
+	text-indent: 0.5em;
+	letter-spacing: 0.5em;
+	color: #d1b790;
 }
