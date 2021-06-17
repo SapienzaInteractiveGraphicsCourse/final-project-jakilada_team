@@ -62,7 +62,7 @@ function init() {
 	createLights();
 	createDesert();
 	createSky();
-	//createCondor(); //solo per il modello
+	
 	// animation function used for updating objects position
 	var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 	renderer.domElement.setAttribute("tabIndex", "0");
@@ -120,14 +120,14 @@ function init() {
 		gameStart = true;
 		paused = false;
 		createPlane();
-		createSkyCondors();
+		TweenMax.delayedCall(1, createSkyCondors());
 	}
 
 	loop();
 	renderer.render( scene, camera );
 }
 
-
+/************************* SCENE CREATION ************************************/
 function createScene() {
 	// Get the width and the height of the screen,
 	// use them to set up the aspect ratio of the camera 
@@ -172,15 +172,17 @@ function createScene() {
 	// container we created in the HTML
 	container = document.getElementById('world');
 	container.appendChild(renderer.domElement);
-	//create keyboardState object
+	//handle keyup event
 	window.addEventListener('keyup', hanldeUpKeyboard, false);
-	//create keyboardState object
+	//handle keydown event
 	window.addEventListener('keydown', hanldeDownKeyboard, false);
+	//handle click event
+	window.addEventListener('click', handleClick, false);
 	// Listen to the screen: if the user resizes it
 	// we have to update the camera and the renderer size
 	window.addEventListener('resize', handleWindowResize, false);
 }
-
+/*************************** WINDOW RESIZE HANDLER *********************************/
 function handleWindowResize() {
 	// update height and width of the renderer and the camera
 	HEIGHT = window.innerHeight;
@@ -189,7 +191,7 @@ function handleWindowResize() {
 	camera.aspect = WIDTH / HEIGHT;
 	camera.updateProjectionMatrix();
 }
-
+/*************************** KEYBOARD UP HANDLER *********************************/
 function hanldeUpKeyboard(event) {
 	event.preventDefault();
 	var key = event.which;
@@ -203,7 +205,30 @@ function hanldeUpKeyboard(event) {
 			break;
 	}
 }
-
+/*************************** KEYBOARD UP HANDLER *********************************/
+function handleClick(e) {
+	e.preventDefault();
+	var id = e.target.id;
+	switch(id){
+		case "howtoplay":
+			document.getElementById("menuoption").style.display = "none";
+			document.getElementById("howtoplay-div").style.display = "block";
+			break;
+		case "backhtp":
+			document.getElementById("menuoption").style.display = "block";
+			document.getElementById("howtoplay-div").style.display = "none";
+			break;
+		case "credits":
+			document.getElementById("menuoption").style.display = "none";
+			document.getElementById("credits-div").style.display = "block";
+			break;
+		case "backcdt":
+			document.getElementById("menuoption").style.display = "block";
+			document.getElementById("credits-div").style.display = "none";
+			break;
+	}
+}
+/*************************** KEYBOARD DOWN HANDLER *********************************/
 function hanldeDownKeyboard(event) {
 	event.preventDefault();
 	var key = event.which;
@@ -231,7 +256,7 @@ function hanldeDownKeyboard(event) {
 			break;
 	}
 }
-//************* LOOP HANDLER S************************************************
+/************* LOOP HANDLER *************************************************/
 function loop(){
 	var pos = 0;
 	if(gameStart && !paused){

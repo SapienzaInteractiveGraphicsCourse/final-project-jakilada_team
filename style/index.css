@@ -32,6 +32,40 @@
 		padding: 20px;
 }
 
+.menu-option {
+	position: absolute;
+	background-color: rgb(255, 201, 140);
+	left: 30%;
+	z-index: 1002;
+	overflow: auto;
+	border-radius: 10px;
+	text-align: center;
+	display: block;
+	padding: 20px;
+}
+
+.howtoplay-divc {
+	position: absolute;
+	background-color: rgb(255, 201, 140);
+	z-index: 1002;
+	overflow: auto;
+	border-radius: 10px;
+	text-align: center;
+	display: none;
+	padding: 20px;
+}
+
+.credits-divc {
+	position: absolute;
+	background-color: rgb(255, 201, 140);
+	z-index: 1002;
+	overflow: auto;
+	border-radius: 10px;
+	text-align: center;
+	display: none;
+	padding: 20px;
+}
+
 .game-holder {
 	position: absolute;
 	width: 100%;
