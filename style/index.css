@@ -19,11 +19,11 @@
 .menu {
 		position: absolute;
 		top: 35%;
-		left: 45%;
+		left: 40%;
 		background-color: rgb(255, 201, 140);
 		z-index: 1002;
 		overflow: auto;
-		width: 600px;
+		width: 700px;
 		height: 630px;
 		margin-left: -200px;
 		margin-top: -200px;
@@ -35,7 +35,7 @@
 .menu-option {
 	position: absolute;
 	background-color: rgb(255, 201, 140);
-	left: 30%;
+	margin-left: 5%;
 	z-index: 1002;
 	overflow: auto;
 	border-radius: 10px;
@@ -99,4 +99,8 @@ body{
 	text-indent: 0.5em;
 	letter-spacing: 0.5em;
 	color: #d1b790;
+}
+
+img {
+	width: 200px;
 }
