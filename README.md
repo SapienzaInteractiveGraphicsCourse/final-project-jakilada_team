@@ -1,8 +1,7 @@
-## Welcome to GitHub Pages
+## JAKILADA FLY
 
-You can use the [editor on GitHub](https://github.com/SapienzaInteractiveGraphicsCourse/final-project-jakilada_team/edit/main/README.md) to maintain and preview the content for your website in Markdown files.
+You can test our game at the following link: [Jakilada Fly](https://sapienzainteractivegraphicscourse.github.io/final-project-jakilada_team/) 
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
 
 ### Markdown
 
