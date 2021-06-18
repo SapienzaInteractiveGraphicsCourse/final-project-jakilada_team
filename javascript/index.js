@@ -26,7 +26,7 @@ var hemisphereLight, shadowLight;
 //support variables
 var gameStart = false;
 var paused = false;
-var scenario = 1; //0 -> desert; 1 -> countryside; 2 -> ??
+var scenario = 0; //0 -> desert; 1 -> countryside; 2 -> ??
 var tween;
 var currentsky;
 var currentscenario;
@@ -41,6 +41,14 @@ var cactus;
 var nBlocs;  //clouds group 1
 var nBlocs2; //clouds gropu 2
 var Cloud;
+
+
+var Heart;
+var heart;
+
+
+
+
 var desertsky;
 var DesertSky;
 var AirPlane;
@@ -70,23 +78,13 @@ window.addEventListener('load', init, false);
 function init() {
 	// create the scene, objects and lights
 	createScene();
+	createHeart();
 	createLights();
-	if(scenario == 0){
-		createDesert();
-		createDesertSky();
-		createSkyCondors();
-		currentsky = desertsky;
-		currentscenario = desert;
-		currentanimal = skyCondors;
-	}else if(scenario == 1){
-		createCountryside();
-		createCountrySky();
-		createSkyDucks();
-		createDuck();
-		currentsky = countrysky;
-		currentscenario = countryside;
-		currentanimal = skyDucks;
-	}
+	createDesert();
+	createDesertSky();
+	currentsky = desertsky;
+	currentscenario = desert;
+	console.log(scene.children)
 	// animation function used for updating objects position
 	var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 	renderer.domElement.setAttribute("tabIndex", "0");
@@ -105,7 +103,7 @@ function init() {
 				if(airplane.mesh.rotation.x < 1.1)
 					airplane.mesh.rotation.x =  airplane.mesh.rotation.x + 2 * delta ;
 			}else if( keyboard.pressed('q')){
-				airplane.mesh.position.z = Math.max(-220,  airplane.mesh.position.z - 120 * delta);	
+				airplane.mesh.position.z = Math.max(-120,  airplane.mesh.position.z - 120 * delta);	
 				TweenMax.pauseAll()
 				if(airplane.mesh.rotation.x > -1.1)
 					airplane.mesh.rotation.x =  airplane.mesh.rotation.x - 2 * delta ;		
@@ -145,6 +143,13 @@ function init() {
 		paused = false;
 		createPlane();
 		//TweenMax.delayedCall(1, createSkyCondors());
+		if(scenario == 0){
+			createSkyCondors();
+			currentanimal = skyCondors;
+		}else if(scenario == 1){
+			createSkyDucks();
+			currentanimal = skyDucks;
+		}
 	}
 
 	loop();
@@ -285,15 +290,36 @@ function handleClick(e) {
 			document.getElementById("credits-div").style.display = "none";
 			break;
 		case "scenario0":
+			if(scenario == 0) break;
 			scenario = 0;
+			scene.remove(scene.getObjectByName("countrysky"));
+			scene.remove(scene.getObjectByName("countryside"));
+			console.log(scene.children)
+			createDesertSky();
+			createDesert();
+			currentsky = desertsky;
+			currentscenario = desert;
 			console.log(scenario)
 			break;
 		case "scenario1":
+			if(scenario == 1) break;
 			scenario = 1;
+			scene.remove(scene.getObjectByName("desertsky"));
+			scene.remove(scene.getObjectByName("desert"));
+			console.log(scene.children)
+			createCountryside();
+			createCountrySky();
+			currentsky = countrysky;
+			currentscenario = countryside;
 			console.log(scenario)
 			break;
 	}
 }
+
+function updateScenario(scenario){
+
+}
+
 /******************* LOOP HANDLER ****************************************************************************************/
 function loop(){
 	var pos = 0;
@@ -668,6 +694,7 @@ function createDesertSky(){
 	desertsky = new DesertSky();
 	desertsky.mesh.position.y = -600;
 	document.getElementById("gameHolder").style.background = "linear-gradient(#e4e0ba, #f7d9aa)";
+	desertsky.mesh.name = "desertsky"
 	scene.add(desertsky.mesh);
 }
 
@@ -743,6 +770,7 @@ Desert = function(){
 function createDesert(){
 	desert = new Desert();
 	desert.mesh.position.y = -600;
+	desert.mesh.name = "desert"
 	scene.add(desert.mesh);
 }
 /********************************** CACTUS CLASS **************************************************************************/
@@ -1058,6 +1086,7 @@ function createCountrySky(){
 	countrysky = new CountrySky();
 	countrysky.mesh.position.y = -600;
 	document.getElementById("gameHolder").style.background = "linear-gradient(#84dbf1, rgb(127, 226, 243))";
+	countrysky.mesh.name = "countrysky"
 	scene.add(countrysky.mesh);
 }
 Countryside = function(){
@@ -1153,6 +1182,7 @@ Countryside = function(){
 function createCountryside(){
 	countryside = new Countryside();
 	countryside.mesh.position.y = -600;
+	countryside.mesh.name = "countryside"
 	scene.add(countryside.mesh);
 }
 /********************************** TREE CLASS****************************************************************************/
@@ -1547,4 +1577,58 @@ function createDuck(){
 	//duck.mesh.rotation.y= 20.4;  //20.4
 	//duck.mesh.rotation.z= 41;
 	scene.add(duck.mesh);
+}
+
+
+
+/*****************************ENERGY HANDLER **************************************************/
+
+
+
+Heart= function(){
+	this.mesh = new THREE.Object3D();
+
+
+	const x = 0, y = 0;
+
+	const heartShape = new THREE.Shape();
+
+	heartShape.moveTo( x + 5, y + 5 );
+	heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
+	heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
+	heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
+	heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
+	heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
+	heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
+
+	var geometry = new THREE.ShapeGeometry( heartShape );
+	var material = new THREE.MeshBasicMaterial( { color: Colors.red, } );
+	const mesh = new THREE.Mesh( geometry, material ) ;
+
+	nHearts = 3;
+	
+	for (var i=0; i<nHearts; i++ ){
+		// create the mesh by cloning the geometry
+		var m = new THREE.Mesh(geometry, material); 
+		
+		// set the position and the rotation of each heart randomly
+		m.position.x = i*10;
+		m.position.y = 80;
+		m.position.z = 10;
+
+		m.rotation.z = 40.9;
+		
+		// set the size of the cube randomly
+		var s = 0.3;
+		m.scale.set(s,s,s);
+		
+		// add the cube to the container we first created
+		this.mesh.add(m);
+	} 
+}
+
+function createHeart(){
+	heart = new Heart();
+	heart.mesh.position.y = 136;
+	scene.add(heart.mesh);
 }
