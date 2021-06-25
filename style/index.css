@@ -37,24 +37,12 @@
 .menu-option {
 	position: absolute;
 	background-color: rgb(255, 201, 140);
-	margin-left: 30%;
+	margin-left: 5%;
 	z-index: 1002;
 	overflow: auto;
 	border-radius: 10px;
 	text-align: center;
 	display: block;
-	padding: 35px;
-}
-
-.menu-scenario {
-	position: absolute;
-	background-color: rgb(255, 201, 140);
-	margin-left: 5%;
-	z-index: 1002;
-	overflow: auto;
-	border-radius: 10px;
-	display: none;
-	text-align: center;
 	padding: 20px;
 }
 
@@ -131,30 +119,212 @@ img {
 #dist{
 	position:absolute;
 	left: 40%;
-	top:40px;
+	top: 40px;
 	transform:translate(-50%,0%);
 	user-select: none;  
 }
-
+  
 .label{
-    position:relative;
-    font-family:'Cambria', sans-serif;
-    text-transform:uppercase;
-    color:#ffa873; 
-    font-size:16px;
-    letter-spacing:2px;
-    text-align:center;
-    margin-bottom:5px;
+	position:relative;
+	font-family:'Cambria', sans-serif;
+	text-transform:uppercase;
+	color:#ffa873; 
+	font-size:16px;
+	letter-spacing:2px;
+	text-align:center;
+	margin-bottom:5px;
 }
-
-
+  
+  
 #distValue{
-    position:relative;
-    text-transform:uppercase;
-    color:#dc5f45;
-    font-size:26px;
-    font-family:'Voltaire';
-    text-align:center;
+	position:relative;
+	text-transform:uppercase;
+	color:#dc5f45;
+	font-size:26px;
+	font-family:'Voltaire';
+	text-align:center;
 }
 
 
+
+/*homepage*/
+@import url('https://fonts.googleapis.com/css?family=Montserrat:600&display=swap');
+
+span{
+	position: relative;
+	display: inline-flex;
+	width: 180px;
+	height: 55px;
+	margin: 0 15px;
+	perspective: 1000px;
+}
+span a{
+	font-size: 19px;
+	letter-spacing: 1px;
+	transform-style: preserve-3d;
+	transform: translateZ(-25px);
+	transition: transform .25s;
+	font-family: 'Montserrat', sans-serif;
+}
+span a:before,
+span a:after{
+	position: absolute;
+	content: "NEW GAME";
+	height: 55px;
+	width: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 5px solid black;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+span a:before{
+	color: #fff;
+	background: #000;
+	transform: rotateY(0deg) translateZ(25px);
+}
+span a:after{
+	color: #000;
+	transform: rotateX(90deg) translateZ(25px);
+}
+span a:hover{
+	transform: translateZ(-25px) rotateX(-90deg);
+}
+
+span b{
+	font-size: 19px;
+	letter-spacing: 1px;
+	transform-style: preserve-3d;
+	transform: translateZ(-25px);
+	transition: transform .25s;
+	font-family: 'Montserrat', sans-serif;
+}
+span b:before,
+span b:after{
+	position: absolute;
+	content: "SELECT SCENARIO";
+	height: 55px;
+	width: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 5px solid black;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+span b:before{
+	color: #fff;
+	background: #000;
+	transform: rotateY(0deg) translateZ(25px);
+}
+span b:after{
+	color: #000;
+	transform: rotateX(90deg) translateZ(25px);
+}
+span b:hover{
+	transform: translateZ(-25px) rotateX(-90deg);
+}
+
+span c{
+	font-size: 19px;
+	letter-spacing: 1px;
+	transform-style: preserve-3d;
+	transform: translateZ(-25px);
+	transition: transform .25s;
+	font-family: 'Montserrat', sans-serif;
+}
+span c:before,
+span c:after{
+	position: absolute;
+	content: "HOW TO PLAY";
+	height: 55px;
+	width: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 5px solid black;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+span c:before{
+	color: #fff;
+	background: #000;
+	transform: rotateY(0deg) translateZ(25px);
+}
+span c:after{
+	color: #000;
+	transform: rotateX(90deg) translateZ(25px);
+}
+span c:hover{
+	transform: translateZ(-25px) rotateX(-90deg);
+}
+
+span d{
+	font-size: 19px;
+	letter-spacing: 1px;
+	transform-style: preserve-3d;
+	transform: translateZ(-25px);
+	transition: transform .25s;
+	font-family: 'Montserrat', sans-serif;
+}
+span d:before,
+span d:after{
+	position: absolute;
+	content: "CREDITS";
+	height: 55px;
+	width: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 5px solid black;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+span d:before{
+	color: #fff;
+	background: #000;
+	transform: rotateY(0deg) translateZ(25px);
+}
+span d:after{
+	color: #000;
+	transform: rotateX(90deg) translateZ(25px);
+}
+span d:hover{
+	transform: translateZ(-25px) rotateX(-90deg);
+}
+
+img {
+	height: 120px;
+	width: 520px;
+	text-align: center;
+	margin: auto;
+}
+.frame1 {
+	text-align: center;
+	margin: auto;
+	z-index: 10;
+	margin-top: 120px;
+}
+
+.box-wrap{
+	margin: auto;
+	position: relative; 
+	width: 520px;
+	border-radius: 5px;
+	margin-top: 125px;
+	background-color: transparent;
+	z-index: 1002;
+	overflow: auto;
+	text-align: center;
+	display: none;
+	padding: 20px;
+}
+
+.imgscen {
+	height: 100px;
+	border-radius: 5px;
+	border: 5px solid black;
+	overflow: auto;
+	text-align: center;
+}
