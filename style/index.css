@@ -35,12 +35,24 @@
 .menu-option {
 	position: absolute;
 	background-color: rgb(255, 201, 140);
-	margin-left: 5%;
+	margin-left: 30%;
 	z-index: 1002;
 	overflow: auto;
 	border-radius: 10px;
 	text-align: center;
 	display: block;
+	padding: 35px;
+}
+
+.menu-scenario {
+	position: absolute;
+	background-color: rgb(255, 201, 140);
+	margin-left: 5%;
+	z-index: 1002;
+	overflow: auto;
+	border-radius: 10px;
+	display: none;
+	text-align: center;
 	padding: 20px;
 }
 
@@ -105,37 +117,33 @@ img {
 	width: 200px;
 }
 
-
-
-
-
-
 /*score distance*/
 #dist{
-	position:absolute;
-	left: 40%;
-	top:40px;
-	transform:translate(-50%,0%);
-	user-select: none;  
+    position:absolute;
+    left: 40%;
+    top:40px;
+    transform:translate(-50%,0%);
+    user-select: none;
+	display: none;
 }
-  
+
 .label{
-	position:relative;
-	font-family:'Cambria', sans-serif;
-	text-transform:uppercase;
-	color:#ffa873; 
-	font-size:16px;
-	letter-spacing:2px;
-	text-align:center;
-	margin-bottom:5px;
+    position:relative;
+    font-family:'Cambria', sans-serif;
+    text-transform:uppercase;
+    color:#ffa873; 
+    font-size:16px;
+    letter-spacing:2px;
+    text-align:center;
+    margin-bottom:5px;
 }
-  
-  
+
+
 #distValue{
-	position:relative;
-	text-transform:uppercase;
-	color:#dc5f45;
-	font-size:26px;
-	font-family:'Voltaire';
-	text-align:center;
+    position:relative;
+    text-transform:uppercase;
+    color:#dc5f45;
+    font-size:26px;
+    font-family:'Voltaire';
+    text-align:center;
 }
