@@ -18,9 +18,11 @@
 
 .menu {
 		position: absolute;
-		top: 35%;
+		top: 20%;
 		left: 40%;
+		/*
 		background-color: rgb(255, 201, 140);
+		*/
 		z-index: 1002;
 		overflow: auto;
 		width: 700px;
@@ -45,22 +47,30 @@
 }
 
 .howtoplay-divc {
-	position: absolute;
-	background-color: rgb(255, 201, 140);
+	margin: auto;
+	position: relative; 
+	width: 520px;
+	border-radius: 5px;
+	border: 5px solid black;
+	margin-top: 125px;
+	background-color: transparent;
 	z-index: 1002;
 	overflow: auto;
-	border-radius: 10px;
 	text-align: center;
 	display: none;
 	padding: 20px;
 }
 
 .credits-divc {
-	position: absolute;
-	background-color: rgb(255, 201, 140);
+	margin: auto;
+	position: relative; 
+	width: 520px;
+	border-radius: 5px;
+	border: 5px solid black;
+	margin-top: 125px;
+	background-color: transparent;
 	z-index: 1002;
 	overflow: auto;
-	border-radius: 10px;
 	text-align: center;
 	display: none;
 	padding: 20px;
@@ -105,16 +115,11 @@ img {
 	width: 200px;
 }
 
-
-
-
-
-
 /*score distance*/
 #dist{
 	position:absolute;
 	left: 40%;
-	top:40px;
+	top: 40px;
 	transform:translate(-50%,0%);
 	user-select: none;  
 }
@@ -139,3 +144,5 @@ img {
 	font-family:'Voltaire';
 	text-align:center;
 }
+
+
