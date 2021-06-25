@@ -342,6 +342,14 @@ function handleClick(e) {
 			document.getElementById("menuoption").style.display = "none";
 			document.getElementById("credits-div").style.display = "block";
 			break;
+		case "selectscenario":
+			document.getElementById("menuoption").style.display = "none";
+			document.getElementById("credits-div").style.display = "block";
+			break;
+		case "backssp":
+			document.getElementById("menuoption").style.display = "block";
+			document.getElementById("selectscenario-div").style.display = "none";
+			break;
 		case "backcdt":
 			document.getElementById("menuoption").style.display = "block";
 			document.getElementById("credits-div").style.display = "none";

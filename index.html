@@ -38,9 +38,157 @@
             z-index: -1;
         }
         */
+
+        @import url('https://fonts.googleapis.com/css?family=Montserrat:600&display=swap');
+
+        span{
+            position: relative;
+            display: inline-flex;
+            width: 180px;
+            height: 55px;
+            margin: 0 15px;
+            perspective: 1000px;
+        }
+        span a{
+            font-size: 19px;
+            letter-spacing: 1px;
+            transform-style: preserve-3d;
+            transform: translateZ(-25px);
+            transition: transform .25s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        span a:before,
+        span a:after{
+            position: absolute;
+            content: "NEW GAME";
+            height: 55px;
+            width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid black;
+            box-sizing: border-box;
+            border-radius: 5px;
+        }
+        span a:before{
+            color: #fff;
+            background: #000;
+            transform: rotateY(0deg) translateZ(25px);
+        }
+        span a:after{
+            color: #000;
+            transform: rotateX(90deg) translateZ(25px);
+        }
+        span a:hover{
+            transform: translateZ(-25px) rotateX(-90deg);
+        }
+
+        span b{
+            font-size: 19px;
+            letter-spacing: 1px;
+            transform-style: preserve-3d;
+            transform: translateZ(-25px);
+            transition: transform .25s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        span b:before,
+        span b:after{
+            position: absolute;
+            content: "SELECT SCENARIO";
+            height: 55px;
+            width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid black;
+            box-sizing: border-box;
+            border-radius: 5px;
+        }
+        span b:before{
+            color: #fff;
+            background: #000;
+            transform: rotateY(0deg) translateZ(25px);
+        }
+        span b:after{
+            color: #000;
+            transform: rotateX(90deg) translateZ(25px);
+        }
+        span b:hover{
+            transform: translateZ(-25px) rotateX(-90deg);
+        }
+
+        span c{
+            font-size: 19px;
+            letter-spacing: 1px;
+            transform-style: preserve-3d;
+            transform: translateZ(-25px);
+            transition: transform .25s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        span c:before,
+        span c:after{
+            position: absolute;
+            content: "HOW TO PLAY";
+            height: 55px;
+            width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid black;
+            box-sizing: border-box;
+            border-radius: 5px;
+        }
+        span c:before{
+            color: #fff;
+            background: #000;
+            transform: rotateY(0deg) translateZ(25px);
+        }
+        span c:after{
+            color: #000;
+            transform: rotateX(90deg) translateZ(25px);
+        }
+        span c:hover{
+            transform: translateZ(-25px) rotateX(-90deg);
+        }
+
+        span d{
+            font-size: 19px;
+            letter-spacing: 1px;
+            transform-style: preserve-3d;
+            transform: translateZ(-25px);
+            transition: transform .25s;
+            font-family: 'Montserrat', sans-serif;
+        }
+        span d:before,
+        span d:after{
+            position: absolute;
+            content: "CREDITS";
+            height: 55px;
+            width: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 5px solid black;
+            box-sizing: border-box;
+            border-radius: 5px;
+        }
+        span d:before{
+            color: #fff;
+            background: #000;
+            transform: rotateY(0deg) translateZ(25px);
+        }
+        span d:after{
+            color: #000;
+            transform: rotateX(90deg) translateZ(25px);
+        }
+        span d:hover{
+            transform: translateZ(-25px) rotateX(-90deg);
+        }
+
+
         img {
-            height: 150px;
-            width: 700px;
+            height: 120px;
+            width: 520px;
             text-align: center;
             margin: auto;
         }
@@ -48,7 +196,7 @@
             text-align: center;
             margin: auto;
             z-index: 10;
-            margin-top: 75px;
+            margin-top: 120px;
         }
         /*
         .button {
@@ -68,7 +216,7 @@
             font-family: 'Luckiest Guy', cursive;
             font-size: 16px;
             }
-        */
+        
 
 
         button, button::after {
@@ -160,11 +308,44 @@
         .btn-group {
             margin-top: 20px;
         }
+        */
+
+
+        .box-wrap{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        margin:10%;
+        }
+        .box{
+        padding:30px;
+        margin:2%;
+        background: white;
+        width:30%;
+        border:1px solid #d6d6d6;
+        box-shadow:0 2px 3px 0px rgba(0,0,0,0.25);
+        border-radius:3px;
+        transition:.2s all; 
+        }
+        .box-wrap:hover .box{
+        filter:blur(3px);
+        opacity:.5;
+        transform: scale(.98);
+        box-shadow:none;
+        }
+        .box-wrap:hover .box:hover{
+        transform:scale(1);
+        filter:blur(0px);
+        opacity:1;
+        box-shadow:0 8px 20px 0px rgba(0,0,0,0.125);
+        }
+
         
     </style>
 
     
     <body>
+        
         <div class="game-holder" id="gameHolder" display= "block">
             <div id="dist">
                 <div class="label">Score</div>
@@ -173,60 +354,102 @@
             
             <div id="menu" class="menu">
 
-                    <div class="frame1" id="menu">
-                        <img src="img/logo.png">
-                    </div> 
-                    <div class="frame" id="menu">
-                    <div class="btn-group" id="menu"> 
-                        <button id="start" class="button" type="button"><h2>NEW GAME</h2></button><br>
-                        <button id="sleect-scenario" class="button" type="button"><h2>SELECT SCENARIO</h2></button><br>
-                    <!--
-                        <table id = "select-scenario">
-                            <tr> 
-                                <td> 
-                                    <img id="scenario0" src="img/desertscenario.png" style="width: 100px; height: 100px;">
-                                </td>
-                                <td>
-                                    <img id="scenario1" src="img/countryscenario.png" style="width: 100px; height: 100px;">
-                                </td>
-                                <td>
-                                    <img id="scenario3" src="img/desertscenario.png" style="width: 100px; height: 100px;">
-                                </td>
-                            </tr>
-                        </table>
-                    -->
-                        <button id="howtoplay" class="button" type="button"><h2>HOW TO PLAY</h2></button><br>
-                        <button id="credits" class="button" type="button"><h2>CREDITS</h2></button> 
-                        <!--<button id="credits" class="button" type="button"><h2>AUDIO</h2></button>-->
+                <div id="menuoption">
+                        <div class="frame1" id="menu">
+                            <img src="img/logo.png">
+                        </div> 
+                        <div class="frame" id="menu">
+                        <div class="btn-group" id="menu"> 
+
+                            <br>
+                            <span><a id="start"></a></span>
+                            <br>
+
+                            <br>
+                            <span><b id="selectscenario"></b></span>
+                            <div class="box-wrap">
+                                <div class="box" id="scenario0">
+                                    <h3>Desert</h3>
+                                </div>
+                                <div class="box" id="scenario1">
+                                    <h3>Country</h3>
+                                </div>
+                                <div class="box" id="scenario3">
+                                    <h3>Space</h3>
+                                </div>
+                            </div>
+                            <br>
+
+                            <br>
+                            <span><c id="howtoplay"></c></span>
+                            <br>
+
+                            <br>
+                            <span><d id="credits"></d></span>
+                            <br>
+
+
+                            <!--<button id="start" class="button" type="button"><h2>NEW GAME</h2></button><br>-->
+                            <!--<button id="sleect-scenario" class="button" type="button"><h2>SELECT SCENARIO</h2></button><br>-->
+                        <!--
+                            <table id = "select-scenario">
+                                <tr> 
+                                    <td> 
+                                        <img id="scenario0" src="img/desertscenario.png" style="width: 100px; height: 100px;">
+                                    </td>
+                                    <td>
+                                        <img id="scenario1" src="img/countryscenario.png" style="width: 100px; height: 100px;">
+                                    </td>
+                                    <td>
+                                        <img id="scenario3" src="img/desertscenario.png" style="width: 100px; height: 100px;">
+                                    </td>
+                                </tr>
+                            </table>
+                        -->  
+
+                            <!--<button id="howtoplay" class="button" type="button"><h2>HOW TO PLAY</h2></button><br>-->
+                            <!--<button id="credits" class="button" type="button"><h2>CREDITS</h2></button>-->
+                            <!--<button id="credits" class="button" type="button"><h2>AUDIO</h2></button>-->
+                        </div>
+                        </div>
+
                     </div>
+                    
+                    <div id="howtoplay-div" class="howtoplay-divc">
+                        <div class="inner">
+                            <h4>In order to get the airplane flying you can use the "W-A-S-D" or Arrow configuration. In particular, the controls are:</h4>
+                            
+                                <img style="width: 40px; height: 40px" src="img/keyboard/w.png" alt="W"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-up.png" alt="A"> to move up the plane<br>
+                                <img style="width: 40px; height: 40px; margin-left: 0.5%;" src="img/keyboard/a.png" alt="A"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-left.png" alt="A"> to move left the plane<br>
+                                <img style="width: 40px; height: 40px; margin-left: 4%;" src="img/keyboard/s.png" alt="S"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-down.png" alt="A"> to move down the plane<br>
+                                <img style="width: 40px; height: 40px; margin-left: 2.5%;"  src="img/keyboard/d.png" alt="D"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-right.png" alt="A"> to move right the plane<br>
+                                <img style="width: 40px; height: 40px; margin-left: -5%;" src="img/keyboard/q.png" alt="Q"> to flip left</tr><br>
+                                <img style="width: 40px; height: 40px; margin-left: -3%;" src="img/keyboard/e.png" alt="E"> to flip right</tr>
+                            
+                            <h4 id="backhtp" style="text-align: right;">GO BACK</h4>
+                        </div>
+                    </div>
+
+                    <div id="credits-div" class="credits-divc">
+                        <h4>The project has been developed thanks to the combined effort of all members of our team: 
+                        </h4>
+                        <p>
+                            Antonio Marigliano <br>
+                            Daniele Michelori <br> 
+                            Ilaria Ponzianelli <br> 
+                            Gianmarco Salvi
+                        </p>
+                        <h4 id="backcdt" style="text-align: right;">GO BACK</h4>
                     </div>
 
                 </div>
-                <div id="howtoplay-div" class="howtoplay-divc">
-                    <h2>In order to get the airplane flying you can use the "W-A-S-D" or Arrow configuration. In particular, the controls are:
-                        <br>"A" or Left-Arrow to move left the plane;
-                        <br>"D" or Right-Arrow to move right the plane;
-                        <br>"W" or Up-Arrow to move up the plane;
-                        <br>"S" or Down-Arrow to move down the plane;
-                        <br>"Q" to flip left;
-                        <br>"E" to flip right;
-                    </h2>
-                    <p id="backhtp"><< GO BACK</p>
+                <div class="world" id="world"></div>
+                <div id="pausedspan" class="pausedspan">
+                <p><h1>PAUSED</h1></p>
+                <p><h6>press "m" or "p" to unpause!</h6></p>
                 </div>
-                <div id="credits-div" class="credits-divc">
-                    <h2>The project has been developed thanks to the combined effort of all members of our team: Antonio Marigliano,<br>Ilaria Ponzianelli,
-                    Daniele Michelori e Gianmarco Salvi.</h2>
-                    <p id="backcdt"><< GO BACK</p>
-                </div>
-
-            </div>
-            <div class="world" id="world"></div>
-            <div id="pausedspan" class="pausedspan">
-               <p><h1>PAUSED</h1></p>
-               <p><h6>press "m" or "p" to unpause!</h6></p>
             </div>
         </div>
-
         
         </div>
         <div id="dist">
@@ -234,15 +457,20 @@
             <div id="distValue">000</div>
         </div>
 
-        <audio controls play>
-                <source src="audio/Calvin_Harris_feat_Tom_Grennan_By_Your_Side_Original_Mix.mp3" type="audio/ogg">
-                <source src="audio/Calvin_Harris_feat_Tom_Grennan_By_Your_Side_Original_Mix.mp3" type="audio/mpeg">
+        
+        <audio autoplay loop controls>
+                <source src="audio/Teenage Crime (Axwell & Henrik B Remode).m4a" type="audio/mp3">
                 Your browser does not support the audio element.
         </audio>
-        
+
+        <script>
+            document.getElementById("selectscenario").onclick = function(){		
+                document.getElementById("menu").hidden = true;
+
+        </script>
     </body>
     </html>
-    <!--
+<!--
         <div class="game-holder" id="gameHolder" display= "block">
             <div id="menu" class="menu">
                 <h1>Jakilada Fly</h1>
