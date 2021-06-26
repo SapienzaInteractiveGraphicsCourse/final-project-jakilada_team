@@ -147,6 +147,42 @@ img {
 
 
 
+/*health*/
+#health{
+	position:absolute;
+	left: 53%;
+	top:40px;
+	transform:translate(-50%,0%);
+	user-select: none;  
+}
+  
+.label_health{
+	position:relative;
+	font-family:'Cambria', sans-serif;
+	text-transform:uppercase;
+	color:#ffa873; 
+	font-size:16px;
+	letter-spacing:2px;
+	text-align:center;
+	margin-bottom:5px;
+}
+
+#hearts{
+	position:relative;
+	text-transform:uppercase;
+	color:#dc5f45;
+	font-size:26px;
+	font-family:'Voltaire';
+	text-align:center;
+}
+
+
+
+
+
+
+
+
 /*homepage*/
 @import url('https://fonts.googleapis.com/css?family=Montserrat:600&display=swap');
 
