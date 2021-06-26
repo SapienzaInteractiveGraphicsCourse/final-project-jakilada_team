@@ -78,10 +78,10 @@ window.addEventListener('load', init, false);
 function init() {
 	// create the scene, objects and lights
 	createScene();
-	createHeart();
 	createLights();
 	createDesert();
 	createDesertSky();
+	initUI();
 	currentsky = desertsky;
 	currentscenario = desert;
 	console.log(scene.children)
@@ -140,6 +140,7 @@ function init() {
 	document.getElementById("start").onclick = function(){		
 		document.getElementById("menu").hidden = true;
 		document.getElementById("dist").style.display = "block";
+		document.getElementById("health").style.display = "block";
 
 		gameStart = true;
 		paused = false;
@@ -353,6 +354,10 @@ function loop(){
 		currentanimal.mesh.rotation.z +=  Math.abs(.0015 + pos*0.00005);
 		airplane.propeller1.rotation.x += 0.5 + pos*0.0005;
 		airplane.propeller2.rotation.x += 0.5 + pos*0.0005;
+
+		aux = 1+ pos/2;  //ho divisto per 2 per rallentare ma era non diviso prima
+		updateDistance();
+
 	}
 	// Rotate the propeller, the sea and the sky
 	if(!paused){
@@ -1606,54 +1611,19 @@ function createDuck(){
 
 
 
-/*****************************ENERGY HANDLER **************************************************/
 
 
+var distance=0;
+var aux  =0;
+var fieldDistance;
 
-Heart= function(){
-	this.mesh = new THREE.Object3D();
+function updateDistance(){
+	distance += aux;
+	var d = distance/2;
+	fieldDistance.innerHTML = Math.floor(d);
+  }
 
 
-	const x = 0, y = 0;
-
-	const heartShape = new THREE.Shape();
-
-	heartShape.moveTo( x + 5, y + 5 );
-	heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
-	heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
-	heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
-	heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
-	heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
-	heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
-
-	var geometry = new THREE.ShapeGeometry( heartShape );
-	var material = new THREE.MeshBasicMaterial( { color: Colors.red, } );
-	const mesh = new THREE.Mesh( geometry, material ) ;
-
-	nHearts = 3;
-	
-	for (var i=0; i<nHearts; i++ ){
-		// create the mesh by cloning the geometry
-		var m = new THREE.Mesh(geometry, material); 
-		
-		// set the position and the rotation of each heart randomly
-		m.position.x = i*10;
-		m.position.y = 80;
-		m.position.z = 10;
-
-		m.rotation.z = 40.9;
-		
-		// set the size of the cube randomly
-		var s = 0.3;
-		m.scale.set(s,s,s);
-		
-		// add the cube to the container we first created
-		this.mesh.add(m);
-	} 
-}
-
-function createHeart(){
-	heart = new Heart();
-	heart.mesh.position.y = 136;
-	scene.add(heart.mesh);
-}
+function initUI(){
+	fieldDistance = document.getElementById("distValue");
+  }
