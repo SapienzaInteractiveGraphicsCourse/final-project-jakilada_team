@@ -176,13 +176,6 @@ img {
 	text-align:center;
 }
 
-
-
-
-
-
-
-
 /*homepage*/
 @import url('https://fonts.googleapis.com/css?family=Montserrat:600&display=swap');
 
@@ -363,4 +356,29 @@ img {
 	border: 5px solid black;
 	overflow: auto;
 	text-align: center;
+}
+
+.heart {
+	width: 25px;
+	display:inline-block;
+	-webkit-mask:
+	   radial-gradient(circle at 60% 65%, red 64%, transparent 65%) top left,
+	   radial-gradient(circle at 40% 65%, red 64%, transparent 65%) top right,
+	   linear-gradient(to bottom left, red 43%,transparent 43%) bottom left ,
+	   linear-gradient(to bottom right,red 43%,transparent 43%) bottom right;
+	-webkit-mask-size:50% 50%;
+	-webkit-mask-repeat:no-repeat;
+	mask:
+	   radial-gradient(circle at 60% 65%, red 64%, transparent 65%) top left,
+	   radial-gradient(circle at 40% 65%, red 64%, transparent 65%) top right,
+	   linear-gradient(to bottom left, red 43%,transparent 43%) bottom left ,
+	   linear-gradient(to bottom right,red 43%,transparent 43%) bottom right;
+	mask-size:50% 50%;
+	mask-repeat:no-repeat;
+	background:linear-gradient(rgb(255, 0, 0),rgb(80, 8, 8));
+}
+.heart::before {
+	content:"";
+	display:block;
+	padding-top:100%;
 }

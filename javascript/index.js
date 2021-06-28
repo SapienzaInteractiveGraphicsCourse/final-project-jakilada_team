@@ -46,7 +46,7 @@ var Cloud;
 var Heart;
 var heart;
 
-
+var condorsInUse = [];
 
 
 var desertsky;
@@ -355,29 +355,35 @@ function loop(){
 		airplane.propeller1.rotation.x += 0.5 + pos*0.0005;
 		airplane.propeller2.rotation.x += 0.5 + pos*0.0005;
 
-		aux = 1+ pos/2;  //ho divisto per 2 per rallentare ma era non diviso prima
+		aux = 1+ pos/1000;  //ho divisto per 1000 per rallentare ma era non diviso prima
 		updateDistance();
 
+		if(currentanimal == skyCondors) {
+			for (var i=0; i<condorsInUse.length; i++){
+				var con = this.condorsInUse[i];
+				console.log(con.condorLeftWing.rotation.x);
+			
+				if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){
+					con.condorLeftWing.rotation.x += 0.7;
+				}
+				if(con.condorLeftWing.rotation.x <= 54 || con.condorLeftWing.rotation.x >= 59){
+					con.condorLeftWing.rotation.x -= 0.02;
+				}
+				if(con.condorRightWing.rotation.x <= -5|| con.condorRightWing.rotation.x >= 0.3){
+					con.condorRightWing.rotation.x -= 0.7;
+				}
+				if(con.condorRightWing.rotation.x > -5 && con.condorRightWing.rotation.x < 0.3){
+					con.condorRightWing.rotation.x += 0.02;
+				}
+			}
+		}
 	}
 	// Rotate the propeller, the sea and the sky
 	if(!paused){
 		currentscenario.mesh.rotation.z += .005 + pos*0.00005;
 		currentsky.mesh.rotation.z += .0004 + pos*0.00005;
 	}
-	/*
-	if(condorLeftWing.rotation.x > 54 && condorLeftWing.rotation.x < 59.4){
-		condorLeftWing.rotation.x += 0.7;
-	}
-	if(condorLeftWing.rotation.x <= 54 || condorLeftWing.rotation.x >= 59){
-		condorLeftWing.rotation.x -= 0.02;
-	}
-	if(condorRightWing.rotation.x <= -5|| condorRightWing.rotation.x >= 0.3){
-		condorRightWing.rotation.x -= 0.7;
-	}
-	if(condorRightWing.rotation.x > -5 && condorRightWing.rotation.x < 0.3){
-		condorRightWing.rotation.x += 0.02;
-	}
-	*/
+	
 	// render the scene
 	renderer.render(scene, camera);
 	// call the loop function again
@@ -912,12 +918,13 @@ function createCactus(){
 /*********************************** CONDOR CLASS *************************************************************************/
 SkyCondors= function(){
 	this.mesh = new THREE.Object3D();
+	this.condorsInUse = [];
 	//number of ducks
 	this.nCondors= 15; // era 60, lo abbasso per fare le prove
 	var stepAngleCondor = Math.PI*2 / this.nCondors;	
 	// create the clouds
 	for(var i=0; i<this.nCondors; i++){
-		var c4 = new Condor();         
+		var c4 = new Condor();  
 		// set the rotation and the position of each cloud using trigonometry
 		var a4 = stepAngleCondor*i; // this is the final angle of the cloud
 		var h4 = 600 + Math.random()*200; // this is the distance between the center of the axis and the cloud itself		
@@ -934,6 +941,8 @@ SkyCondors= function(){
 		c4.mesh.scale.set(0.3,0.3,0.3);
 		// do not forget to add the mesh of each cloud in the scene
 		this.mesh.add(c4.mesh);
+		condorsInUse.push(c4);
+		//console.log(condorsInUse.length);
 	}	
 }
 //create ducks on the screen
@@ -1013,24 +1022,24 @@ Condor = function() {
 
     geomCondorRightWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
 	matCondorRightWing = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-	condorRightWing = new THREE.Mesh(geomCondorRightWing, matCondorRightWing);
-    condorRightWing.position.set(-9, -1, 14);
-	condorRightWing.rotation.set(0,0,0);
-	condorRightWing.castShadow = true;
-	condorRightWing.receiveShadow = true;
-    condorRightWing.scale.set(0.5,0.3,0.3);
-	this.mesh.add(condorRightWing);
+	this.condorRightWing = new THREE.Mesh(geomCondorRightWing, matCondorRightWing);
+    this.condorRightWing.position.set(-9, -1, 14);
+	this.condorRightWing.rotation.set(0,0,0);
+	this.condorRightWing.castShadow = true;
+	this.condorRightWing.receiveShadow = true;
+    this.condorRightWing.scale.set(0.5,0.3,0.3);
+	this.mesh.add(this.condorRightWing);
 	// Create the L lower wing
 
 	geomCondorLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
 	matCondorLeftWing = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-	condorLeftWing = new THREE.Mesh(geomCondorLeftWing, matCondorLeftWing);
-	condorLeftWing.position.set(-9, 0, -14);
-	condorLeftWing.rotation.set(59.7,0,0);
-	condorLeftWing.castShadow = true;
-	condorLeftWing.receiveShadow = true;
-	condorLeftWing.scale.set(0.5,0.3,0.3);
-	this.mesh.add(condorLeftWing);
+	this.condorLeftWing = new THREE.Mesh(geomCondorLeftWing, matCondorLeftWing);
+	this.condorLeftWing.position.set(-9, 0, -14);
+	this.condorLeftWing.rotation.set(59.7,0,0);
+	this.condorLeftWing.castShadow = true;
+	this.condorLeftWing.receiveShadow = true;
+	this.condorLeftWing.scale.set(0.5,0.3,0.3);
+	this.mesh.add(this.condorLeftWing);
 	//create eyes
     var geomCondorEye1 = new THREE.BoxGeometry(4,3,3,1,1,1);
 	var matCondorEye1 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
