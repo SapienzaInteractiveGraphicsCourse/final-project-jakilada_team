@@ -47,7 +47,7 @@ var Heart;
 var heart;
 
 var condorsInUse = [];
-
+var ducksInUse = [];
 
 var desertsky;
 var DesertSky;
@@ -361,7 +361,7 @@ function loop(){
 		if(currentanimal == skyCondors) {
 			for (var i=0; i<condorsInUse.length; i++){
 				var con = this.condorsInUse[i];
-				console.log(con.condorLeftWing.rotation.x);
+				//console.log(con.condorLeftWing.rotation.x);
 			
 				if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){
 					con.condorLeftWing.rotation.x += 0.7;
@@ -374,6 +374,26 @@ function loop(){
 				}
 				if(con.condorRightWing.rotation.x > -5 && con.condorRightWing.rotation.x < 0.3){
 					con.condorRightWing.rotation.x += 0.02;
+				}
+			}
+		}
+
+		else if(currentanimal == skyDucks) {
+			for (var i=0; i<ducksInUse.length; i++){
+				var duc = this.ducksInUse[i];
+				console.log(duc.duckLeftWing.rotation.x);
+			
+				if(duc.duckLeftWing.rotation.x > 54 && duc.duckLeftWing.rotation.x < 59.4){
+					duc.duckLeftWing.rotation.x += 0.7;
+				}
+				if(duc.duckLeftWing.rotation.x <= 54 || duc.duckLeftWing.rotation.x >= 59){
+					duc.duckLeftWing.rotation.x -= 0.02;
+				}
+				if(duc.duckRightWing.rotation.x <= -5|| duc.duckRightWing.rotation.x >= 0.3){
+					duc.duckRightWing.rotation.x -= 0.7;
+				}
+				if(duc.duckRightWing.rotation.x > -5 && duc.duckRightWing.rotation.x < 0.3){
+					duc.duckRightWing.rotation.x += 0.02;
 				}
 			}
 		}
@@ -1439,6 +1459,7 @@ function createBush(){
 /********************** DUCKS ********************************************************************************************/
 SkyDucks= function(){
 	this.mesh = new THREE.Object3D();
+	this.ducksInUse = [];
 	//number of ducks
 	this.nDucks= 15; // era 60, lo abbasso per fare le prove
 	var stepAngleDuck = Math.PI*2 / this.nDucks;	
@@ -1464,6 +1485,7 @@ SkyDucks= function(){
 		c3.mesh.scale.set(0.3,0.3,0.3);
 		// do not forget to add the mesh of each cloud in the scene
 		this.mesh.add(c3.mesh); 
+		ducksInUse.push(c3);
 	}  
 }
 //create ducks on the screen
@@ -1552,23 +1574,23 @@ Duck = function() {
 
     geomDuckRightLowerWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
 	matDuckRightLowerWing = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
-	duckRightLowerWing = new THREE.Mesh(geomDuckRightLowerWing, matDuckRightLowerWing);
-    duckRightLowerWing.position.set(-9, -1, 14);
-	duckRightLowerWing.rotation.set(0,0,0);
-	duckRightLowerWing.castShadow = true;
-	duckRightLowerWing.receiveShadow = true;
-    duckRightLowerWing.scale.set(0.5,0.2,0.3);
-	this.mesh.add(duckRightLowerWing);
+	this.duckRightWing = new THREE.Mesh(geomDuckRightLowerWing, matDuckRightLowerWing);
+    this.duckRightWing.position.set(-9, -1, 14);
+	this.duckRightWing.rotation.set(0,0,0);
+	this.duckRightWing.castShadow = true;
+	this.duckRightWing.receiveShadow = true;
+    this.duckRightWing.scale.set(0.5,0.2,0.3);
+	this.mesh.add(this.duckRightWing);
 
 	geomDuckLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
 	matDuckLeftWing = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
-	duckLeftWing = new THREE.Mesh(geomDuckLeftWing, matDuckLeftWing);
-	duckLeftWing.position.set(-9, 0, -14);
-	duckLeftWing.rotation.set(59.7,0,0);
-	duckLeftWing.castShadow = true;
-	duckLeftWing.receiveShadow = true;
-	duckLeftWing.scale.set(0.5,0.2,0.3);
-	this.mesh.add(duckLeftWing);
+	this.duckLeftWing = new THREE.Mesh(geomDuckLeftWing, matDuckLeftWing);
+	this.duckLeftWing.position.set(-9, 0, -14);
+	this.duckLeftWing.rotation.set(59.7,0,0);
+	this.duckLeftWing.castShadow = true;
+	this.duckLeftWing.receiveShadow = true;
+	this.duckLeftWing.scale.set(0.5,0.2,0.3);
+	this.mesh.add(this.duckLeftWing);
 	//create eyes
     var geomDuckEye1 = new THREE.BoxGeometry(3,3,3,1,1,1);
 	var matDuckEye1 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
