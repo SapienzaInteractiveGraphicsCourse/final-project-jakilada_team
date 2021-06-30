@@ -23,9 +23,19 @@ var scene, camera, fieldOfView, aspectRatio, nearPlane,
     farPlane, HEIGHT, WIDTH, renderer, container;
 //variables fo the light
 var hemisphereLight, shadowLight;
-//support variables
-var gameStart = false;
-var paused = false;
+
+var game = {
+	// geometry
+	cylinderRadius:600,
+	cylinderHeight:800,
+
+	// game
+	scenario:0, // 0 -> desert; 1 -> countryside; 2 -> ??
+
+	// logic
+	started:false,
+	paused:false,
+}
 var scenario = 0; //0 -> desert; 1 -> countryside; 2 -> ??
 var tween;
 var currentsky;
@@ -84,13 +94,13 @@ function init() {
 	initUI();
 	currentsky = desertsky;
 	currentscenario = desert;
-	console.log(scene.children)
+	console.log(scene.children);
 	// animation function used for updating objects position
 	var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 	renderer.domElement.setAttribute("tabIndex", "0");
 	renderer.domElement.focus();
 	updateFcts.push(function(delta, now){
-		if(gameStart && !paused){
+		if(game.started && !game.paused){
 			//alert(tween.isActive());
 			if(keyboard.pressed('left') || keyboard.pressed('a')){
 				airplane.mesh.position.x += (Math.max(-0,  airplane.mesh.position.x - 110) - airplane.mesh.position.x)*delta;
@@ -137,13 +147,14 @@ function init() {
 	})
 
 	/*************** START THE GAME **************************************************************************************/
-	document.getElementById("start").onclick = function(){		
+	/*
+	document.getElementById("start").onclick = function(){	
+		game.started = true;	
 		document.getElementById("menu").hidden = true;
 		document.getElementById("dist").style.display = "block";
 		document.getElementById("health").style.display = "block";
 
-		gameStart = true;
-		paused = false;
+		game.paused = false;
 		createPlane();
 		//TweenMax.delayedCall(1, createSkyCondors());
 		if(scenario == 0){
@@ -154,7 +165,7 @@ function init() {
 			currentanimal = skyDucks;
 		}
 	}
-
+*/
 	loop();
 	renderer.render( scene, camera );
 }
@@ -181,12 +192,12 @@ function createScene() {
 		nearPlane,
 		farPlane
 		);
-	scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
+	//scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
 	// Set the position of the camera
-	camera.position.x = 60;
-	camera.position.z = 250;
-	camera.position.y = 100;
-	camera.rotation.z = -.1;
+	camera.position.x = 0;
+	camera.position.z = 250; // 250
+	camera.position.y = 100; // 100
+	camera.rotation.z = 0;
 	// Create the renderer
 	renderer = new THREE.WebGLRenderer({ 
 		// Allow transparency to show the gradient background
@@ -228,11 +239,11 @@ function hanldeUpKeyboard(event) {
 	var key = event.which;
 	switch(key){
 		case 69:
-			if(!paused)
+			if(!game.paused)
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
 			break;
 		case 81:
-			if(!paused)
+			if(!game.paused)
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});;
 			break;
 	}
@@ -244,30 +255,30 @@ function hanldeDownKeyboard(event) {
 	var key = event.which;
 	switch(key){
 		case 77:
-			if(!gameStart) break;
-			if(document.getElementById("pausedspan").style.display == "block"){
-				document.getElementById("pausedspan").style.display = "none";
+			if(!game.started) break;
+			if(document.getElementById("game.pausedspan").style.display == "block"){
+				document.getElementById("game.pausedspan").style.display = "none";
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
 			}
 			else{
-				document.getElementById("pausedspan").style.display = "block";
+				document.getElementById("game.pausedspan").style.display = "block";
 				TweenMax.pauseAll();
 			}
-			paused = !paused;
+			game.paused = !game.paused;
 			break;
 		case 80:
-			if(!gameStart) break;
-			if(document.getElementById("pausedspan").style.display == "block"){
-				document.getElementById("pausedspan").style.display = "none"
+			if(!game.started) break;
+			if(document.getElementById("game.pausedspan").style.display == "block"){
+				document.getElementById("game.pausedspan").style.display = "none"
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
 
 			}
 			else{
-				document.getElementById("pausedspan").style.display = "block"
+				document.getElementById("game.pausedspan").style.display = "block"
 				TweenMax.pauseAll();
 
 			}
-			paused = !paused;
+			game.paused = !game.paused;
 			break;
 	}
 }
@@ -276,6 +287,26 @@ function handleClick(e) {
 	e.preventDefault();
 	var id = e.target.id;
 	switch(id){
+
+		case "start":
+			game.started = true;	
+			document.getElementById("menu").hidden = true;
+			document.getElementById("dist").style.display = "block";
+			document.getElementById("health").style.display = "block";
+			//document.getElementsByTagName("body").handleClick();
+	
+			game.paused = false;
+			createPlane();
+			//TweenMax.delayedCall(1, createSkyCondors());
+			if(scenario == 0){
+				createSkyCondors();
+				currentanimal = skyCondors;
+			}else if(scenario == 1){
+				createSkyDucks();
+				currentanimal = skyDucks;
+			}
+			break;
+
 		case "selectscenario":
 			document.getElementById("menuoption").style.display = "none";
 			document.getElementById("selectscenario-div").style.display = "block";
@@ -305,7 +336,6 @@ function handleClick(e) {
 			document.getElementById("menuoption").style.display = "none";
 			document.getElementById("credits-div").style.display = "block";
 			document.getElementById("selectscenario-div").style.display = "none";
-
 			break;
 
 		case "backcdt":
@@ -327,6 +357,7 @@ function handleClick(e) {
 			currentscenario = desert;
 			console.log(scenario)
 			break;
+
 		case "scenario1":
 			if(scenario == 1) break;
 			scenario = 1;
@@ -349,9 +380,10 @@ function updateScenario(scenario){
 /******************* LOOP HANDLER ****************************************************************************************/
 function loop(){
 	var pos = 0;
-	if(gameStart && !paused){
+	if(game.started && !game.paused){
 		pos = Math.abs(airplane.mesh.position.x)
-		currentanimal.mesh.rotation.z +=  Math.abs(.0015 + pos*0.00005);
+		//currentanimal.mesh.rotation.z +=  Math.abs(.0015 + pos*0.00005);
+		currentanimal.mesh.position.x -= 0.8;
 		airplane.propeller1.rotation.x += 0.5 + pos*0.0005;
 		airplane.propeller2.rotation.x += 0.5 + pos*0.0005;
 
@@ -399,7 +431,7 @@ function loop(){
 		}
 	}
 	// Rotate the propeller, the sea and the sky
-	if(!paused){
+	if(!game.paused){
 		currentscenario.mesh.rotation.z += .005 + pos*0.00005;
 		currentsky.mesh.rotation.z += .0004 + pos*0.00005;
 	}
@@ -644,10 +676,9 @@ AirPlane = function() {
 //airplane
 function createPlane(){ 
 	airplane = new AirPlane();
-	//airplane.mesh.scale.set(0.3,.125,.125);
 	airplane.mesh.scale.set(.3,.125,.125);
 	airplane.mesh.position.y = 120;
-	airplane.mesh.rotation.z = -.1;
+	//airplane.mesh.rotation.z = -.1;
 	scene.add(airplane.mesh);
 }
 /*************************** CLOUD CLASS *********************************************************************************/
@@ -759,7 +790,7 @@ Desert = function(){
 	// create the geometry (shape) of the cylinder;
 	// the parameters are: 
 	// radius top, radius bottom, height, number of segments on the radius, number of segments vertically
-	geom = new THREE.CylinderGeometry(600,600,800,40,10);  //FORSE DA CAMBIARE
+	geom = new THREE.CylinderGeometry(cylinderRadius,cylinderRadius,cylinderHeight,40,10);  //FORSE DA CAMBIARE
 	// rotate the geometry on the x axis
 	geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 	// create the material 
@@ -936,23 +967,23 @@ function createCactus(){
 	scene.add(cactus.mesh);
 }
 /*********************************** CONDOR CLASS *************************************************************************/
-SkyCondors= function(){
+SkyCondors = function(){
 	this.mesh = new THREE.Object3D();
 	this.condorsInUse = [];
 	//number of ducks
-	this.nCondors= 15; // era 60, lo abbasso per fare le prove
-	var stepAngleCondor = Math.PI*2 / this.nCondors;	
+	this.nCondors= 10; // era 100, lo abbasso per fare le prove
+	//var stepAngleCondor = Math.PI*2 / this.nCondors;	
 	// create the clouds
 	for(var i=0; i<this.nCondors; i++){
 		var c4 = new Condor();  
 		// set the rotation and the position of each cloud using trigonometry
-		var a4 = stepAngleCondor*i; // this is the final angle of the cloud
-		var h4 = 600 + Math.random()*200; // this is the distance between the center of the axis and the cloud itself		
+		//var a4 = stepAngleCondor*i; // this is the final angle of the cloud
+		//var h4 = 600 + Math.random()*200; // this is the distance between the center of the axis and the condor itself		
 		// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
-		c4.mesh.position.y = Math.sin(a4)*h4;
-		c4.mesh.position.x = Math.cos(a4)*h4;
+		c4.mesh.position.y = 600 + Math.random()*200;
+		c4.mesh.position.x = Math.random()*100;
 		// rotate the condors according to its position
-		c4.mesh.rotation.z = a4 + Math.PI/2;
+		c4.mesh.rotation.z = Math.PI;
 		// for a better result, we position the clouds 
 		// at random depths inside of the scene
 	    //c2.mesh.position.z = -400-Math.random()*400;		
@@ -1098,15 +1129,15 @@ Condor = function() {
 	this.mesh.add(leftLeg);
 };
 
-function createCondor(){ 
+/*function createCondor(){ 
 	condor = new Condor();
 	condor.mesh.scale.set(.25,.25,.25);
-	condor.mesh.position.y = 60;
-	condor.mesh.rotation.x= 41;  //era 41
+	//condor.mesh.position.y = 60;
+	//condor.mesh.rotation.x = 41;  //era 41
 	//condor.mesh.rotation.y= 20.4;  //20.4
 	//condor.mesh.rotation.z= 41;
 	scene.add(condor.mesh);
-}
+}*/
 
 /******************************* COUNTRY SIDE ******************************************************************************/
 CountrySky = function(){
@@ -1657,4 +1688,4 @@ function updateDistance(){
 
 function initUI(){
 	fieldDistance = document.getElementById("distValue");
-  }
+}
