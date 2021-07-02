@@ -7,6 +7,7 @@ var Colors = {
 	brownDark:0x23190f,
 	blue:0x68c3c0,
 	grey:0x696969,
+	greys: 0x181818,
 	lightgrey:0xB8B8B8,
 	orange: 0xffa500,
 	sienna:	0xa0522d,
@@ -17,7 +18,7 @@ var Colors = {
 	black: 0x000000,
 	sand: 0xf2d16b,
 	//gray: 0x202020,
-	platinum: 0xe5e4e2,
+	moon: 0xC0C0C0,
 };
 //variables for the camera
 var scene, camera, fieldOfView, aspectRatio, nearPlane, 
@@ -37,15 +38,17 @@ var game = {
 	collisionDistance: 100,
 	level: 1,
 	distance: 0,
-	nAnimals: 10,
-	animalsOnScreen: [], // animals appearing in the screen 
+	nAnimals: 100, // increases with levels
+	stepLength: 150, // step interval between one spawn and another (decreases with levels)
+	animalsSpeed: 0.8, // x Axis birds speed (increases with levels)
 	animalsArray: [], // total animals in a level
-
-
+	animalMesh: new THREE.Object3D(), // skyCondors/skyDucks/SkySpaceEnemy
+	spawnPerStep: 1,
 
 	// logic
 	started: false,
 	paused: false,
+	levelUp: true,
 }
 
 
@@ -80,7 +83,7 @@ var countryside;
 var Condor;
 var condor;
 var SkyCondors;
-var skyCondors;
+//var skyCondors;
 var geomCondorRightWing;
 var matCondorRightWing;
 var condorRightWing;
@@ -260,11 +263,11 @@ function hanldeUpKeyboard(event) {
 	event.preventDefault();
 	var key = event.which;
 	switch(key){
-		case 69:
+		case 69: // E
 			if(!game.paused)
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
 			break;
-		case 81:
+		case 81: // Q
 			if(!game.paused)
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});;
 			break;
@@ -319,7 +322,6 @@ function handleClick(e) {
 	
 			game.paused = false;
 			createPlane();
-			createAnimals();
 			break;
 
 		case "selectscenario":
@@ -383,8 +385,8 @@ function handleClick(e) {
 
 function animationAnimals(){
 	if(game.scenario == 0){
-		for (var i=0; i<game.animalsOnScreen.length; i++){
-			var con = game.animalsOnScreen[i];
+		for (var i=0; i<game.nAnimals; i++){
+			var con = game.animalsArray[i];
 			//console.log(con.condorLeftWing.rotation.x);
 			if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){
 				con.condorLeftWing.rotation.x += 0.7;
@@ -422,16 +424,22 @@ function animationAnimals(){
 	}
 }
 
+function moveAnimals(){
+	for(var i=0; i<game.nAnimals; i++){
+		game.animalsArray[i].mesh.position.x -= game.animalsSpeed;
+	}
+}
 /******************* LOOP HANDLER ****************************************************************************************/
 function loop(){
 	var pos = 0;
 	if(game.started && !game.paused){
 		pos = Math.abs(airplane.mesh.position.x);
-		game.animalsOnScreen = game.animalsArray;
-		for(var i=0; i<game.nAnimals; i++){
-			game.animalsOnScreen[i].mesh.position.x -= 0.8; // animalsOnScreen
+		if(game.levelUp){
+			spawnAnimals(game.nAnimals);
+			game.levelUp = false;
 		}
-		
+
+		moveAnimals();
 		airplane.propeller1.rotation.x += 0.5 + pos*0.0005;
 		airplane.propeller2.rotation.x += 0.5 + pos*0.0005;
 
@@ -698,330 +706,7 @@ function createBackgroundScenario(){
 	else createScenario2();
 }
 
-function createAnimals(){
-	
-	/***************************** CONDOR CLASS ********************************************************************************/
-	Condor = function() {
 
-		this.mesh = new THREE.Object3D();	
-		// Create the body
-		//number of points on the curve, default 12
-		const length = 30, width = 20;
-		const shape = new THREE.Shape();
-		shape.moveTo( 0, 0 );
-		shape.lineTo( 0, width );
-		shape.lineTo( length, width );
-		shape.lineTo( length, 0 );
-		shape.lineTo( 0, 0 );
-		const extrudeSettings = {
-			steps: 2,   // Number of points used for subdividing segments along the depth of the extruded spline. Default is 1.
-			depth: 50,  //Depth to extrude the shape. Default is 100.
-			bevelEnabled: true,
-			bevelThickness: 55, // How deep into the original shape the bevel (smussatura) goes. Default is 6.
-			bevelSize: 4,  //Distance from the shape outline that the bevel extends. Default is bevelThickness - 2.
-			bevelOffset: 2,  //Distance from the shape outline that the bevel starts. Default is 0.
-			bevelSegments: 2  //Number of bevel layers. Default is 3.
-		};
-		var geomBody = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matBody = new THREE.MeshPhongMaterial({color:Colors.gray, shading:THREE.FlatShading});
-		var body = new THREE.Mesh(geomBody, matBody);
-		body.position.set(-20,-6,10);
-		body.rotation.set(0,1.5,0);
-		body.castShadow = true;
-		body.receiveShadow = true;
-		body.scale.set(0.5,0.7,0.25);
-		this.mesh.add(body);
-		//create the white neck
-		var geomNeck = new THREE.CylinderGeometry(8,8,6,32);
-		var matNeck= new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
-		var neck = new THREE.Mesh(geomNeck, matNeck);
-		neck.rotation.z= 30;
-		neck.position.x = 22;
-		neck.castShadow = true;
-		neck.receiveShadow = true;
-		this.mesh.add(neck);
-		// Create the face
-		var geomFace = new THREE.CylinderGeometry(5,5,10,32);
-		var matFace= new THREE.MeshPhongMaterial({color:Colors.pink, shading:THREE.FlatShading});
-		var face = new THREE.Mesh(geomFace, matFace);
-		face.rotation.z= 30;
-		face.position.x = 30;
-		face.position.y = 2;
-		face.castShadow = true;
-		face.receiveShadow = true;
-		this.mesh.add(face);
-		// Create the beak
-		var geomBeak = new THREE.CylinderGeometry(0,5,10,10);
-		var matBeak= new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
-		var beak = new THREE.Mesh(geomBeak, matBeak);
-		beak.position.set(40,4,-1);
-		beak.rotation.set(5,0,250);
-		beak.castShadow = true;
-		beak.receiveShadow = true;
-		this.mesh.add(beak);
-		//tail
-		var geomTail = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matTail = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-		var tail = new THREE.Mesh(geomTail, matTail);
-		tail.position.set(-40,-3,-5);
-		tail.castShadow = true;
-		tail.receiveShadow = true;
-		tail.scale.set(0.2,0.2,0.05);
-		this.mesh.add(tail);
-		// Create the R lower wing
-
-		geomCondorRightWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
-		matCondorRightWing = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-		this.condorRightWing = new THREE.Mesh(geomCondorRightWing, matCondorRightWing);
-		this.condorRightWing.position.set(-9, -1, 14);
-		this.condorRightWing.rotation.set(0,0,0);
-		this.condorRightWing.castShadow = true;
-		this.condorRightWing.receiveShadow = true;
-		this.condorRightWing.scale.set(0.5,0.3,0.3);
-		this.mesh.add(this.condorRightWing);
-		// Create the L lower wing
-
-		geomCondorLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
-		matCondorLeftWing = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-		this.condorLeftWing = new THREE.Mesh(geomCondorLeftWing, matCondorLeftWing);
-		this.condorLeftWing.position.set(-9, 0, -14);
-		this.condorLeftWing.rotation.set(59.7,0,0);
-		this.condorLeftWing.castShadow = true;
-		this.condorLeftWing.receiveShadow = true;
-		this.condorLeftWing.scale.set(0.5,0.3,0.3);
-		this.mesh.add(this.condorLeftWing);
-		//create eyes
-		var geomCondorEye1 = new THREE.BoxGeometry(4,3,3,1,1,1);
-		var matCondorEye1 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-		var condorEye1 = new THREE.Mesh(geomCondorEye1, matCondorEye1);
-		condorEye1.position.set(33,0,4);
-		condorEye1.castShadow = true;
-		condorEye1.receiveShadow = true;
-		this.mesh.add(condorEye1);
-
-		var geomCondorEye2 = new THREE.BoxGeometry(4,3,3,1,1,1);
-		var matCondorEye2 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-		var condorEye2 = new THREE.Mesh(geomCondorEye2, matCondorEye2);
-		condorEye2.position.set(32,0,-4);
-		condorEye2.castShadow = true;
-		condorEye2.receiveShadow = true;
-		this.mesh.add(condorEye2);
-		//create duck legs
-		var geomRightLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matRightLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
-		var rightLeg = new THREE.Mesh(geomRightLeg, matRightLeg);
-		rightLeg.position.set(-15,11,4);
-		rightLeg.rotation.set(0,0,2.4);
-		rightLeg.castShadow = true;
-		rightLeg.receiveShadow = true;
-		rightLeg.scale.set(0.2,0.1,0.05);
-
-		this.mesh.add(rightLeg);
-		var geomLeftLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matLeftLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
-		var leftLeg = new THREE.Mesh(geomLeftLeg, matLeftLeg);
-		leftLeg.position.set(-15,11,-8);
-		leftLeg.rotation.set(0,0,2.4);
-		leftLeg.castShadow = true;
-		leftLeg.receiveShadow = true;
-		leftLeg.scale.set(0.2,0.1,0.05);
-		this.mesh.add(leftLeg);
-	}
-	/*********************************** CONDOR CLASS *************************************************************************/
-	SkyCondors = function(){
-		this.mesh = new THREE.Object3D();	
-		// create nAnimals and pushes in animalsArray
-		for(var i=0; i < game.nAnimals; i++){
-			var condor = new Condor();
-			condor.mesh.position.y = 600 + Math.random()*200;
-			condor.mesh.position.x = Math.random()*100;
-			condor.mesh.rotation.z = Math.PI;	
-			condor.mesh.scale.set(0.3,0.3,0.3);
-			this.mesh.add(condor.mesh); 
-			game.animalsArray.push(condor);
-		}	
-	}
-	//create ducks on the screen
-	function createSkyCondors(){
-		skyCondors = new SkyCondors();
-		skyCondors.mesh.position.y = -game.cylinderRadius;
-		scene.add(skyCondors.mesh);
-	}
-
-	/********************** DUCKS ********************************************************************************************/
-	SkyDucks = function(){
-		this.mesh = new THREE.Object3D();	
-		// create nAnimals and pushes in animalsArray
-		for(var i=0; i < game.nAnimals; i++){
-			var duck = new Duck();
-			duck.mesh.position.y = 600 + Math.random()*200;
-			duck.mesh.position.x = Math.random()*100;
-			duck.mesh.rotation.z = Math.PI;	
-			duck.mesh.scale.set(0.3,0.3,0.3);
-			this.mesh.add(duck.mesh); 
-			game.animalsArray.push(duck);
-		}
-	}
-
-	//create ducks on the screen
-	function createSkyDucks(){
-		skyDucks = new SkyDucks();
-		skyDucks.mesh.position.y = -game.cylinderRadius;
-		scene.add(skyDucks.mesh);
-	}
-
-	/************************DUCK CLASS***************************************************************************************/
-	Duck = function() {	
-		this.mesh = new THREE.Object3D();	
-		// Create the body
-		//number of points on the curve, default 12
-		const length = 30, width = 20;
-		const shape = new THREE.Shape();
-		shape.moveTo( 0, 0 );
-		shape.lineTo( 0, width );
-		shape.lineTo( length, width );
-		shape.lineTo( length, 0 );
-		shape.lineTo( 0, 0 );
-		const extrudeSettings = {
-			steps: 2,   // Number of points used for subdividing segments along the depth of the extruded spline. Default is 1.
-			depth: 50,  //Depth to extrude the shape. Default is 100.
-			bevelEnabled: true,
-			bevelThickness: 55, // How deep into the original shape the bevel (smussatura) goes. Default is 6.
-			bevelSize: 4,  //Distance from the shape outline that the bevel extends. Default is bevelThickness - 2.
-			bevelOffset: 2,  //Distance from the shape outline that the bevel starts. Default is 0.
-			bevelSegments: 2  //Number of bevel layers. Default is 3.
-		};
-		var geomBody = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matBody = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
-		var body = new THREE.Mesh(geomBody, matBody);
-		body.position.set(-20,-6,10);
-		body.rotation.set(0,1.5,0);
-		body.castShadow = true;
-		body.receiveShadow = true;
-		body.scale.set(0.7,0.7,0.25);
-		this.mesh.add(body);
-		//white part 
-		var geomBody2 = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matBody2 = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
-		var body2 = new THREE.Mesh(geomBody2, matBody2);
-		body2.position.set(-20,3.6,10);
-		body2.rotation.set(0,1.5,0);
-		body2.castShadow = true;
-		body2.receiveShadow = true;
-		body2.scale.set(0.7,0.3,0.25);
-		this.mesh.add(body2);
-		//create the white neck
-		var geomNeck = new THREE.CylinderGeometry(5,5,5,32);
-		var matNeck= new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
-		var neck = new THREE.Mesh(geomNeck, matNeck);
-		neck.rotation.z= 30;
-		neck.position.x = 22;
-		neck.castShadow = true;
-		neck.receiveShadow = true;
-		this.mesh.add(neck);
-		// Create the face and neck
-		var geomFace = new THREE.CylinderGeometry(5,5,20,32);
-		var matFace= new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
-		var face = new THREE.Mesh(geomFace, matFace);
-		face.rotation.z= 30;
-		face.position.x = 34;
-		face.position.y = 2;
-		face.castShadow = true;
-		face.receiveShadow = true;
-		this.mesh.add(face);
-		// Create the beak
-		var geomBeak = new THREE.CylinderGeometry(0,5,10,10);
-		var matBeak= new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
-		var beak = new THREE.Mesh(geomBeak, matBeak);
-		beak.position.set(47,4,-1);
-		beak.rotation.set(5,0,250);
-		beak.castShadow = true;
-		beak.receiveShadow = true;
-		this.mesh.add(beak);
-		//tail
-		var geomTail = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matTail = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
-		var tail = new THREE.Mesh(geomTail, matTail);
-		tail.position.set(-40,-3,-5);
-		tail.castShadow = true;
-		tail.receiveShadow = true;
-		tail.scale.set(0.2,0.2,0.05);
-		this.mesh.add(tail);
-
-		geomDuckRightLowerWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
-		matDuckRightLowerWing = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
-		this.duckRightWing = new THREE.Mesh(geomDuckRightLowerWing, matDuckRightLowerWing);
-		this.duckRightWing.position.set(-9, -1, 14);
-		this.duckRightWing.rotation.set(0,0,0);
-		this.duckRightWing.castShadow = true;
-		this.duckRightWing.receiveShadow = true;
-		this.duckRightWing.scale.set(0.5,0.2,0.3);
-		this.mesh.add(this.duckRightWing);
-
-		geomDuckLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
-		matDuckLeftWing = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
-		this.duckLeftWing = new THREE.Mesh(geomDuckLeftWing, matDuckLeftWing);
-		this.duckLeftWing.position.set(-9, 0, -14);
-		this.duckLeftWing.rotation.set(59.7,0,0);
-		this.duckLeftWing.castShadow = true;
-		this.duckLeftWing.receiveShadow = true;
-		this.duckLeftWing.scale.set(0.5,0.2,0.3);
-		this.mesh.add(this.duckLeftWing);
-		//create eyes
-		var geomDuckEye1 = new THREE.BoxGeometry(3,3,3,1,1,1);
-		var matDuckEye1 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-		var duckEye1 = new THREE.Mesh(geomDuckEye1, matDuckEye1);
-		duckEye1.position.set(40,2,4);
-		duckEye1.castShadow = true;
-		duckEye1.receiveShadow = true;
-		this.mesh.add(duckEye1);
-
-		var geomDuckEye2 = new THREE.BoxGeometry(3,3,3,1,1,1);
-		var matDuckEye2 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-		var duckEye2 = new THREE.Mesh(geomDuckEye2, matDuckEye2);
-		duckEye2.position.set(40,2,-4);
-		duckEye2.castShadow = true;
-		duckEye2.receiveShadow = true;
-		this.mesh.add(duckEye2);
-		//create duck legs
-		var geomRightLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matRightLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
-		var rightLeg = new THREE.Mesh(geomRightLeg, matRightLeg);
-		rightLeg.position.set(-15,11,4);
-		rightLeg.rotation.set(0,0,2.4);
-		rightLeg.castShadow = true;
-		rightLeg.receiveShadow = true;
-		rightLeg.scale.set(0.2,0.1,0.05);
-		this.mesh.add(rightLeg);
-
-		var geomLeftLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
-		var matLeftLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
-		var leftLeg = new THREE.Mesh(geomLeftLeg, matLeftLeg);
-		leftLeg.position.set(-15,11,-8);
-		leftLeg.rotation.set(0,0,2.4);
-		leftLeg.castShadow = true;
-		leftLeg.receiveShadow = true;
-		leftLeg.scale.set(0.2,0.1,0.05);
-		this.mesh.add(leftLeg);
-	};
-
-	//single duck under the airplane for tests
-	function createDuck(){ 
-		duck = new Duck();
-		duck.mesh.scale.set(.25,.25,.25);
-		duck.mesh.position.y = 50;
-
-		duck.mesh.rotation.x= 41;  //era 41
-		//duck.mesh.rotation.y= 20.4;  //20.4
-		//duck.mesh.rotation.z= 41;
-		scene.add(duck.mesh);
-	}
-
-	if(game.scenario == 0) createSkyCondors(); // create condors
-	else if(game.scenario == 1) createSkyDucks(); // create ducks
-	else createSkySpaceship();
-	//else // create 3rd scenario animal
-}
 
 function createScenario0(){
 	/*************************** CLOUD CLASS *********************************************************************************/
@@ -1806,7 +1491,7 @@ function createScenario2(){
 			var rock = new THREE.Mesh(geomRock, matRock); // create the mesh by cloning the geometry
 			// set the position and the rotation of each cube randomly
 			rock.position.x = i*20;
-			rock.position.y =0;
+			rock.position.y = 0;
 			rock.position.z =  0;
 
 			rock.rotation.z = Math.random()*Math.PI*2;
@@ -1824,9 +1509,8 @@ function createScenario2(){
 		var nRocks2 = 2 + Math.floor(Math.random()*4);	
 		for (var i=0; i<nRocks2; i++ ){		
 			var rock2 = new THREE.Mesh(geomRock, matRock);	
-			rock2.position.x = i*10;
-			rock2.position.y = 30 + Math.random()*10;
-			rock2.position.z = 180 + Math.random()*10;
+			rock2.position.x = Math.random()*Math.PI*2;
+			rock2.position.y = Math.random()*Math.PI*2;
 
 			rock2.rotation.z = Math.random()*Math.PI*2;
 			rock2.rotation.y = Math.random()*Math.PI*2;	
@@ -1841,18 +1525,33 @@ function createScenario2(){
 	}
 
 
-	Hole= function(){
+	Hole = function(){
 		//holes
 		this.mesh = new THREE.Object3D();
 	    var geomHole = new THREE.CircleGeometry(60,50);
-		var matHole= new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
-		var hole = new THREE.Mesh(geomHole, matHole);
-		hole.position.set(110, 33, 10);
-		hole.rotation.set(1.5, 0.5, 0);
-		hole.castShadow = true;
-		hole.receiveShadow = true;
+		var matHole = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading});
+		//hole.rotation.set(1.5, 0.5, 0);
+		//hole.scale.set(0.2,0.2,0.4);
+		var hole = new THREE.Mesh(geomHole, matHole);	
+		hole.rotation.set(1.5, 0, 0);
 		hole.scale.set(0.2,0.2,0.4);
+		//hole.position.set(110, 33, 10);
+		hole.castShadow = true;
+		hole.receiveShadow = true;	
+		
+
+		this.mesh = new THREE.Object3D();
+		var geomHole2 = new THREE.CircleGeometry(60,50);
+		var matHole2 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+		var hole2 = new THREE.Mesh(geomHole2, matHole2);	
+		hole2.rotation.set(2, 0, 0);
+		hole2.scale.set(0.08,0.08,0.2);
+		hole2.position.set(110, 33, 10);
+		hole2.castShadow = true;
+		hole2.receiveShadow = true;	
+		this.mesh.add(hole2);
 		this.mesh.add(hole);
+	
 	}
 
 
@@ -1867,7 +1566,7 @@ function createScenario2(){
 		geom.applyMatrix(new THREE.Matrix4().makeRotationX(-Math.PI/2));
 		// create the material 
 		var mat = new THREE.MeshPhongMaterial({
-			color:Colors.platinum,
+			color:Colors.moon,
 			shading:THREE.FlatShading,
 		});
 		// To create an object in Three.js, we have to create a mesh 
@@ -1875,7 +1574,7 @@ function createScenario2(){
 		this.mesh = new THREE.Mesh(geom, mat);
 		// Allow the sea to receive shadows
 		this.mesh.receiveShadow = true; 
-		this.nRocksMoon= 25;
+		this.nRocksMoon= 130;
 		// To distribute the clouds consistently,
 		// we need to place them according to a uniform angle
 		var stepRockMoonAngle = Math.PI*2 / this.nRocksMoon;
@@ -1885,7 +1584,7 @@ function createScenario2(){
 			var r = new Rock();
 			// set the rotation and the position of each cloud using trigonometry
 			var a = stepRockMoonAngle*i; // this is the final angle of the cloud
-			var h = 599; // this is the distance between the center of the axis and the cloud itself
+			var h = 590; // this is the distance between the center of the axis and the cloud itself
 			// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
 			r.mesh.position.y = Math.sin(a)*h;
 			r.mesh.position.x = Math.cos(a)*h;
@@ -1902,7 +1601,7 @@ function createScenario2(){
 		}
 
 
-		this.nHoles= 7;
+		this.nHoles= 15;
 		// To distribute the cactus consistently, we need to place them according to a uniform angle
 		var stepHolesAngle = Math.PI*2 / this.nHoles;
 
@@ -1911,7 +1610,7 @@ function createScenario2(){
 			var hol = new Hole();
 			// set the rotation and the position of each cactus using trigonometry
 			var a = stepHolesAngle*i; // this is the final angle of the cloud
-			var h = 610; // this is the distance between the center of the axis and the cloud itself
+			var h = 600; // this is the distance between the center of the axis and the cloud itself
 			// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
 			hol.mesh.position.y = Math.sin(a)*h;
 			hol.mesh.position.x = Math.cos(a)*h;
@@ -1919,7 +1618,7 @@ function createScenario2(){
 			hol.mesh.rotation.z = a + Math.PI/2;
 			// for a better result, we position the cactus 
 			// at fixed depths inside of the scene
-			hol.mesh.position.z = -400+ Math.random()*270;
+			hol.mesh.position.z = -300+ Math.random()*300;
 			// we also set a random scale for each cactus
 			var s = 1+Math.random()*2;
 			hol.mesh.scale.set(s,s,s);
@@ -1948,9 +1647,318 @@ function createScenario2(){
 }
 
 
+// spawna n animals (means put n animals on the screen, from right to left)
+function spawnAnimals(n){
 
+	Condor = function() {
 
+		this.mesh = new THREE.Object3D();	
+		// Create the body
+		//number of points on the curve, default 12
+		const length = 30, width = 20;
+		const shape = new THREE.Shape();
+		shape.moveTo( 0, 0 );
+		shape.lineTo( 0, width );
+		shape.lineTo( length, width );
+		shape.lineTo( length, 0 );
+		shape.lineTo( 0, 0 );
+		const extrudeSettings = {
+			steps: 2,   // Number of points used for subdividing segments along the depth of the extruded spline. Default is 1.
+			depth: 50,  //Depth to extrude the shape. Default is 100.
+			bevelEnabled: true,
+			bevelThickness: 55, // How deep into the original shape the bevel (smussatura) goes. Default is 6.
+			bevelSize: 4,  //Distance from the shape outline that the bevel extends. Default is bevelThickness - 2.
+			bevelOffset: 2,  //Distance from the shape outline that the bevel starts. Default is 0.
+			bevelSegments: 2  //Number of bevel layers. Default is 3.
+		};
+		var geomBody = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matBody = new THREE.MeshPhongMaterial({color:Colors.greys, shading:THREE.FlatShading});
+		var body = new THREE.Mesh(geomBody, matBody);
+		body.position.set(-20,-6,10);
+		body.rotation.set(0,1.5,0);
+		body.castShadow = true;
+		body.receiveShadow = true;
+		body.scale.set(0.5,0.7,0.25);
+		this.mesh.add(body);
+		//create the white neck
+		var geomNeck = new THREE.CylinderGeometry(8,8,6,32);
+		var matNeck= new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
+		var neck = new THREE.Mesh(geomNeck, matNeck);
+		neck.rotation.z= 30;
+		neck.position.x = 22;
+		neck.castShadow = true;
+		neck.receiveShadow = true;
+		this.mesh.add(neck);
+		// Create the face
+		var geomFace = new THREE.CylinderGeometry(5,5,10,32);
+		var matFace= new THREE.MeshPhongMaterial({color:Colors.pink, shading:THREE.FlatShading});
+		var face = new THREE.Mesh(geomFace, matFace);
+		face.rotation.z= 30;
+		face.position.x = 30;
+		face.position.y = 2;
+		face.castShadow = true;
+		face.receiveShadow = true;
+		this.mesh.add(face);
+		// Create the beak
+		var geomBeak = new THREE.CylinderGeometry(0,5,10,10);
+		var matBeak= new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+		var beak = new THREE.Mesh(geomBeak, matBeak);
+		beak.position.set(40,4,-1);
+		beak.rotation.set(5,0,250);
+		beak.castShadow = true;
+		beak.receiveShadow = true;
+		this.mesh.add(beak);
+		//tail
+		var geomTail = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matTail = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+		var tail = new THREE.Mesh(geomTail, matTail);
+		tail.position.set(-40,-3,-5);
+		tail.castShadow = true;
+		tail.receiveShadow = true;
+		tail.scale.set(0.2,0.2,0.05);
+		this.mesh.add(tail);
+		// Create the R lower wing
 
+		geomCondorRightWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
+		matCondorRightWing = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+		this.condorRightWing = new THREE.Mesh(geomCondorRightWing, matCondorRightWing);
+		this.condorRightWing.position.set(-9, -1, 14);
+		this.condorRightWing.rotation.set(0,0,0);
+		this.condorRightWing.castShadow = true;
+		this.condorRightWing.receiveShadow = true;
+		this.condorRightWing.scale.set(0.5,0.3,0.3);
+		this.mesh.add(this.condorRightWing);
+		// Create the L lower wing
+
+		geomCondorLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
+		matCondorLeftWing = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+		this.condorLeftWing = new THREE.Mesh(geomCondorLeftWing, matCondorLeftWing);
+		this.condorLeftWing.position.set(-9, 0, -14);
+		this.condorLeftWing.rotation.set(59.7,0,0);
+		this.condorLeftWing.castShadow = true;
+		this.condorLeftWing.receiveShadow = true;
+		this.condorLeftWing.scale.set(0.5,0.3,0.3);
+		this.mesh.add(this.condorLeftWing);
+		//create eyes
+		var geomCondorEye1 = new THREE.BoxGeometry(4,3,3,1,1,1);
+		var matCondorEye1 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+		var condorEye1 = new THREE.Mesh(geomCondorEye1, matCondorEye1);
+		condorEye1.position.set(33,0,4);
+		condorEye1.castShadow = true;
+		condorEye1.receiveShadow = true;
+		this.mesh.add(condorEye1);
+
+		var geomCondorEye2 = new THREE.BoxGeometry(4,3,3,1,1,1);
+		var matCondorEye2 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+		var condorEye2 = new THREE.Mesh(geomCondorEye2, matCondorEye2);
+		condorEye2.position.set(32,0,-4);
+		condorEye2.castShadow = true;
+		condorEye2.receiveShadow = true;
+		this.mesh.add(condorEye2);
+		//create duck legs
+		var geomRightLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matRightLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+		var rightLeg = new THREE.Mesh(geomRightLeg, matRightLeg);
+		rightLeg.position.set(-15,11,4);
+		rightLeg.rotation.set(0,0,2.4);
+		rightLeg.castShadow = true;
+		rightLeg.receiveShadow = true;
+		rightLeg.scale.set(0.2,0.1,0.05);
+
+		this.mesh.add(rightLeg);
+		var geomLeftLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matLeftLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+		var leftLeg = new THREE.Mesh(geomLeftLeg, matLeftLeg);
+		leftLeg.position.set(-15,11,-8);
+		leftLeg.rotation.set(0,0,2.4);
+		leftLeg.castShadow = true;
+		leftLeg.receiveShadow = true;
+		leftLeg.scale.set(0.2,0.1,0.05);
+		this.mesh.add(leftLeg);
+	};
+
+	Duck = function() {	
+		this.mesh = new THREE.Object3D();	
+		// Create the body
+		//number of points on the curve, default 12
+		const length = 30, width = 20;
+		const shape = new THREE.Shape();
+		shape.moveTo( 0, 0 );
+		shape.lineTo( 0, width );
+		shape.lineTo( length, width );
+		shape.lineTo( length, 0 );
+		shape.lineTo( 0, 0 );
+		const extrudeSettings = {
+			steps: 2,   // Number of points used for subdividing segments along the depth of the extruded spline. Default is 1.
+			depth: 50,  //Depth to extrude the shape. Default is 100.
+			bevelEnabled: true,
+			bevelThickness: 55, // How deep into the original shape the bevel (smussatura) goes. Default is 6.
+			bevelSize: 4,  //Distance from the shape outline that the bevel extends. Default is bevelThickness - 2.
+			bevelOffset: 2,  //Distance from the shape outline that the bevel starts. Default is 0.
+			bevelSegments: 2  //Number of bevel layers. Default is 3.
+		};
+		var geomBody = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matBody = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
+		var body = new THREE.Mesh(geomBody, matBody);
+		body.position.set(-20,-6,10);
+		body.rotation.set(0,1.5,0);
+		body.castShadow = true;
+		body.receiveShadow = true;
+		body.scale.set(0.7,0.7,0.25);
+		this.mesh.add(body);
+		//white part 
+		var geomBody2 = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matBody2 = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
+		var body2 = new THREE.Mesh(geomBody2, matBody2);
+		body2.position.set(-20,3.6,10);
+		body2.rotation.set(0,1.5,0);
+		body2.castShadow = true;
+		body2.receiveShadow = true;
+		body2.scale.set(0.7,0.3,0.25);
+		this.mesh.add(body2);
+		//create the white neck
+		var geomNeck = new THREE.CylinderGeometry(5,5,5,32);
+		var matNeck= new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
+		var neck = new THREE.Mesh(geomNeck, matNeck);
+		neck.rotation.z= 30;
+		neck.position.x = 22;
+		neck.castShadow = true;
+		neck.receiveShadow = true;
+		this.mesh.add(neck);
+		// Create the face and neck
+		var geomFace = new THREE.CylinderGeometry(5,5,20,32);
+		var matFace= new THREE.MeshPhongMaterial({color:Colors.seagreen, shading:THREE.FlatShading});
+		var face = new THREE.Mesh(geomFace, matFace);
+		face.rotation.z= 30;
+		face.position.x = 34;
+		face.position.y = 2;
+		face.castShadow = true;
+		face.receiveShadow = true;
+		this.mesh.add(face);
+		// Create the beak
+		var geomBeak = new THREE.CylinderGeometry(0,5,10,10);
+		var matBeak= new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+		var beak = new THREE.Mesh(geomBeak, matBeak);
+		beak.position.set(47,4,-1);
+		beak.rotation.set(5,0,250);
+		beak.castShadow = true;
+		beak.receiveShadow = true;
+		this.mesh.add(beak);
+		//tail
+		var geomTail = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matTail = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
+		var tail = new THREE.Mesh(geomTail, matTail);
+		tail.position.set(-40,-3,-5);
+		tail.castShadow = true;
+		tail.receiveShadow = true;
+		tail.scale.set(0.2,0.2,0.05);
+		this.mesh.add(tail);
+
+		geomDuckRightLowerWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
+		matDuckRightLowerWing = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
+		this.duckRightWing = new THREE.Mesh(geomDuckRightLowerWing, matDuckRightLowerWing);
+		this.duckRightWing.position.set(-9, -1, 14);
+		this.duckRightWing.rotation.set(0,0,0);
+		this.duckRightWing.castShadow = true;
+		this.duckRightWing.receiveShadow = true;
+		this.duckRightWing.scale.set(0.5,0.2,0.3);
+		this.mesh.add(this.duckRightWing);
+
+		geomDuckLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);    
+		matDuckLeftWing = new THREE.MeshPhongMaterial({color:Colors.sienna, shading:THREE.FlatShading});
+		this.duckLeftWing = new THREE.Mesh(geomDuckLeftWing, matDuckLeftWing);
+		this.duckLeftWing.position.set(-9, 0, -14);
+		this.duckLeftWing.rotation.set(59.7,0,0);
+		this.duckLeftWing.castShadow = true;
+		this.duckLeftWing.receiveShadow = true;
+		this.duckLeftWing.scale.set(0.5,0.2,0.3);
+		this.mesh.add(this.duckLeftWing);
+		//create eyes
+		var geomDuckEye1 = new THREE.BoxGeometry(3,3,3,1,1,1);
+		var matDuckEye1 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+		var duckEye1 = new THREE.Mesh(geomDuckEye1, matDuckEye1);
+		duckEye1.position.set(40,2,4);
+		duckEye1.castShadow = true;
+		duckEye1.receiveShadow = true;
+		this.mesh.add(duckEye1);
+
+		var geomDuckEye2 = new THREE.BoxGeometry(3,3,3,1,1,1);
+		var matDuckEye2 = new THREE.MeshPhongMaterial({color:Colors.black, shading:THREE.FlatShading});
+		var duckEye2 = new THREE.Mesh(geomDuckEye2, matDuckEye2);
+		duckEye2.position.set(40,2,-4);
+		duckEye2.castShadow = true;
+		duckEye2.receiveShadow = true;
+		this.mesh.add(duckEye2);
+		//create duck legs
+		var geomRightLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matRightLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+		var rightLeg = new THREE.Mesh(geomRightLeg, matRightLeg);
+		rightLeg.position.set(-15,11,4);
+		rightLeg.rotation.set(0,0,2.4);
+		rightLeg.castShadow = true;
+		rightLeg.receiveShadow = true;
+		rightLeg.scale.set(0.2,0.1,0.05);
+		this.mesh.add(rightLeg);
+
+		var geomLeftLeg = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+		var matLeftLeg = new THREE.MeshPhongMaterial({color:Colors.orange, shading:THREE.FlatShading});
+		var leftLeg = new THREE.Mesh(geomLeftLeg, matLeftLeg);
+		leftLeg.position.set(-15,11,-8);
+		leftLeg.rotation.set(0,0,2.4);
+		leftLeg.castShadow = true;
+		leftLeg.receiveShadow = true;
+		leftLeg.scale.set(0.2,0.1,0.05);
+		this.mesh.add(leftLeg);
+	};
+
+	//game.animalMesh = new THREE.Object3D();
+	var animal;
+	// create nAnimals and pushes in animalsArray
+	for(var i=0; i < game.nAnimals; i++){
+		if(game.scenario == 0){
+			animal = new Condor();
+		}
+		else if(game.scenario == 1){
+			animal = new Duck();
+		}
+		else animal = new SpaceShip();
+		animal.mesh.position.y = 60 + Math.random()*140;
+		animal.mesh.position.x = 300; // handle with spawn speed
+		animal.mesh.rotation.z = Math.PI;	
+		animal.mesh.scale.set(0.3,0.3,0.3);
+		//game.animalMesh.mesh.add(animal.mesh);
+		game.animalsArray.push(animal);
+		
+	}
+
+	// exact position from right to left
+	// xMax = 300 xMin = -300
+	// yMax = 200 yMin = 60
+	var step = 1;
+	var aux = 0;
+	var howManyAnimalsPerStep = Math.round(game.spawnPerStep * Math.random() + 1);
+	for(var i=0; i<n;){ // deve ciclare su tutto l'animalsArray
+		console.log("Step number: " + step + " , howMany: " + howManyAnimalsPerStep);
+		for(var j=i; j < howManyAnimalsPerStep + i; j++){
+			console.log("i:" + i + "    j:" + j);
+			game.animalsArray[j].mesh.position.x += step * game.stepLength * Math.random();
+		}
+		i+= howManyAnimalsPerStep;
+		howManyAnimalsPerStep = Math.round(game.spawnPerStep * Math.random() + 1);
+		step++;
+		aux = i;
+	}
+	if(n - aux > 0){
+		for(var k=aux; k<n; k++){
+			game.animalsArray[k].mesh.position.x += step*game.stepLength*Math.random();
+		}
+	}
+
+	// adding animals to the scene
+	for(var i=0; i<n; i++) scene.add(game.animalsArray[i].mesh);
+}
+
+function updateLevel(){}
 
 function updateDistance(){
 	game.distance += aux;
