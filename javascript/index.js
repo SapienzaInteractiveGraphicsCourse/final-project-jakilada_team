@@ -38,12 +38,12 @@ var game = {
 	collisionDistance: 100,
 	level: 1,
 	distance: 0,
-	nAnimals: 100, // increases with levels
-	stepLength: 150, // step interval between one spawn and another (decreases with levels)
-	animalsSpeed: 0.8, // x Axis birds speed (increases with levels)
+	nAnimals: 5, // increases with levels
+	stepLength: 100, // step interval between one spawn and another (decreases with levels)
+	animalsSpeed: 1.2, // x Axis birds speed (increases with levels)
 	animalsArray: [], // total animals in a level
-	animalMesh: new THREE.Object3D(), // skyCondors/skyDucks/SkySpaceEnemy
-	spawnPerStep: 1,
+	spawnPerStep: 3,
+	deltaSpeed: [],
 
 	// logic
 	started: false,
@@ -101,8 +101,6 @@ var Rock;
 var Hole;
 
 
-
-
 //animation support variables
 var posHor = 0, posVert = 0; //register the arrowkey position
 //animation Array
@@ -117,9 +115,10 @@ function init() {
 	createLights();
 	createScenario0();
 	initUI();
+	initDeltaSpeed();
 	currentSky = desertsky;
 	currentscenario = desert;
-	console.log(scene.children);
+	//console.log(scene.children);
 	// animation function used for updating objects position
 	var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 	renderer.domElement.setAttribute("tabIndex", "0");
@@ -386,6 +385,7 @@ function handleClick(e) {
 function animationAnimals(){
 	if(game.scenario == 0){
 		for (var i=0; i<game.nAnimals; i++){
+			
 			var con = game.animalsArray[i];
 			//console.log(con.condorLeftWing.rotation.x);
 			if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){
@@ -400,12 +400,12 @@ function animationAnimals(){
 			if(con.condorRightWing.rotation.x > -5 && con.condorRightWing.rotation.x < 0.3){
 				con.condorRightWing.rotation.x += 0.02;
 			}
-		
-		}
-	
+
+		}	
 	}
 	else if(game.scenario == 1){
 		for (var i=0; i<game.animalsOnScreen.length; i++){
+			
 			var duc = game.animalsOnScreen[i];
 		
 			if(duc.duckLeftWing.rotation.x > 54 && duc.duckLeftWing.rotation.x < 59.4){
@@ -420,32 +420,48 @@ function animationAnimals(){
 			if(duc.duckRightWing.rotation.x > -5 && duc.duckRightWing.rotation.x < 0.3){
 				duc.duckRightWing.rotation.x += 0.02;
 			}
+			
 		}
+	}
+	
+}
+
+function initDeltaSpeed(){
+	for(var i=0; i<game.nAnimals; i++){
+		game.deltaSpeed.push(-game.animalsSpeed * Math.random() + game.animalsSpeed);
+	}
+}
+function moveAnimals(){
+	for(var i=0; i<game.nAnimals; i++){
+		if(game.animalsArray[i].alive == true) game.animalsArray[i].mesh.position.x -= game.animalsSpeed + game.deltaSpeed[i];
 	}
 }
 
-function moveAnimals(){
-	for(var i=0; i<game.nAnimals; i++){
-		game.animalsArray[i].mesh.position.x -= game.animalsSpeed;
-	}
-}
+
 /******************* LOOP HANDLER ****************************************************************************************/
 function loop(){
 	var pos = 0;
 	if(game.started && !game.paused){
+		
 		pos = Math.abs(airplane.mesh.position.x);
+		airplane.propeller1.rotation.x += 0.5 + pos*0.0005;
+		airplane.propeller2.rotation.x += 0.5 + pos*0.0005;
+
 		if(game.levelUp){
 			spawnAnimals(game.nAnimals);
 			game.levelUp = false;
 		}
-
-		moveAnimals();
-		airplane.propeller1.rotation.x += 0.5 + pos*0.0005;
-		airplane.propeller2.rotation.x += 0.5 + pos*0.0005;
+		
+		
+		if(game.animalsArray.length != 0) {
+			animationAnimals();
+			moveAnimals();
+			clearAnimalsOnScene();
+		}
 
 		aux = 1+ pos/1000;  //ho divisto per 1000 per rallentare ma era non diviso prima
 		updateDistance();
-		animationAnimals();
+		
 	}
 	// Rotate the propeller, the sea and the sky
 	if(!game.paused){
@@ -705,8 +721,6 @@ function createBackgroundScenario(){
 	else if(game.scenario == 1) createScenario1();
 	else createScenario2();
 }
-
-
 
 function createScenario0(){
 	/*************************** CLOUD CLASS *********************************************************************************/
@@ -1651,6 +1665,7 @@ function createScenario2(){
 function spawnAnimals(n){
 
 	Condor = function() {
+		this.alive = true;
 
 		this.mesh = new THREE.Object3D();	
 		// Create the body
@@ -1777,7 +1792,9 @@ function spawnAnimals(n){
 		this.mesh.add(leftLeg);
 	};
 
-	Duck = function() {	
+	Duck = function() {
+		this.alive = true;
+
 		this.mesh = new THREE.Object3D();	
 		// Create the body
 		//number of points on the curve, default 12
@@ -1922,6 +1939,7 @@ function spawnAnimals(n){
 			animal = new Duck();
 		}
 		else animal = new SpaceShip();
+		animal.name = "animal" + i;
 		animal.mesh.position.y = 60 + Math.random()*140;
 		animal.mesh.position.x = 300; // handle with spawn speed
 		animal.mesh.rotation.z = Math.PI;	
@@ -1938,25 +1956,53 @@ function spawnAnimals(n){
 	var aux = 0;
 	var howManyAnimalsPerStep = Math.round(game.spawnPerStep * Math.random() + 1);
 	for(var i=0; i<n;){ // deve ciclare su tutto l'animalsArray
-		console.log("Step number: " + step + " , howMany: " + howManyAnimalsPerStep);
+		//console.log("Step number: " + step + " , howMany: " + howManyAnimalsPerStep);
+		if(howManyAnimalsPerStep + i > n){
+			for(var k=aux; k<n; k++){
+				game.animalsArray[k].mesh.position.x += step * game.stepLength 
+														- (game.stepLength * rand * 0.8) 
+														+ (game.stepLength * (1 - rand) * 0.2);
+			}
+			break;
+		} 
 		for(var j=i; j < howManyAnimalsPerStep + i; j++){
-			console.log("i:" + i + "    j:" + j);
-			game.animalsArray[j].mesh.position.x += step * game.stepLength * Math.random();
+			//console.log("i:" + i + "    j:" + j);
+			var rand = Math.random();
+			game.animalsArray[j].mesh.position.x += step * game.stepLength 
+													- (game.stepLength * rand * 0.8) 
+													+ (game.stepLength * (1 - rand) * 0.2);
 		}
 		i+= howManyAnimalsPerStep;
 		howManyAnimalsPerStep = Math.round(game.spawnPerStep * Math.random() + 1);
 		step++;
 		aux = i;
 	}
-	if(n - aux > 0){
-		for(var k=aux; k<n; k++){
-			game.animalsArray[k].mesh.position.x += step*game.stepLength*Math.random();
-		}
-	}
 
 	// adding animals to the scene
 	for(var i=0; i<n; i++) scene.add(game.animalsArray[i].mesh);
 }
+
+function clearAnimalsOnScene(){
+
+
+	function allAnimalsDead(){
+		for(var j=0; j<game.nAnimals; j++){
+			if(game.animalsArray[j].alive == true) return false;
+		}
+		return true;
+	}
+
+	for(var i=0; i<game.nAnimals; i++){
+		if(game.animalsArray[i].mesh.position.x < -300
+			&& game.animalsArray[i].alive){
+				
+			scene.remove(game.animalsArray[i].mesh);
+			game.animalsArray[i].alive = false;
+		}	
+	}
+	if(allAnimalsDead()) game.animalsArray = [];
+}
+
 
 function updateLevel(){}
 
