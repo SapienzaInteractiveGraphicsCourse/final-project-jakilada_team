@@ -48,12 +48,12 @@
 
 .howtoplay-divc {
 	margin: auto;
-	position: relative; 
+	position: relative;
 	width: 520px;
 	border-radius: 5px;
 	border: 5px solid black;
 	margin-top: 125px;
-	background-color: transparent;
+	background-color: #FBFBF9;
 	z-index: 1002;
 	overflow: auto;
 	text-align: center;
@@ -68,7 +68,7 @@
 	border-radius: 5px;
 	border: 5px solid black;
 	margin-top: 125px;
-	background-color: transparent;
+	background-color: #FBFBF9;
 	z-index: 1002;
 	overflow: auto;
 	text-align: center;
@@ -118,8 +118,8 @@ img {
 /*score distance*/
 #dist{
 	position:absolute;
-	left: 40%;
-	top: 40px;
+	left: 5%;
+	top: 5%;
 	transform:translate(-50%,0%);
 	user-select: none;  
 }
@@ -145,13 +145,41 @@ img {
 	text-align:center;
 }
 
-
+/*Level*/
+#level{
+	position:absolute;
+	left: 19%;
+	top: 5%;
+	transform:translate(-50%,0%);
+	user-select: none;  
+}
+  
+.label{
+	position:relative;
+	font-family:'Cambria', sans-serif;
+	text-transform:uppercase;
+	color:#ffa873; 
+	font-size:16px;
+	letter-spacing:2px;
+	text-align:center;
+	margin-bottom:5px;
+}
+  
+  
+#levelValue{
+	position:relative;
+	text-transform:uppercase;
+	color:#dc5f45;
+	font-size:26px;
+	font-family:'Voltaire';
+	text-align:center;
+}
 
 /*health*/
 #health{
 	position:absolute;
-	left: 53%;
-	top:40px;
+	left: 12%;
+	top: 5%;
 	transform:translate(-50%,0%);
 	user-select: none;  
 }
@@ -197,6 +225,7 @@ span a{
 }
 span a:before,
 span a:after{
+	background-color: #FBFBF9;
 	position: absolute;
 	content: "NEW GAME";
 	height: 55px;
@@ -231,6 +260,7 @@ span b{
 }
 span b:before,
 span b:after{
+	background-color: #FBFBF9;
 	position: absolute;
 	content: "SELECT SCENARIO";
 	height: 55px;
@@ -265,6 +295,7 @@ span c{
 }
 span c:before,
 span c:after{
+	background-color: #FBFBF9;
 	position: absolute;
 	content: "HOW TO PLAY";
 	height: 55px;
@@ -299,6 +330,7 @@ span d{
 }
 span d:before,
 span d:after{
+	background-color: #FBFBF9;
 	position: absolute;
 	content: "CREDITS";
 	height: 55px;
@@ -320,6 +352,111 @@ span d:after{
 	transform: rotateX(90deg) translateZ(25px);
 }
 span d:hover{
+	transform: translateZ(-25px) rotateX(-90deg);
+}
+
+span d{
+	font-size: 19px;
+	letter-spacing: 1px;
+	transform-style: preserve-3d;
+	transform: translateZ(-25px);
+	transition: transform .25s;
+	font-family: 'Montserrat', sans-serif;
+}
+span d:before,
+span d:after{
+	background-color: #FBFBF9;
+	position: absolute;
+	content: "CREDITS";
+	height: 55px;
+	width: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 5px solid black;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+span d:before{
+	color: #fff;
+	background: #000;
+	transform: rotateY(0deg) translateZ(25px);
+}
+span d:after{
+	color: #000;
+	transform: rotateX(90deg) translateZ(25px);
+}
+span d:hover{
+	transform: translateZ(-25px) rotateX(-90deg);
+}
+
+span e{
+	font-size: 19px;
+	letter-spacing: 1px;
+	transform-style: preserve-3d;
+	transform: translateZ(-25px);
+	transition: transform .25s;
+	font-family: 'Montserrat', sans-serif;
+}
+span e:before,
+span e:after{
+	background-color: #FBFBF9;
+	position: absolute;
+	content: "PLAY AGAIN";
+	height: 55px;
+	width: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 5px solid black;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+span e:before{
+	color: #fff;
+	background: #000;
+	transform: rotateY(0deg) translateZ(25px);
+}
+span e:after{
+	color: #000;
+	transform: rotateX(90deg) translateZ(25px);
+}
+span e:hover{
+	transform: translateZ(-25px) rotateX(-90deg);
+}
+
+span f{
+	font-size: 19px;
+	letter-spacing: 1px;
+	transform-style: preserve-3d;
+	transform: translateZ(-25px);
+	transition: transform .25s;
+	font-family: 'Montserrat', sans-serif;
+}
+span f:before,
+span f:after{
+	background-color: #FBFBF9;
+	position: absolute;
+	content: "BACK TO MENU";
+	height: 55px;
+	width: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 5px solid black;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+span f:before{
+	color: #fff;
+	background: #000;
+	transform: rotateY(0deg) translateZ(25px);
+}
+span f:after{
+	color: #000;
+	transform: rotateX(90deg) translateZ(25px);
+}
+span f:hover{
 	transform: translateZ(-25px) rotateX(-90deg);
 }
 
