@@ -37,9 +37,9 @@ var game = {
 	collisionDistance: 10,
 	level: 1,
 	distance: 0,
-	nAnimals: 30,
-	stepLength: 150, // step interval between one spawn and another (decreases with levels)
-	animalsSpeed: 1.2, // x Axis birds speed (increases with levels)
+	nAnimals: 50,
+	stepLength: 130, // step interval between one spawn and another (decreases with levels)
+	animalsSpeed: 1.4, // x Axis birds speed (increases with levels)
 	animalsArray: [], // total animals in a level
 	spawnPerStep: 2, // depends on level
 	step: 1,
@@ -47,14 +47,12 @@ var game = {
 	airplaneXpos: 0,
 	airplaneYpos: 120,
 
-
 	// logic
 	started: false,
 	paused: false,
-	levelUp: true,
 }
 
-var fieldDistance, fieldLevel;
+var fieldDistance, fieldLevel, fieldHealth;
 
 var currentSky;
 var currentscenario;
@@ -329,6 +327,7 @@ function handleClick(e) {
 			//document.getElementsByTagName("body").handleClick();
 	
 			game.paused = false;
+			spawnAnimals(game.nAnimals);
 			createPlane();
 			break;
 
@@ -387,6 +386,14 @@ function handleClick(e) {
 			game.scenario = 2;
 			createBackgroundScenario();
 			break;
+
+		case "restart":
+			resetGame();
+			document.getElementById("gameOver").style.display = "none";
+			break;
+
+		case "backToMenu":
+
 	}
 }
 
@@ -450,12 +457,7 @@ function moveAnimals(){
 /******************* LOOP HANDLER ****************************************************************************************/
 function loop(){
 	if(game.started && !game.paused){
-		
-		if(game.levelUp){
-			spawnAnimals(game.nAnimals);
-			game.levelUp = false;
-		}		
-		
+
 		if(game.animalsArray.length != 0) {
 			animationAnimals();
 			moveAnimals();
@@ -467,8 +469,7 @@ function loop(){
 		updateLevel();
 		
 	}
-	// Rotate the propeller, the sea and the sky
-	if(!game.paused){	}
+	if(!game.paused && !game.started) backgroundMovement();
 	
 	// render the scene
 	renderer.render(scene, camera);
@@ -1931,6 +1932,10 @@ function spawnAnimals(n){
 		}
 	}
 
+	class SpaceShip {
+		constructor() {}
+	}
+
 	//game.animalMesh = new THREE.Object3D();
 	var animal;
 	// create nAnimals and pushes in animalsArray
@@ -1941,7 +1946,9 @@ function spawnAnimals(n){
 		else if(game.scenario == 1){
 			animal = new Duck();
 		}
-		else animal = new SpaceShip();
+		//else animal = new SpaceShip();
+
+
 		animal.name = "animal" + i;
 		animal.mesh.position.y = 60 + Math.random()*140;
 		animal.mesh.position.x = 300; // handle with spawn speed
@@ -1998,13 +2005,13 @@ function handleAnimalsOnScene(){
 														+ (game.stepLength * (1 - rand) * 0.2);
 
 			game.animalsArray[i].mesh.position.y = 60 + Math.random()*140;
-
+			game.animalsArray[i].alive = true;
 			scene.add(game.animalsArray[i].mesh);
 		}	
 	}
 }
 
-function handleAirplaneMovement(){
+function backgroundMovement(){
 	if(game.airplaneXpos >= 0){
 		currentscenario.mesh.rotation.z += .005 + game.airplaneXpos*0.00004;
 		currentSky.mesh.rotation.z += 0.0005 + game.airplaneXpos*0.000002;
@@ -2013,6 +2020,11 @@ function handleAirplaneMovement(){
 		currentscenario.mesh.rotation.z += .005 + game.airplaneXpos*0.000008;
 		currentSky.mesh.rotation.z += 0.0005 + game.airplaneXpos*0.0000008;
 	}
+}
+
+function handleAirplaneMovement(){
+	
+	backgroundMovement();
 	// movements of propellers (don't affect airplane position)
 	airplane.propeller1.rotation.x += 0.5 + game.airplaneXpos*0.0005;
 	airplane.propeller2.rotation.x += 0.5 + game.airplaneXpos*0.0005;
@@ -2054,15 +2066,88 @@ function detectCollision(){
 	for(var i=0; i<n; i++){
 		xAnimal = animals[i].mesh.position.x;
 		yAnimal = animals[i].mesh.position.y;
-		if(calcDistance(xAirplane, yAirPlane, xAnimal, yAnimal) <= game.collisionDistance){
-			scene.remove(animals[i].mesh);
+		if(calcDistance(xAirplane, yAirPlane, xAnimal, yAnimal) <= game.collisionDistance && animals[i].alive == true){
+			animals[i].alive = false;
+			scene.remove(animals[i].mesh); // explosion animation
+			getMalus();
 		}
 	}
+
+	
 }
 
 function getBonus(){}
 
-function getMalus(){}
+
+
+function getMalus(){
+	document.getElementById("h"+game.lives).style.display = "none";
+	game.lives--;
+	if(game.lives <= 0) gameOver();
+}
+
+function gameOver(){
+
+	// Missing GAMEOVER, SCORE, LEVEL TEXT (Daniele add them please)
+	document.getElementById("gameOver").style.display = "block";
+	document.getElementById("dist").style.display = "none";
+	document.getElementById("health").style.display = "none";
+	document.getElementById("level").style.display = "none";
+
+	game.started = false;
+	clearScene();
+}
+
+function clearScene(){
+	for(var i=0; i<game.nAnimals; i++){
+		scene.remove(game.animalsArray[i].mesh);
+	}
+	scene.remove(airplane.mesh);
+}
+
+function resetGame(){
+	// geometry
+	game.cylinderRadius = 600;
+	game.cylinderHeight = 800;
+
+	// game
+	//game.scenario = currentscenario; // 0 -> desert; 1 -> countryside; 2 -> space
+	game.lives = 3;
+	game.collisionDistance = 10;
+	game.level = 1;
+	game.distance = 0;
+	game.nAnimals = 50;
+	game.stepLength = 130; // step interval between one spawn and another (decreases with levels)
+	game.animalsSpeed = 1.4; // x Axis birds speed (increases with levels)
+	game.animalsArray = [], // total animals in a level
+	game.spawnPerStep = 2; // depends on level
+	game.step = 1;
+	game.deltaSpeed = []; // depends on level
+	game.airplaneXpos = 0;
+	game.airplaneYpos = 120;
+	
+	airplane.mesh.position.x = game.airplaneXpos;
+	airplane.mesh.position.y = game.airplaneYpos;
+
+	spawnAnimals(game.nAnimals);
+	initDeltaSpeed();
+	
+
+	// logic
+	game.started = true;
+	game.paused = false;
+
+	document.getElementById("dist").style.display = "block";
+	document.getElementById("health").style.display = "block";
+	document.getElementById("level").style.display = "block";
+	
+	document.getElementById("h1").style.display = "";
+	document.getElementById("h2").style.display = "";
+	document.getElementById("h3").style.display = "";
+	
+
+	scene.add(airplane.mesh);	
+}
 
 function initUI(){
 	fieldDistance = document.getElementById("distValue");
