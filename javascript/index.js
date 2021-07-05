@@ -88,6 +88,12 @@ var geomCondorLeftWing;
 var matCondorLeftWing;
 var condorLeftWing;
 
+// scenario 2
+var geomDuckLeftWing;
+var matDuckLeftWing;
+var geomDuckRightLowerWing;
+var matDuckRightLowerWing;
+
 //scenario 3 space
 var Star;
 var SpaceSky;
@@ -233,36 +239,28 @@ function createScene() {
 		// Allow transparency to show the gradient background
 		// we defined in the CSS
 		alpha: true, 
-		// Activate the anti-aliasing; it may bring poorer performances;
-		antialias: true 
+		antialias: true // Activate the anti-aliasing; it may bring poorer performances;
 	});
-	// Define the size of the renderer; in this case,
-	// it will fill the entire screen
-	renderer.setSize(WIDTH, HEIGHT);
-	// Enable shadow rendering
-	renderer.shadowMap.enabled = true;
-	// Add the DOM element of the renderer to the 
-	// container we created in the HTML
-	container = document.getElementById('world');
+	
+	renderer.setSize(WIDTH, HEIGHT);  // Define the size of the renderer; in this case, it will fill the entire screen
+	renderer.shadowMap.enabled = true; // Enable shadow rendering
+	container = document.getElementById('world'); // Add the DOM element of the renderer to the container we created in the HTML
 	container.appendChild(renderer.domElement);
-	//handle keyup event
-	window.addEventListener('keyup', hanldeUpKeyboard, false);
-	//handle keydown event
-	window.addEventListener('keydown', hanldeDownKeyboard, false);
-	//handle click event
-	window.addEventListener('click', handleClick, false);
-	//handle resize event
-	window.addEventListener('resize', handleWindowResize, false);
+	window.addEventListener('keyup', hanldeUpKeyboard, false); //handle keyup event
+	window.addEventListener('keydown', hanldeDownKeyboard, false); //handle keydown event
+	window.addEventListener('click', handleClick, false); //handle click event	
+	window.addEventListener('resize', handleWindowResize, false); //handle resize event
 }
 /*************************** WINDOW RESIZE HANDLER ***********************************************************************/
-function handleWindowResize() {
-	// update height and width of the renderer and the camera
+
+function handleWindowResize() {  // update height and width of the renderer and the camera
 	HEIGHT = window.innerHeight;
 	WIDTH = window.innerWidth;
 	renderer.setSize(WIDTH, HEIGHT);
 	camera.aspect = WIDTH / HEIGHT;
 	camera.updateProjectionMatrix();
 }
+
 /*************************** KEYBOARD UP HANDLER *************************************************************************/
 function hanldeUpKeyboard(event) {
 	event.preventDefault();
@@ -299,14 +297,12 @@ function hanldeDownKeyboard(event) {
 		case 80:
 			if(!game.started) break;
 			if(document.getElementById("pausedspan").style.display == "block"){
-				document.getElementById("pausedspan").style.display = "none"
+				document.getElementById("pausedspan").style.display = "none";
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
-
 			}
 			else{
-				document.getElementById("pausedspan").style.display = "block"
+				document.getElementById("pausedspan").style.display = "block";
 				TweenMax.pauseAll();
-
 			}
 			game.paused = !game.paused;
 			break;
@@ -319,17 +315,36 @@ function handleClick(e) {
 	switch(id){
 
 		case "start":
+            game.started = true;
+            document.getElementById("menu").style.display = "none";
+            document.getElementById("dist").style.display = "block";
+            document.getElementById("health").style.display = "block";
+            document.getElementById("level").style.display = "block";
+            //document.getElementsByTagName("body").handleClick();
+
+            game.paused = false;
+            spawnAnimals(game.nAnimals);
+            createPlane();
+            resetGame();
+            break;
+			
+			
+		/*case "start":
+
+
+		
 			game.started = true;	
 			document.getElementById("menu").hidden = true;
 			document.getElementById("dist").style.display = "block";
 			document.getElementById("health").style.display = "block";
 			document.getElementById("level").style.display = "block";
+			renderer.domElement.focus();
 			//document.getElementsByTagName("body").handleClick();
 	
 			game.paused = false;
 			spawnAnimals(game.nAnimals);
 			createPlane();
-			break;
+			break;*/
 
 		case "selectscenario":
 			document.getElementById("menuoption").style.display = "none";
@@ -391,8 +406,11 @@ function handleClick(e) {
 			resetGame();
 			document.getElementById("gameOver").style.display = "none";
 			break;
-
+		
 		case "backToMenu":
+            document.getElementById("menu").style.display = "block";
+            document.getElementById("gameOver").style.display = "none";
+            break;
 
 	}
 }
@@ -416,13 +434,12 @@ function animationAnimals(){
 			if(con.condorRightWing.rotation.x > -5 && con.condorRightWing.rotation.x < 0.3){
 				con.condorRightWing.rotation.x += 0.02;
 			}
-
 		}	
 	}
 	else if(game.scenario == 1){
-		for (var i=0; i<game.animalsOnScreen.length; i++){
+		for (var i=0; i<game.nAnimals; i++){
 			
-			var duc = game.animalsOnScreen[i];
+			var duc = game.animalsArray[i];
 		
 			if(duc.duckLeftWing.rotation.x > 54 && duc.duckLeftWing.rotation.x < 59.4){
 				duc.duckLeftWing.rotation.x += 0.7;
@@ -436,10 +453,15 @@ function animationAnimals(){
 			if(duc.duckRightWing.rotation.x > -5 && duc.duckRightWing.rotation.x < 0.3){
 				duc.duckRightWing.rotation.x += 0.02;
 			}
-			
 		}
 	}
-	
+
+	else{
+		for (var i=0; i<game.nAnimals; i++){
+			var shi = game.animalsArray[i];
+			shi.mesh.rotation.y += Math.random()*.1;
+		}
+	}
 }
 
 function initDeltaSpeed(){
@@ -447,6 +469,7 @@ function initDeltaSpeed(){
 		game.deltaSpeed.push(-game.animalsSpeed * Math.random() + game.animalsSpeed);
 	}
 }
+
 function moveAnimals(){
 	for(var i=0; i<game.nAnimals; i++){
 		if(game.animalsArray[i].alive == true) game.animalsArray[i].mesh.position.x -= game.animalsSpeed + game.deltaSpeed[i];
@@ -471,11 +494,11 @@ function loop(){
 	}
 	if(!game.paused && !game.started) backgroundMovement();
 	
-	// render the scene
-	renderer.render(scene, camera);
-	// call the loop function again
-	requestAnimationFrame(loop);
+	renderer.render(scene, camera);// render the scene
+	requestAnimationFrame(loop); // call the loop function again
 }
+
+
 //********************* LIGHT CREATIONS **********************************************************************************/
 function createLights() {
 	// A hemisphere light is a gradient colored light; 
@@ -727,15 +750,13 @@ function createBackgroundScenario(){
 function createScenario0(){
 	/*************************** CLOUD CLASS *********************************************************************************/
 	Cloud = function(){
-		// Create an empty container that will hold the different parts of the cloud
-		this.mesh = new THREE.Object3D();	
+		this.mesh = new THREE.Object3D(); // Create an empty container that will hold the different parts of the cloud
 		// create a cube geometry;
 		// this shape will be duplicated to create the cloud
 		geom = new THREE.SphereGeometry(17,32,32);
 		mat = new THREE.MeshPhongMaterial({color:Colors.white, }); // create a material; a simple white material will do the trick	
 		// duplicate the geometry a random number of times
 		nBlocs = 5 + Math.floor(Math.random()*3);	
-		//var nBlocs = 3;
 		for (var i=0; i<nBlocs; i++ ){		
 			// create the mesh by cloning the geometry
 			var m = new THREE.Mesh(geom, mat); 		
@@ -754,7 +775,7 @@ function createScenario0(){
 			// add the cube to the container we first created
 			this.mesh.add(m);
 		} 
-		//momentaneamente commentato perche altrimenti non funziona il gioco
+
 		nBlocs2 = 3;
 		for (var i=0; i<nBlocs2; i++ ){
 			// create the mesh by cloning the geometry
@@ -780,15 +801,10 @@ function createScenario0(){
 	}
 	/******************************** DESERT game.scenario ************************************************************************/
 	DesertSky = function(){
-		// Create an empty container
-		this.mesh = new THREE.Object3D();
+		this.mesh = new THREE.Object3D(); // Create an empty container
+		this.nClouds = 10; // choose a number of clouds to be scattered in the sky
 		
-		// choose a number of clouds to be scattered in the sky
-		this.nClouds = 10;
-		
-		// To distribute the clouds consistently,
-		// we need to place them according to a uniform angle
-		var stepAngle = Math.PI*2 / this.nClouds;
+		var stepAngle = Math.PI*2 / this.nClouds; // To distribute the clouds consistently,  we need to place them according to a uniform angle
 		
 		// create the clouds
 		for(var i=0; i<this.nClouds; i++){
@@ -855,21 +871,21 @@ function createScenario0(){
 		// create the cactus
 		for(var i=0; i<this.nCactus; i++){
 			var c = new Cactus();
-			// set the rotation and the position of each cloud using trigonometry
-			var a = stepCactusAngle*i; // this is the final angle of the cloud
-			var h = 610; // this is the distance between the center of the axis and the cloud itself
+			// set the rotation and the position of each cactus using trigonometry
+			var a = stepCactusAngle*i; // this is the final angle of the cactus
+			var h = 610; // this is the distance between the center of the axis and the cactus itself
 			// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
 			c.mesh.position.y = Math.sin(a)*h;
 			c.mesh.position.x = Math.cos(a)*h;
-			// rotate the cloud according to its position
+			// rotate the cactus according to its position
 			c.mesh.rotation.z = a + Math.PI/2;
 			// for a better result, we position the cactus 
 			// at fixed depths inside of the scene
 			c.mesh.position.z = -400+ Math.random()*270;
-			// we also set a random scale for each cloud
+			// we also set a random scale for each cactus
 			var s = 1+Math.random()*2;
 			c.mesh.scale.set(s,s,s);
-			// do not forget to add the mesh of each cloud in the scene
+			// do not forget to add the mesh of each cactus in the scene
 			this.mesh.add(c.mesh); 
 		}
 		this.nCactus2= 7;
@@ -1025,10 +1041,8 @@ function createScenario0(){
 function createScenario1(){
 		/******************************* COUNTRYSIDE ******************************************************************************/
 	CountrySky = function(){
-		// Create an empty container
-		this.mesh = new THREE.Object3D();	
-		// choose a number of clouds to be scattered in the sky
-		this.nClouds = 18;	
+		this.mesh = new THREE.Object3D();	// Create an empty container
+		this.nClouds = 18;	// choose a number of clouds to be scattered in the sky
 		// To distribute the clouds consistently,
 		// we need to place them according to a uniform angle
 		var stepAngle = Math.PI*2 / this.nClouds;	
@@ -1080,8 +1094,7 @@ function createScenario1(){
 		// To create an object in Three.js, we have to create a mesh 
 		// which is a combination of a geometry and some material
 		this.mesh = new THREE.Mesh(geom, mat);
-		// Allow the sea to receive shadows
-		this.mesh.receiveShadow = true; 
+		this.mesh.receiveShadow = true; // Allow the sea to receive shadows
 		this.nTrees= 25;	
 		// To distribute the trees consistently,
 		// we need to place them according to a uniform angle
@@ -1386,13 +1399,22 @@ function createScenario1(){
 	currentscenario = countryside;
 }
 
+
+/******************************** SPACE game.scenario ************************************************************************/
+function createShip(){
+	ship = new Ship();
+	ship.mesh.position.y = -game.cylinderRadius;
+	//ship.mesh.rotation.z = Math.PI;	
+	scene.add(ship.mesh);
+}
+
 function createScenario2(){
 
 	Star = function(){
-		// Create an empty container that will hold the different parts of the cloud
+		// Create an empty container that will hold the different parts of the star
 		this.mesh = new THREE.Object3D();	
 		// create a cube geometry;
-		// this shape will be duplicated to create the cloud
+		// this shape will be duplicated to create the star
 		geom = new THREE.BoxGeometry(1, 1, 1);
 		mat = new THREE.MeshPhongMaterial({color:Colors.white, }); // create a material; a simple white material will do the trick	
 		// duplicate the geometry a random number of times
@@ -1440,8 +1462,6 @@ function createScenario2(){
 			this.mesh.add(m2);
 		}
 	}
-	/******************************** DESERT game.scenario ************************************************************************/
-	
 
 	SpaceSky = function(){
 		// Create an empty container
@@ -1485,7 +1505,6 @@ function createScenario2(){
 		}  
 	}
 
-
 	function createSpaceSky(){
 		spacesky = new SpaceSky();
 		spacesky.mesh.position.y = -game.cylinderRadius;
@@ -1493,8 +1512,6 @@ function createScenario2(){
 		spacesky.mesh.name = "spacesky"
 		scene.add(spacesky.mesh);
 	}
-
-
 
 	Rock = function(){
 		//Rock
@@ -1540,7 +1557,6 @@ function createScenario2(){
 		} 
 	}
 
-
 	Hole = function(){
 		//holes
 		this.mesh = new THREE.Object3D();
@@ -1569,8 +1585,6 @@ function createScenario2(){
 		this.mesh.add(hole);
 	
 	}
-
-
 	
 	Moon = function(){
 		this.mesh = new THREE.Object3D();
@@ -1932,8 +1946,50 @@ function spawnAnimals(n){
 		}
 	}
 
-	class SpaceShip {
-		constructor() {}
+	class Ship {
+		constructor() {
+			this.alive= true;
+			this.mesh = new THREE.Object3D();	
+			//top
+			var pointsTop = [];
+			for ( let i = 0; i < 20; i ++ ) {
+				pointsTop.push( new THREE.Vector2( Math.sin( i * 0.2 ) * 10 + 5, ( i - 5 ) * 2 ) );
+			}
+			var geometryTop = new THREE.LatheGeometry(pointsTop);
+			var materialTop = new THREE.MeshBasicMaterial( { color: 0xB3E5FF, transparent:true, opacity:.99, shading:THREE.FlatShading } );
+			var latheTop = new THREE.Mesh( geometryTop, materialTop );
+			latheTop.position.set(0, 6, 0);
+			latheTop.rotation.set(0, 1, 0);
+			latheTop.castShadow = true;
+			latheTop.receiveShadow = true;
+			latheTop.scale.set(0.6, 0.6, 0.6);
+			latheTop.rotation.z = Math.PI;	
+			this.mesh.add(latheTop);
+			
+			//bottom
+			var geometryTop = new THREE.SphereGeometry( 7, 32, 32 );
+			var materialTop = new THREE.MeshBasicMaterial( {color: Colors.orange} );
+			var sphere = new THREE.Mesh( geometryTop, materialTop );
+			sphere.position.set(0, 5, 0);
+			sphere.rotation.set(0, 0, 0);
+			sphere.castShadow = true;
+			sphere.receiveShadow = true;
+			sphere.scale.set(1, 1, 1);
+			sphere.rotation.z = Math.PI;	
+			this.mesh.add( sphere );
+		
+			//body
+			var geometryBody = new THREE.TorusGeometry( 10, 4, 16, 100 );
+			var materialBody = new THREE.MeshBasicMaterial( { color: 0x8C8C8C, transparent:false, opacity:.8, shading:THREE.FlatShading } );
+			var body = new THREE.Mesh(geometryBody, materialBody);
+			body.position.set(0, 4, 0);
+			body.rotation.set(1.5, 0, 0);
+			body.castShadow = true;
+			body.receiveShadow = true;
+			body.scale.set(1, 1, 1);
+			//body.rotation.z = Math.PI;	
+			this.mesh.add(body);
+		}
 	}
 
 	//game.animalMesh = new THREE.Object3D();
@@ -1942,21 +1998,24 @@ function spawnAnimals(n){
 	for(var i=0; i < game.nAnimals; i++){
 		if(game.scenario == 0){
 			animal = new Condor();
+			animal.mesh.scale.set(0.35,0.35,0.35);
 		}
 		else if(game.scenario == 1){
 			animal = new Duck();
+			animal.mesh.scale.set(0.25,0.25,0.25);
 		}
-		//else animal = new SpaceShip();
-
+		else {
+			animal = new Ship();
+			animal.mesh.scale.set(0.9,0.75,0.9);
+		}
 
 		animal.name = "animal" + i;
 		animal.mesh.position.y = 60 + Math.random()*140;
 		animal.mesh.position.x = 300; // handle with spawn speed
 		animal.mesh.rotation.z = Math.PI;	
-		animal.mesh.scale.set(0.35,0.35,0.35);
+		//animal.mesh.scale.set(0.35,0.35,0.35);
 		//game.animalMesh.mesh.add(animal.mesh);
 		game.animalsArray.push(animal);
-		
 	}
 
 	// exact position from right to left
@@ -1992,8 +2051,8 @@ function spawnAnimals(n){
 	for(var i=0; i<n; i++) scene.add(game.animalsArray[i].mesh);
 }
 
-function handleAnimalsOnScene(){
 
+function handleAnimalsOnScene(){
 
 	for(var i=0; i<game.nAnimals; i++){
 		if(game.animalsArray[i].mesh.position.x < -300){
@@ -2023,7 +2082,6 @@ function backgroundMovement(){
 }
 
 function handleAirplaneMovement(){
-	
 	backgroundMovement();
 	// movements of propellers (don't affect airplane position)
 	airplane.propeller1.rotation.x += 0.5 + game.airplaneXpos*0.0005;
@@ -2045,7 +2103,6 @@ function updateDistance(){
 	game.airplaneXpos = airplane.mesh.position.x;
 	var aux;
 	aux = 0.1 + (game.airplaneXpos + 200)/1000;
-
 	game.distance += aux;
 	fieldDistance.innerHTML = Math.floor(game.distance);
 }
@@ -2056,6 +2113,7 @@ function calcDistance(x1,y1,x2,y2){
 	var dist = Math.sqrt(Math.pow(xdiff,2) + Math.pow(ydiff,2));
 	return dist;
 }
+
 function detectCollision(){
 	var n = game.nAnimals;
 	var animals = game.animalsArray;
@@ -2068,12 +2126,10 @@ function detectCollision(){
 		yAnimal = animals[i].mesh.position.y;
 		if(calcDistance(xAirplane, yAirPlane, xAnimal, yAnimal) <= game.collisionDistance && animals[i].alive == true){
 			animals[i].alive = false;
-			scene.remove(animals[i].mesh); // explosion animation
+			scene.remove(animals[i].mesh); // explosion animation to add
 			getMalus();
 		}
-	}
-
-	
+	}	
 }
 
 function getBonus(){}
@@ -2111,7 +2167,6 @@ function resetGame(){
 	game.cylinderHeight = 800;
 
 	// game
-	//game.scenario = currentscenario; // 0 -> desert; 1 -> countryside; 2 -> space
 	game.lives = 3;
 	game.collisionDistance = 10;
 	game.level = 1;
@@ -2132,7 +2187,6 @@ function resetGame(){
 	spawnAnimals(game.nAnimals);
 	initDeltaSpeed();
 	
-
 	// logic
 	game.started = true;
 	game.paused = false;
@@ -2145,7 +2199,7 @@ function resetGame(){
 	document.getElementById("h2").style.display = "";
 	document.getElementById("h3").style.display = "";
 	
-
+	renderer.domElement.focus();  //airplane starts moving immediately
 	scene.add(airplane.mesh);	
 }
 
