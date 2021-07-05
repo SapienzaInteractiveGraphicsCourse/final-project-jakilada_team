@@ -27,25 +27,25 @@
                         <img src="img/logo.png">
                     </div> 
                     <div class="frame" id="menu">
-                    <div class="btn-group" id="menu"> 
+                        <div class="btn-group" id="menu"> 
 
-                        <br>
-                        <span><a id="start"></a></span>
-                        <br>
+                            <br>
+                            <span><a id="start"></a></span>
+                            <br>
 
-                        <br>
-                        <span><b id="selectscenario"></b></span>
-                        <br>
+                            <br>
+                            <span><b id="selectscenario"></b></span>
+                            <br>
 
-                        <br>
-                        <span><c id="howtoplay"></c></span>
-                        <br>
+                            <br>
+                            <span><c id="howtoplay"></c></span>
+                            <br>
 
-                        <br>
-                        <span><d id="credits"></d></span>
-                        <br>
+                            <br>
+                            <span><d id="credits"></d></span>
+                            <br>
 
-                    </div>
+                        </div>
                     </div>
 
                 </div>
@@ -65,7 +65,7 @@
                         <img class = "imgscen" id="scenario2" src="img/scenario/moon.png" alt="">
                     </div>
                     <h4 id="backssp" style="text-align: right;">GO BACK</h4>
-                    </div>
+                </div>
 
                 <div id="howtoplay-div" class="howtoplay-divc">
                     <div class="inner">
@@ -90,19 +90,69 @@
                     </p>
                     <h4 id="backcdt" style="text-align: right;">GO BACK</h4>
                 </div>
-
+                <!--
                 <br>
-                <!--<audio autoplay loop>
-                    <source src="audio/Teenage Crime (Axwell & Henrik B Remode).m4a" type="audio/mp3">
-                    Your browser does not support the audio element.
-                </audio>-->
+                    <audio autoplay loop>
+                        <source src="audio/Teenage Crime (Axwell & Henrik B Remode).m4a" type="audio/mp3">
+                        Your browser does not support the audio element.
+                    </audio>
+                -->
 
+                <!--PAUSED-->
                 </div>
                 <div class="world" id="world"></div>
-                <div id="pausedspan" class="pausedspan">
-                <p><h1>PAUSED</h1></p>
-                <p><h6>press "m" or "p" to unpause!</h6></p>
+
+                <div id="pausedspan" style= "display: none; text-align: center;">
+                    <div class="frame1">
+                        <img class = "imgzone" src="img/paused.png">
+                    </div> 
+                    <div class="frame">
+                        <div class="buttonzone"> 
+
+                            <span><h id="resumePaused"></h></span>
+                            <br>
+            
+                            <br>
+                            <span><g id="playAgainPaused"></g></span>
+                            <br>
+
+                            <br>
+                            <span><f id="backToMenuPaused"></f></span>
+                            <br>
+
+                        </div>
+                    </div>
+
                 </div>
+                
+                <!--           
+                    <div class="world" id="world"></div>
+                    <div id="pausedspan" class="pausedspan">
+                    <p><h1>PAUSED</h1></p>
+                    <p><h6>press "m" or "p" to unpause!</h6></p>
+                    </div>
+                -->
+
+                <!--GAME OVER-->
+                <div id="gameOver" style= "display: none; text-align: center;">
+                    <div class="frame1">
+                        <img class = "imgzone2" src="img/game over.png">
+                    </div> 
+                    <div class="frame">
+                        <div class="buttonzone"> 
+                            
+                            <span><e id="restartGameOver"></e></span>
+                            <br>
+            
+                            <br>
+                            <span><f id="backToMenuGameOver"></f></span>
+                            <br>
+
+                        </div>
+                    </div>
+
+                </div>
+
             </div>
         </div>
         
@@ -129,24 +179,6 @@
             <div class="label">Level</div>
             <div id="levelValue"></div>
         </div>
-
-      
-        
-        <div id="gameOver" style= "display: none; text-align: center; top: 20%;">
-            <div class="btn-group"> 
-
-                <br>
-                <span><e id="restart"></e></span>
-                <br>
-
-                <br>
-                <span><f id="backToMenu"></f></span>
-                <br>
-
-            </div>
-        </div>
-
-      
 
     </body>
 </html>

@@ -123,7 +123,7 @@ function init() {
 	currentscenario = desert;
 	//console.log(scene.children);
 	// animation function used for updating objects position
-	var keyboard	= new THREEx.KeyboardState(renderer.domElement);
+	var keyboard = new THREEx.KeyboardState(renderer.domElement);
 	renderer.domElement.setAttribute("tabIndex", "0");
 	renderer.domElement.focus();
 	updateFcts.push(function(delta){
@@ -402,12 +402,28 @@ function handleClick(e) {
 			createBackgroundScenario();
 			break;
 
-		case "restart":
+		case "resumePaused":
+			document.getElementById("pausedspan").style.display = "none";
+			break;
+		
+		case "playAgainPaused":
+			resetGame();
+			document.getElementById("pausedspan").style.display = "none";
+			break;
+		
+		case "backToMenuPaused":
+			backGame();
+			document.getElementById("menu").style.display = "block";
+			document.getElementById("pausedspan").style.display = "none";
+			break;
+
+		case "restartGameOver":
 			resetGame();
 			document.getElementById("gameOver").style.display = "none";
 			break;
 		
-		case "backToMenu":
+		case "backToMenuGameOver":
+			backGame();
             document.getElementById("menu").style.display = "block";
             document.getElementById("gameOver").style.display = "none";
             break;
@@ -1998,7 +2014,7 @@ function spawnAnimals(n){
 	for(var i=0; i < game.nAnimals; i++){
 		if(game.scenario == 0){
 			animal = new Condor();
-			animal.mesh.scale.set(0.35,0.35,0.35);
+			animal.mesh.scale.set(0.3,0.3,0.3);
 		}
 		else if(game.scenario == 1){
 			animal = new Duck();
@@ -2161,7 +2177,26 @@ function clearScene(){
 	scene.remove(airplane.mesh);
 }
 
+function backGame() {
+	clearScene();
+
+	// logic
+	game.started = false;
+	game.paused = false;
+
+	document.getElementById("dist").style.display = "none";
+	document.getElementById("health").style.display = "none";
+	document.getElementById("level").style.display = "none";
+	
+	document.getElementById("h1").style.display = "";
+	document.getElementById("h2").style.display = "";
+	document.getElementById("h3").style.display = "";
+	
+	renderer.domElement.focus();  //airplane starts moving immediately
+}
+
 function resetGame(){
+	clearScene();
 	// geometry
 	game.cylinderRadius = 600;
 	game.cylinderHeight = 800;
