@@ -282,29 +282,20 @@ function hanldeDownKeyboard(event) {
 	event.preventDefault();
 	var key = event.which;
 	switch(key){
-		case 77:
-			if(!game.started) break;
+		case 80: //P
 			if(document.getElementById("pausedspan").style.display == "block"){
 				document.getElementById("pausedspan").style.display = "none";
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
+				game.started = true;
+				game.paused = false;
+				renderer.domElement.focus();  //airplane starts moving immediately
 			}
-			else{
+			else if(document.getElementById("pausedspan").style.display == "none" && game.started == true) {
 				document.getElementById("pausedspan").style.display = "block";
 				TweenMax.pauseAll();
+				game.started = false;
+				game.paused = true;
 			}
-			game.paused = !game.paused;
-			break;
-		case 80:
-			if(!game.started) break;
-			if(document.getElementById("pausedspan").style.display == "block"){
-				document.getElementById("pausedspan").style.display = "none";
-				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
-			}
-			else{
-				document.getElementById("pausedspan").style.display = "block";
-				TweenMax.pauseAll();
-			}
-			game.paused = !game.paused;
 			break;
 	}
 }
@@ -403,7 +394,10 @@ function handleClick(e) {
 			break;
 
 		case "resumePaused":
+			game.started = true;
 			document.getElementById("pausedspan").style.display = "none";
+			game.paused = false;
+			renderer.domElement.focus();  //airplane starts moving immediately
 			break;
 		
 		case "playAgainPaused":
