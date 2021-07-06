@@ -19,6 +19,7 @@ var Colors = {
 	sand: 0xf2d16b,
 	//gray: 0x202020,
 	moon: 0xC0C0C0,
+	neongreen: 0x7bff62,
 };
 //variables for the camera
 var scene, camera, fieldOfView, aspectRatio, nearPlane, 
@@ -34,7 +35,12 @@ var game = {
 	// game
 	scenario: 0, // 0 -> desert; 1 -> countryside; 2 -> space
 	lives: 3,
+<<<<<<< Updated upstream
 	collisionDistance: 10,
+=======
+	collisionDistanceMalus: 25,
+	collisionDistanceBonus: 30,
+>>>>>>> Stashed changes
 	level: 1,
 	distance: 0,
 	nAnimals: 50,
@@ -46,6 +52,14 @@ var game = {
 	deltaSpeed: [], // depends on level
 	airplaneXpos: 0,
 	airplaneYpos: 120,
+<<<<<<< Updated upstream
+=======
+	bonusLife: null,
+	bonusLifeSpeed: 1.6,
+
+
+	maxScore: 0,
+>>>>>>> Stashed changes
 
 	// logic
 	started: false,
@@ -69,8 +83,7 @@ var nBlocs2; //clouds gropu 2
 var Cloud;
 
 
-var Heart;
-var heart;
+
 var desertsky;
 var DesertSky;
 var AirPlane;
@@ -119,6 +132,13 @@ function init() {
 	createScenario0();
 	initUI();
 	initDeltaSpeed();
+<<<<<<< Updated upstream
+=======
+
+
+	//createBonusLife();
+
+>>>>>>> Stashed changes
 	currentSky = desertsky;
 	currentscenario = desert;
 	//console.log(scene.children);
@@ -311,10 +331,17 @@ function handleClick(e) {
             document.getElementById("dist").style.display = "block";
             document.getElementById("health").style.display = "block";
             document.getElementById("level").style.display = "block";
+<<<<<<< Updated upstream
             //document.getElementsByTagName("body").handleClick();
 
             game.paused = false;
             spawnAnimals(game.nAnimals);
+=======
+
+            game.paused = false;
+            //spawnAnimals(game.nAnimals);
+			createBonusLife();
+>>>>>>> Stashed changes
             createPlane();
             resetGame();
             break;
@@ -418,9 +445,15 @@ function handleClick(e) {
 		
 		case "backToMenuGameOver":
 			backGame();
+<<<<<<< Updated upstream
             document.getElementById("menu").style.display = "block";
             document.getElementById("gameOver").style.display = "none";
             break;
+=======
+			document.getElementById("menu").style.display = "block";
+			document.getElementById("gameOver").style.display = "none";
+			break;
+>>>>>>> Stashed changes
 
 	}
 }
@@ -497,9 +530,17 @@ function loop(){
 			handleAnimalsOnScene();
 		}
 		detectCollision();
+<<<<<<< Updated upstream
 		handleAirplaneMovement();
 		updateDistance();
 		updateLevel();
+=======
+		
+		handleAirplaneMovement();
+		updateDistance();
+		updateLevel();
+		game.bonusLife.handleOnScene();
+>>>>>>> Stashed changes
 		
 	}
 	if(!game.paused && !game.started) backgroundMovement();
@@ -858,7 +899,7 @@ function createScenario0(){
 	Desert = function(){
 		this.mesh = new THREE.Object3D();
 		// create the geometry (shape) of the cylinder;
-		// the parameters are: 
+		// the parameters are:
 		// radius top, radius bottom, height, number of segments on the radius, number of segments vertically
 		geom = new THREE.CylinderGeometry(game.cylinderRadius,game.cylinderRadius,game.cylinderHeight,40,10);  //FORSE DA CAMBIARE
 		// rotate the geometry on the x axis
@@ -870,7 +911,7 @@ function createScenario0(){
 		});
 		// To create an object in Three.js, we have to create a mesh 
 		// which is a combination of a geometry and some material
-		this.mesh = new THREE.Mesh(geom, mat);
+		this.mesh = new THREE.Mesh(geom, mat); // <----------------------------------------------
 		// Allow the sea to receive shadows
 		this.mesh.receiveShadow = true; 
 		this.nCactus= 10;
@@ -1064,7 +1105,10 @@ function createScenario1(){
 			// for that we use a bit of trigonometry
 			var a = stepAngle*i; // this is the final angle of the cloud
 			var h = 760 + Math.random()*250; // this is the distance between the center of the axis and the cloud itself
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 			// Trigonometry!!! I hope you remember what you've learned in Math :)
 			// in case you don't: 
 			// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
@@ -1076,8 +1120,12 @@ function createScenario1(){
 
 			// for a better result, we position the clouds 
 			// at random depths inside of the scene
+<<<<<<< Updated upstream
 			c.mesh.position.z = -400-Math.random()*400;
 			
+=======
+			c.mesh.position.z = -400-Math.random()*400;		
+>>>>>>> Stashed changes
 			// we also set a random scale for each cloud
 			var s = 1+Math.random()*2;
 			c.mesh.scale.set(s,s,s);
@@ -1416,6 +1464,10 @@ function createScenario1(){
 }
 
 
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 /******************************** SPACE game.scenario ************************************************************************/
 function createShip(){
 	ship = new Ship();
@@ -2014,7 +2066,11 @@ function spawnAnimals(n){
 	for(var i=0; i < game.nAnimals; i++){
 		if(game.scenario == 0){
 			animal = new Condor();
+<<<<<<< Updated upstream
 			animal.mesh.scale.set(0.3,0.3,0.3);
+=======
+			animal.mesh.scale.set(0.35,0.35,0.35);
+>>>>>>> Stashed changes
 		}
 		else if(game.scenario == 1){
 			animal = new Duck();
@@ -2088,12 +2144,22 @@ function handleAnimalsOnScene(){
 
 function backgroundMovement(){
 	if(game.airplaneXpos >= 0){
+<<<<<<< Updated upstream
 		currentscenario.mesh.rotation.z += .005 + game.airplaneXpos*0.00004;
 		currentSky.mesh.rotation.z += 0.0005 + game.airplaneXpos*0.000002;
 	}
 	else {
 		currentscenario.mesh.rotation.z += .005 + game.airplaneXpos*0.000008;
 		currentSky.mesh.rotation.z += 0.0005 + game.airplaneXpos*0.0000008;
+=======
+		// game.level is used to increase background rotation speed along with levels
+		currentscenario.mesh.rotation.z += .005 + game.airplaneXpos*0.00004 + game.level * 0.0005; 
+		currentSky.mesh.rotation.z += 0.0005 + game.airplaneXpos*0.000002 + game.level * 0.0005;
+	}
+	else {
+		currentscenario.mesh.rotation.z += .005 + game.airplaneXpos*0.000008 + game.level * 0.0005;
+		currentSky.mesh.rotation.z += 0.0005 + game.airplaneXpos*0.0000008 + game.level * 0.0005;
+>>>>>>> Stashed changes
 	}
 }
 
@@ -2110,9 +2176,17 @@ function updateLevel(){
 		game.level++;
 		game.stepLength -= game.stepLength/10;
 		game.animalsSpeed += game.animalsSpeed/10;
+<<<<<<< Updated upstream
 		if(game.level % 3 == 0) game.spawnPerStep++;
 		initDeltaSpeed();
 	} 
+=======
+		game.bonusLifeSpeed += game.bonusLifeSpeed/20;
+		if(game.level % 3 == 0) game.spawnPerStep++;
+		initDeltaSpeed();
+		game.bonusLife.resetAvailability();
+	}
+>>>>>>> Stashed changes
 }
 
 function updateDistance(){
@@ -2137,19 +2211,51 @@ function detectCollision(){
 	var yAirPlane = game.airplaneYpos;
 	var xAnimal, yAnimal;
 
+<<<<<<< Updated upstream
 	for(var i=0; i<n; i++){
 		xAnimal = animals[i].mesh.position.x;
 		yAnimal = animals[i].mesh.position.y;
 		if(calcDistance(xAirplane, yAirPlane, xAnimal, yAnimal) <= game.collisionDistance && animals[i].alive == true){
+=======
+	var xBonusLife = game.bonusLife.mesh.position.x;
+	var yBonusLife = game.bonusLife.mesh.position.y;
+	var bonusLifeDist = calcDistance(xAirplane, yAirPlane, xBonusLife, yBonusLife);
+
+	for(var i=0; i<n; i++){
+		xAnimal = animals[i].mesh.position.x;
+		yAnimal = animals[i].mesh.position.y;
+		var animalDist = calcDistance(xAirplane, yAirPlane, xAnimal, yAnimal);
+		
+
+		if(animalDist <= game.collisionDistanceMalus && animals[i].alive == true){
+>>>>>>> Stashed changes
 			animals[i].alive = false;
 			scene.remove(animals[i].mesh); // explosion animation to add
 			getMalus();
 		}
+<<<<<<< Updated upstream
 	}	
 }
 
 function getBonus(){}
 
+=======
+		else if(bonusLifeDist <= game.collisionDistanceBonus  && game.bonusLife.available == true){
+			game.bonusLife.available = false;
+			scene.remove(game.bonusLife.mesh); // explosion animation to add
+			game.bonusLife.resetPosition();
+			getBonus();
+		}
+	}
+}
+
+function getBonus(){
+	if(game.lives < 3){
+		game.lives++;
+		document.getElementById("h"+game.lives).style.display = "";
+	}
+}
+>>>>>>> Stashed changes
 
 
 function getMalus(){
@@ -2171,8 +2277,15 @@ function gameOver(){
 }
 
 function clearScene(){
+<<<<<<< Updated upstream
 	for(var i=0; i<game.nAnimals; i++){
 		scene.remove(game.animalsArray[i].mesh);
+=======
+	if(game.animalsArray.length != 0){
+		for(var i=0; i<game.nAnimals; i++){
+			scene.remove(game.animalsArray[i].mesh);
+		}
+>>>>>>> Stashed changes
 	}
 	scene.remove(airplane.mesh);
 }
@@ -2196,6 +2309,10 @@ function backGame() {
 }
 
 function resetGame(){
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 	clearScene();
 	// geometry
 	game.cylinderRadius = 600;
@@ -2203,7 +2320,11 @@ function resetGame(){
 
 	// game
 	game.lives = 3;
+<<<<<<< Updated upstream
 	game.collisionDistance = 10;
+=======
+	game.collisionDistanceMalus = 10;
+>>>>>>> Stashed changes
 	game.level = 1;
 	game.distance = 0;
 	game.nAnimals = 50;
@@ -2235,10 +2356,108 @@ function resetGame(){
 	document.getElementById("h3").style.display = "";
 	
 	renderer.domElement.focus();  //airplane starts moving immediately
+<<<<<<< Updated upstream
 	scene.add(airplane.mesh);	
+=======
+	
+	scene.add(airplane.mesh);
+	
+>>>>>>> Stashed changes
 }
 
 function initUI(){
 	fieldDistance = document.getElementById("distValue");
 	fieldLevel = document.getElementById("levelValue");
+<<<<<<< Updated upstream
+=======
+}
+
+
+class BonusLife {
+
+	constructor(){
+
+		this.movingUp = false;
+		this.available = false;
+		this.mesh = new THREE.Object3D();
+		
+			
+		var geomHorizontal = new THREE.BoxGeometry(30,30,30);
+		var matHorizontal = new THREE.MeshPhongMaterial({ color: Colors.neongreen, shading: THREE.FlatShading });
+		var horizontal = new THREE.Mesh(geomHorizontal, matHorizontal);
+		horizontal.position.set(-20, -6, 10);
+		horizontal.rotation.set(0, 1.5, 0);
+		horizontal.castShadow = true;
+		horizontal.scale.set(0.16, 0.48, 0.16);
+		this.mesh.add(horizontal);
+	
+		var geomVertical = new THREE.BoxGeometry(30,30,30);
+		var matVertical = new THREE.MeshPhongMaterial({ color: Colors.neongreen, shading: THREE.FlatShading });
+		var vertical = new THREE.Mesh(geomVertical, matVertical);
+		vertical.position.set(-20, -6, 10);
+		vertical.rotation.set(0, 1.5, 0);
+		vertical.castShadow = true;
+		vertical.scale.set(0.48, 0.16, 0.16);
+		this.mesh.add(vertical);
+	}
+
+	rotate = function() {
+		var l = this.mesh.children.length;
+		for(var i=0; i<l; i++){
+			var m = this.mesh.children[i];
+			m.rotation.y+= 0.03;
+		}
+	}
+
+	resetAvailability = function(){
+		if(scene.getObjectByName("bonusLife") == undefined) scene.add(this.mesh);
+		this.available = true;
+		console.log("Reset Availability. Position now is: " + game.bonusLife.mesh.position);
+	}
+
+	resetPosition = function(){
+		this.mesh.position.y = 40 + Math.random()*160;
+		this.mesh.position.x = 300;
+	}
+
+
+	handleOnScene = function() {
+		if(this.available == true){
+			if(this.mesh.position.x > -300){
+				this.rotate();
+				this.mesh.position.x -= game.bonusLifeSpeed; // is increased in updateLevel
+				
+				if(this.movingUp == true){
+					this.mesh.position.y += 1.0;
+					if(this.mesh.position.y > 200){
+						this.movingUp = false;
+					}
+				}
+				else {
+					this.mesh.position.y -= 1.0;
+					if(this.mesh.position.y < 40){
+						this.movingUp = true;
+					}
+				}
+			}
+			else {
+				this.available = false;
+				this.resetPosition();
+				//console.log("Position reset at:" + this.mesh.position);
+				return;
+			}
+		}
+		
+	}
+
+} 
+
+function createBonusLife(){
+	game.bonusLife = new BonusLife();
+	game.bonusLife.mesh.name = "bonusLife";
+	game.bonusLife.mesh.position.y = 60 + Math.random()*140;
+	game.bonusLife.mesh.position.x = 300;
+
+    scene.add(game.bonusLife.mesh);
+>>>>>>> Stashed changes
 }

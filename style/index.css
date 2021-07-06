@@ -1,3 +1,5 @@
+:focus { outline: none; }
+
 .message--replay {
 	font-size: 1.25vw;
 	bottom: 40vh;
@@ -602,11 +604,19 @@ img {
 }
 
 .imgzone2 {
+<<<<<<< Updated upstream
 	position: absolute; 
 	width: 350px; 
 	height: 70px; 
 	top: 15%; 
 	left: 39.7%;
+=======
+    position: absolute; 
+    width: 450px; 
+    height: 70px; 
+    top: 15%; 
+    left: 36.7%;
+>>>>>>> Stashed changes
 }
 
 .buttonzone {
