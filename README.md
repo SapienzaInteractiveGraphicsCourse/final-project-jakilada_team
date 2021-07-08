@@ -1,6 +1,6 @@
-## JAKILADA FLY
+## JAKILADA
 
-You can test our game at the following link: [Jakilada Fly](https://sapienzainteractivegraphicscourse.github.io/final-project-jakilada_team/) 
+You can test our game at the following link: [Jakilada](https://sapienzainteractivegraphicscourse.github.io/final-project-jakilada_team/) 
 
 
 ### Markdown
