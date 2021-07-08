@@ -447,11 +447,11 @@ function handleClick(e) {
 
 		case "audioImg":
 			if(game.audioOn){
-				fieldAudio.src = "/img/sound_off.png";
+				fieldAudio.src = "img/sound_off.png";
 				game.audioOn = false;
 			}
 			else {
-				fieldAudio.src = "/img/sound_on.png";
+				fieldAudio.src = "img/sound_on.png";
 				game.audioOn = true;
 			}
 			backtrackHandler();
