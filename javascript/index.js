@@ -17,7 +17,7 @@ var Colors = {
 	shinygreen: 0x34d81d,
 	black: 0x000000,
 	sand: 0xf2d16b,
-	//gray: 0x202020,
+	gray: 0xE9E5DC,
 	moon: 0xC0C0C0,
 	neongreen: 0x7bff62,
 };
@@ -158,7 +158,7 @@ function init() {
 				airplane.mesh.position.y += (Math.min(200,  airplane.mesh.position.y + 120)-airplane.mesh.position.y)*delta;
 				game.airplaneYpos = airplane.mesh.position.y;
 			}else if(keyboard.pressed('down') || keyboard.pressed('s')){
-				airplane.mesh.position.y += (Math.max(50,  airplane.mesh.position.y - 120)-airplane.mesh.position.y)*delta;
+				airplane.mesh.position.y += (Math.max(40,  airplane.mesh.position.y - 120)-airplane.mesh.position.y)*delta;
 				game.airplaneYpos = airplane.mesh.position.y;
 			}
 
@@ -471,7 +471,7 @@ function backtrackHandler(){
 	else {
 		document.getElementById("theme_song").loop = true;
 		document.getElementById("theme_song").muted = true;
-		//document.getElementById("theme_song").play();
+		// document.getElementById("theme_song").play();
 	}
 }
 
@@ -2097,11 +2097,12 @@ function spawnAnimals(n){
 			}
 			animal.name = "animal" + i;
 
-
+	
 			// position on Y
-			var redline = 50 + 150 / game.spawnPerStep * (j+1);
-			var yellowline = redline/2 + 25 * (j+1);
-			animal.mesh.position.y = yellowline + 50 * Math.random() - 25;
+			var baseLine = 30;
+			var redline = baseLine + 180 / game.spawnPerStep * (j+1);
+			var yellowline = redline - 180/(2*game.spawnPerStep);
+			animal.mesh.position.y = yellowline + (180/game.spawnPerStep) * (Math.random() - 0.5);
 
 			//animal.mesh.position.y = 50 + (150 / game.spawnPerStep) * j ;
 			animal.mesh.position.x = 300; // handle with spawn speed
@@ -2168,9 +2169,11 @@ function handleAnimalsOnScene(){
 			// game.animalsArray[i].mesh.position.y = 60 + Math.random()*140;
 
 			var j = game.animalsRemoved % game.spawnPerStep;
-			var redline = 50 + 150 / game.spawnPerStep * (j +1);
-			var yellowline = redline/2 + 25 * (j+1);
-			game.animalsArray[i].mesh.position.y = yellowline + 50 * Math.random() - 25;
+			// position on Y
+			var baseLine = 30;
+			var redline = baseLine + 180 / game.spawnPerStep * (j+1);
+			var yellowline = redline - 180/(2*game.spawnPerStep);
+			game.animalsArray[i].mesh.position.y = yellowline + (180/game.spawnPerStep) *(Math.random() - 0.5);
 
 			game.animalsArray[i].alive = true;
 			scene.add(game.animalsArray[i].mesh);
@@ -2281,6 +2284,7 @@ function detectCollision(){
 			game.bonusLife.available = false;
 			scene.remove(game.bonusLife.mesh); // explosion animation to add
 			game.bonusLife.resetPosition();
+			scene.add(game.bonusLife.mesh);
 			getBonus();
 		}
 	}
@@ -2498,14 +2502,14 @@ class BonusLife {
 	}
 
 	resetAvailability = function(){
-		if(scene.getObjectByName("bonusLife") == undefined) scene.add(this.mesh);
+		//if(scene.getObjectByName("bonusLife") == undefined) scene.add(this.mesh);
 		this.available = true;
-		console.log("Reset Availability. Position now is: " + game.bonusLife.mesh.position);
+		//console.log("Reset Availability. Position now is: " + game.bonusLife.mesh.position);
 	}
 
 	resetPosition = function(){
 		this.mesh.position.y = 40 + Math.random()*160;
-		this.mesh.position.x = 300;
+		this.mesh.position.x = 400;
 	}
 
 
