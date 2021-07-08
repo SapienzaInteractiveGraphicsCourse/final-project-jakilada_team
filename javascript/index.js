@@ -49,7 +49,7 @@ var game = {
 	bonusLife: null,
 	bonusLifeSpeed: 1.6,
 	animalsRemoved: 0,
-	audioOn: true,
+	audioOn: false,
 
 	maxScore: 0,
 
@@ -447,11 +447,11 @@ function handleClick(e) {
 
 		case "audioImg":
 			if(game.audioOn){
-				fieldAudio.src = "img/sound_off.png";
+				fieldAudio.src = "/img/sound_off.png";
 				game.audioOn = false;
 			}
 			else {
-				fieldAudio.src = "img/sound_on.png";
+				fieldAudio.src = "/img/sound_on.png";
 				game.audioOn = true;
 			}
 			backtrackHandler();
@@ -471,7 +471,7 @@ function backtrackHandler(){
 	else {
 		document.getElementById("theme_song").loop = true;
 		document.getElementById("theme_song").muted = true;
-		document.getElementById("theme_song").play();
+		//document.getElementById("theme_song").play();
 	}
 }
 
