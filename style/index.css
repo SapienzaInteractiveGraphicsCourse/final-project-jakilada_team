@@ -53,7 +53,7 @@
 	position: relative;
 	width: 520px;
 	border-radius: 5px;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	margin-top: 125px;
 	background-color: #FBFBF9;
 	z-index: 1002;
@@ -68,7 +68,7 @@
 	position: relative; 
 	width: 520px;
 	border-radius: 5px;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	margin-top: 125px;
 	background-color: #FBFBF9;
 	z-index: 1002;
@@ -147,6 +147,23 @@ img {
 	text-align:center;
 }
 
+/*record*/
+#record{
+	position:absolute;
+	left: 5%;
+	top: 5%;
+	transform:translate(-50%,0%);
+	user-select: none;  
+}
+#recordValue{
+	position:relative;
+	text-transform:uppercase;
+	color:#dc5f45;
+	font-size:26px;
+	font-family:'Voltaire';
+	text-align:center;
+}
+
 /*Level*/
 #level{
 	position:absolute;
@@ -154,17 +171,6 @@ img {
 	top: 5%;
 	transform:translate(-50%,0%);
 	user-select: none;  
-}
-  
-.label{
-	position:relative;
-	font-family:'Cambria', sans-serif;
-	text-transform:uppercase;
-	color:#ffa873; 
-	font-size:16px;
-	letter-spacing:2px;
-	text-align:center;
-	margin-bottom:5px;
 }
   
   
@@ -235,7 +241,7 @@ span a:after{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -270,7 +276,7 @@ span b:after{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -305,7 +311,7 @@ span c:after{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -340,7 +346,7 @@ span d:after{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -375,7 +381,7 @@ span d:after{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -410,7 +416,7 @@ span e:after{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -439,13 +445,13 @@ span f:before,
 span f:after{
 	background-color: #FBFBF9;
 	position: absolute;
-	content: "MENU (M)";
+	content: "MENU";
 	height: 55px;
 	width: 180px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -481,7 +487,7 @@ span g:after{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -517,7 +523,7 @@ span h:after{
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	box-sizing: border-box;
 	border-radius: 5px;
 }
@@ -559,12 +565,14 @@ img {
 	text-align: center;
 	display: none;
 	padding: 20px;
+	font-weight: lighter;
 }
 
 .imgscen {
 	height: 100px;
+	width: 70%;
 	border-radius: 5px;
-	border: 5px solid black;
+	border: 3.5px solid black;
 	overflow: auto;
 	text-align: center;
 }
@@ -612,6 +620,25 @@ img {
 }
 
 .buttonzone {
-	margin-top: 16.25%; 
+	margin-top: 16.25%;
 	margin-left: 3.5%;
 }
+
+.buttonzone2 {
+	margin-top: 20.25%;  /*16.25%*/
+	margin-left: 3.5%;
+}
+
+.audioButton {
+    /* background: url("/img/sound_on.png") no-repeat; */
+    background-size: cover;
+    height: 60px;
+    width: 60px;
+    position: absolute;
+    bottom: 6%;
+    left: 4%;
+    border: none;
+    outline: none;
+	display: block;
+    /* visibility: hidden; */
+  }

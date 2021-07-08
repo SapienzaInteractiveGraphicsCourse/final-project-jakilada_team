@@ -35,12 +35,10 @@ var game = {
 	// game
 	scenario: 0, // 0 -> desert; 1 -> countryside; 2 -> space
 	lives: 3,
-	collisionDistanceMalus: 25,
-	collisionDistanceBonus: 30,
 	level: 1,
 	distance: 0,
 	nAnimals: 50,
-	stepLength: 130, // step interval between one spawn and another (decreases with levels)
+	stepLength: 150, //step interval between one spawn and another (decreases with levels)
 	animalsSpeed: 1.4, // x Axis birds speed (increases with levels)
 	animalsArray: [], // total animals in a level
 	spawnPerStep: 2, // depends on level
@@ -50,7 +48,8 @@ var game = {
 	airplaneYpos: 120,
 	bonusLife: null,
 	bonusLifeSpeed: 1.6,
-
+	animalsRemoved: 0,
+	audioOn: true,
 
 	maxScore: 0,
 
@@ -59,7 +58,7 @@ var game = {
 	paused: false,
 }
 
-var fieldDistance, fieldLevel, fieldHealth;
+var fieldDistance, fieldLevel, fieldHealth, fieldRecord, fieldAudio;
 
 var currentSky;
 var currentscenario;
@@ -79,7 +78,7 @@ var Cloud;
 
 var desertsky;
 var DesertSky;
-var AirPlane;
+//var AirPlane;
 var airplane;
 var CountrySky;
 var countrysky;
@@ -125,6 +124,7 @@ function init() {
 	createScenario0();
 	initUI();
 	initDeltaSpeed();
+	backtrackHandler();
 
 
 	//createBonusLife();
@@ -142,9 +142,17 @@ function init() {
 			if(keyboard.pressed('left') || keyboard.pressed('a')){
 				airplane.mesh.position.x += (Math.max(-200,  airplane.mesh.position.x - 120) - airplane.mesh.position.x)*delta;
 				game.airplaneXpos = airplane.mesh.position.x;
+
+				TweenMax.pauseAll()
+				if(airplane.mesh.rotation.x > -0.3) airplane.mesh.rotation.x =  airplane.mesh.rotation.x - 2 * delta ;
+
 			}else if( keyboard.pressed('right') || keyboard.pressed('d')){
+
 				airplane.mesh.position.x += (Math.min(200,  airplane.mesh.position.x + 120)- airplane.mesh.position.x)*delta;
 				game.airplaneXpos = airplane.mesh.position.x;
+
+				TweenMax.pauseAll()
+				if(airplane.mesh.rotation.x < 0.5) airplane.mesh.rotation.x =  airplane.mesh.rotation.x + 2 * delta ;
 			}
 			if(keyboard.pressed('up')  || keyboard.pressed('w') ){
 				airplane.mesh.position.y += (Math.min(200,  airplane.mesh.position.y + 120)-airplane.mesh.position.y)*delta;
@@ -155,7 +163,7 @@ function init() {
 			}
 
 
-
+			/*
 			// commands not necessary
 			if( keyboard.pressed('e')){
 				airplane.mesh.position.z = Math.min(70,  airplane.mesh.position.z + 120 * delta);
@@ -176,6 +184,7 @@ function init() {
 				airplane.mesh.rotation.y = airplane.mesh.rotation.y - 5 * delta;		
 			}
 			//END DEV TOOL
+			*/
 		}
 	})
 	var lastTimeMsec= null
@@ -215,6 +224,7 @@ function init() {
 	loop();
 	renderer.render( scene, camera );
 }
+
 
 /************************* SCENE CREATION ********************************************************************************/
 function createScene() {
@@ -276,11 +286,14 @@ function hanldeUpKeyboard(event) {
 	event.preventDefault();
 	var key = event.which;
 	switch(key){
-		case 69: // E
+		case 37:
+		case 65: // A,
 			if(!game.paused)
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
 			break;
-		case 81: // Q
+
+		case 39:
+		case 68: // D
 			if(!game.paused)
 				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});;
 			break;
@@ -303,7 +316,7 @@ function hanldeDownKeyboard(event) {
 			else if(document.getElementById("pausedspan").style.display == "none" && game.started == true) {
 				document.getElementById("pausedspan").style.display = "block";
 				TweenMax.pauseAll();
-				game.started = false;
+				game.started = true;
 				game.paused = true;
 			}
 			break;
@@ -432,23 +445,69 @@ function handleClick(e) {
 			document.getElementById("gameOver").style.display = "none";
 			break;
 
+		case "audioImg":
+			if(game.audioOn){
+				fieldAudio.src = "/img/sound_off.png";
+				game.audioOn = false;
+			}
+			else {
+				fieldAudio.src = "/img/sound_on.png";
+				game.audioOn = true;
+			}
+			backtrackHandler();
+			renderer.domElement.focus();
+			break;
+
 	}
 }
 
+function backtrackHandler(){
+
+	if(game.audioOn){
+		document.getElementById("theme_song").loop = true;
+		document.getElementById("theme_song").muted = false;
+		document.getElementById("theme_song").play();
+	}
+	else {
+		document.getElementById("theme_song").loop = true;
+		document.getElementById("theme_song").muted = true;
+		document.getElementById("theme_song").play();
+	}
+}
 
 function animationAnimals(){
 	if(game.scenario == 0){
 		for (var i=0; i<game.nAnimals; i++){
-			
 			var con = game.animalsArray[i];
-			//console.log(con.condorLeftWing.rotation.x);
-			if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){
+
+			// console.log(con.condorLeftWing.rotation.x);
+
+			// if(con.movingUpWings == false){
+			// 	if(con.condorLeftWing.rotation.x > 59.4){
+			// 		con.movingUpWings = true;
+			// 	}
+			// 	else{
+			// 		con.condorLeftWing.rotation.x += 0.9;
+			// 		con.condorRightWing.rotation.x -= 0.9;
+			// 	}	
+			// }
+			// else {
+			// 	if(con.condorLeftWing.rotation.x < 54){
+			// 		con.movingUpWings = false;
+			// 	}
+			// 	else {
+			// 		con.condorLeftWing.rotation.x -= 0.02;
+			// 		con.condorRightWing.rotation.x += 0.02;
+			// 	}
+			// }
+
+			if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){ // pushing down wing
 				con.condorLeftWing.rotation.x += 0.9;
 			}
-			if(con.condorLeftWing.rotation.x <= 54 || con.condorLeftWing.rotation.x >= 59){
+			if(con.condorLeftWing.rotation.x <= 54 || con.condorLeftWing.rotation.x >= 59.4){ // rising up
 				con.condorLeftWing.rotation.x -= 0.02;
 			}
-			if(con.condorRightWing.rotation.x <= -5|| con.condorRightWing.rotation.x >= 0.3){
+			if(con.condorRightWing.rotation.x <= -5|| con.condorRightWing.rotation.x >= 0.3){ 
 				con.condorRightWing.rotation.x -= 0.9;
 			}
 			if(con.condorRightWing.rotation.x > -5 && con.condorRightWing.rotation.x < 0.3){
@@ -506,11 +565,11 @@ function loop(){
 			moveAnimals();
 			handleAnimalsOnScene();
 		}
-		detectCollision();
 		
 		handleAirplaneMovement();
 		updateDistance();
 		updateLevel();
+		detectCollision();
 		game.bonusLife.handleOnScene();
 		
 	}
@@ -554,204 +613,207 @@ function createLights() {
 }
 
 /******************************************** AIRPLANE CLASS *************************************************************/
-AirPlane = function() {
-	this.mesh = new THREE.Object3D();
-	// Create the cabin
-	// Cockpit
-	var geomCockpit = new THREE.BoxGeometry(100,60,50,1,1,1);
-	var matCockpit = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
-	// we can access a specific vertex of a shape through 
-	// the vertices array, and then move its x, y and z property:
-	geomCockpit.vertices[4].y-=10;
-	geomCockpit.vertices[4].z+=20;
-	geomCockpit.vertices[5].y-=10;
-	geomCockpit.vertices[5].z-=20;
-	geomCockpit.vertices[6].y+=30;
-	geomCockpit.vertices[6].z+=20;
-	geomCockpit.vertices[7].y+=30;
-	geomCockpit.vertices[7].z-=20;
-	var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
-	cockpit.position.set(-20,0,0);
-	cockpit.castShadow = true;
-	cockpit.receiveShadow = true;
-	this.mesh.add(cockpit);
-	// Create the front cabine
-	var geomEngine = new THREE.BoxGeometry(20,60,50,1,1,1);
-	var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
-	var engine = new THREE.Mesh(geomEngine, matEngine);
-	engine.position.x = 40;
-	engine.castShadow = true;
-	engine.receiveShadow = true;
-	this.mesh.add(engine);	
-	// Create the tail
-	var geomTailPlane = new THREE.BoxGeometry(15,20,5,1,1,1);
-	var matTailPlane = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
-	var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
-	tailPlane.position.set(-62.7,27,0);
-	tailPlane.castShadow = true;
-	tailPlane.receiveShadow = true;
-	this.mesh.add(tailPlane);	
-	// Create the wing
-	var geomSideWing = new THREE.BoxGeometry(45,15,250,1,1,1);
-	var matSideWing = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
-	var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
-	sideWing.position.set(6,4,0);
-	sideWing.rotation.z = .1;
-	geomSideWing.vertices[1].x += 1;
-	geomSideWing.vertices[0].x += 1;
-	geomSideWing.vertices[4].x += 1;
-	geomSideWing.vertices[5].x += 1;
-	sideWing.castShadow = true;
-	sideWing.receiveShadow = true;
-	this.mesh.add(sideWing);
-	//create guns
-	var geomGun1= new THREE.BoxGeometry(10,10,10,1,1,1);
-	var matGun1 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
-	var gun1 = new THREE.Mesh(geomGun1, matGun1);
-	gun1.position.set(50,-17,15);
-	gun1.castShadow = true;
-	gun1.receiveShadow = true;
-	this.mesh.add(gun1);
+class AirPlane {
+	constructor(){
+		this.mesh = new THREE.Object3D();
+		// Create the cabin
+		// Cockpit
+		var geomCockpit = new THREE.BoxGeometry(100,60,50,1,1,1);
+		var matCockpit = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+		// we can access a specific vertex of a shape through 
+		// the vertices array, and then move its x, y and z property:
+		geomCockpit.vertices[4].y-=10;
+		geomCockpit.vertices[4].z+=20;
+		geomCockpit.vertices[5].y-=10;
+		geomCockpit.vertices[5].z-=20;
+		geomCockpit.vertices[6].y+=30;
+		geomCockpit.vertices[6].z+=20;
+		geomCockpit.vertices[7].y+=30;
+		geomCockpit.vertices[7].z-=20;
+		var cockpit = new THREE.Mesh(geomCockpit, matCockpit);
+		cockpit.position.set(-20,0,0);
+		cockpit.castShadow = true;
+		cockpit.receiveShadow = true;
+		this.mesh.add(cockpit);
+		// Create the front cabine
+		var geomEngine = new THREE.BoxGeometry(20,60,50,1,1,1);
+		var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
+		var engine = new THREE.Mesh(geomEngine, matEngine);
+		engine.position.x = 40;
+		engine.castShadow = true;
+		engine.receiveShadow = true;
+		this.mesh.add(engine);	
+		// Create the tail
+		var geomTailPlane = new THREE.BoxGeometry(15,20,5,1,1,1);
+		var matTailPlane = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+		var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
+		tailPlane.position.set(-62.7,27,0);
+		tailPlane.castShadow = true;
+		tailPlane.receiveShadow = true;
+		this.mesh.add(tailPlane);	
+		// Create the wing
+		var geomSideWing = new THREE.BoxGeometry(45,15,250,1,1,1);
+		var matSideWing = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+		var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
+		sideWing.position.set(6,4,0);
+		sideWing.rotation.z = .1;
+		geomSideWing.vertices[1].x += 1;
+		geomSideWing.vertices[0].x += 1;
+		geomSideWing.vertices[4].x += 1;
+		geomSideWing.vertices[5].x += 1;
+		sideWing.castShadow = true;
+		sideWing.receiveShadow = true;
+		this.mesh.add(sideWing);
+		//create guns
+		var geomGun1= new THREE.BoxGeometry(10,10,10,1,1,1);
+		var matGun1 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
+		var gun1 = new THREE.Mesh(geomGun1, matGun1);
+		gun1.position.set(50,-17,15);
+		gun1.castShadow = true;
+		gun1.receiveShadow = true;
+		this.mesh.add(gun1);
 
-	var geomGun2= new THREE.BoxGeometry(10,10,10,1,1,1);
-	var matGun2 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
-	var gun2 = new THREE.Mesh(geomGun2, matGun2);
-	gun2.position.set(gun1.position.x,gun1.position.y,-gun1.position.z);
-	gun2.castShadow = true;
-	gun2.receiveShadow = true;
-	this.mesh.add(gun2);
+		var geomGun2= new THREE.BoxGeometry(10,10,10,1,1,1);
+		var matGun2 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
+		var gun2 = new THREE.Mesh(geomGun2, matGun2);
+		gun2.position.set(gun1.position.x,gun1.position.y,-gun1.position.z);
+		gun2.castShadow = true;
+		gun2.receiveShadow = true;
+		this.mesh.add(gun2);
 
-	var geomMgun1= new THREE.BoxGeometry(5,5,5,1,1,1);
-	var mutMgun1 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
-	var mgun1 = new THREE.Mesh(geomMgun1, mutMgun1);
-	mgun1.position.set(55,-15,15);
-	mgun1.castShadow = true;
-	mgun1.receiveShadow = true;
-	this.mesh.add(mgun1);
+		var geomMgun1= new THREE.BoxGeometry(5,5,5,1,1,1);
+		var mutMgun1 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
+		var mgun1 = new THREE.Mesh(geomMgun1, mutMgun1);
+		mgun1.position.set(55,-15,15);
+		mgun1.castShadow = true;
+		mgun1.receiveShadow = true;
+		this.mesh.add(mgun1);
 
-	var geomMgun2= new THREE.BoxGeometry(5,5,5,1,1,1);
-	var mutMgun2 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
-	var mgun2 = new THREE.Mesh(geomMgun2, mutMgun2);
-	mgun2.position.set(55,-15,-15);
-	mgun2.castShadow = true;
-	mgun2.receiveShadow = true;
-	this.mesh.add(mgun2);
-	//create glass cabin
-	var geomWindshield = new THREE.BoxGeometry(50,20,20,1,1,1);
-	var matWindshield = new THREE.MeshPhongMaterial({color:Colors.lightgrey, transparent:true, opacity:.8, shading:THREE.FlatShading});;
-	var windshield = new THREE.Mesh(geomWindshield, matWindshield);
-	windshield.position.set(2,36,0);
-	windshield.rotation.z += 0.1;
-	geomWindshield.vertices[0].x += 2;
-	geomWindshield.vertices[1].x += 2;
-	geomWindshield.vertices[5].x += 2;
-	geomWindshield.vertices[4].x += 2;
-	windshield.castShadow = true;
-	windshield.receiveShadow = true;  
-	this.mesh.add(windshield);
-	//create wheels
-	var wheelProtecGeom = new THREE.BoxGeometry(15,20,20,1,1,1);
-	var wheelProtecMat = new THREE.MeshPhongMaterial({color:Colors.red,shading:THREE.FlatShading});
-	var wheelProtecR = new THREE.Mesh(wheelProtecGeom,wheelProtecMat);
-	wheelProtecR.position.set(22,-25,20);
-	this.mesh.add(wheelProtecR);
-  
-	var wheelTireGeom = new THREE.BoxGeometry(10,17,17);
-	var wheelTireMat = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
-	var wheelTireR = new THREE.Mesh(wheelTireGeom,wheelTireMat);
-	wheelTireR.position.set(22,-40,20);
-  
-	var wheelAxisGeom = new THREE.BoxGeometry(4,7,20);
-	var wheelAxisMat = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
-	var wheelAxis = new THREE.Mesh(wheelAxisGeom,wheelAxisMat);
-	wheelTireR.add(wheelAxis);
-	this.mesh.add(wheelTireR);
+		var geomMgun2= new THREE.BoxGeometry(5,5,5,1,1,1);
+		var mutMgun2 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
+		var mgun2 = new THREE.Mesh(geomMgun2, mutMgun2);
+		mgun2.position.set(55,-15,-15);
+		mgun2.castShadow = true;
+		mgun2.receiveShadow = true;
+		this.mesh.add(mgun2);
+		//create glass cabin
+		var geomWindshield = new THREE.BoxGeometry(50,20,20,1,1,1);
+		var matWindshield = new THREE.MeshPhongMaterial({color:Colors.lightgrey, transparent:true, opacity:.8, shading:THREE.FlatShading});;
+		var windshield = new THREE.Mesh(geomWindshield, matWindshield);
+		windshield.position.set(2,36,0);
+		windshield.rotation.z += 0.1;
+		geomWindshield.vertices[0].x += 2;
+		geomWindshield.vertices[1].x += 2;
+		geomWindshield.vertices[5].x += 2;
+		geomWindshield.vertices[4].x += 2;
+		windshield.castShadow = true;
+		windshield.receiveShadow = true;  
+		this.mesh.add(windshield);
+		//create wheels
+		var wheelProtecGeom = new THREE.BoxGeometry(15,20,20,1,1,1);
+		var wheelProtecMat = new THREE.MeshPhongMaterial({color:Colors.red,shading:THREE.FlatShading});
+		var wheelProtecR = new THREE.Mesh(wheelProtecGeom,wheelProtecMat);
+		wheelProtecR.position.set(22,-25,20);
+		this.mesh.add(wheelProtecR);
 	
-	var wheelProtecL = wheelProtecR.clone();
-	wheelProtecL.position.set(wheelProtecR.position.x,wheelProtecR.position.y,-wheelProtecR.position.z);
-	this.mesh.add(wheelProtecL);
-  
-	var wheelTireL = wheelTireR.clone();
-	wheelTireL.position.set(wheelTireR.position.x,wheelTireR.position.y,-wheelTireR.position.z);
-	this.mesh.add(wheelTireL);
-
-	var wheelProtecB = wheelProtecR.clone();
-	wheelProtecB.scale.set(.7,.7,.7);
-	wheelProtecB.position.set(-55,-5,0);
-	this.mesh.add(wheelProtecB);
-  
-	var wheelTireB = wheelTireR.clone();
-	wheelTireB.scale.set(.8,.8,.8);
-	wheelTireB.position.set(-55,-15,0);
-	this.mesh.add(wheelTireB);
-	// create the engines
-	var geomEngine1 = new THREE.BoxGeometry(47,25,40,1,1,1);
-	var matEngine1 = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading})
+		var wheelTireGeom = new THREE.BoxGeometry(10,17,17);
+		var wheelTireMat = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
+		var wheelTireR = new THREE.Mesh(wheelTireGeom,wheelTireMat);
+		wheelTireR.position.set(22,-40,20);
 	
-	var engine1 = new THREE.Mesh(geomEngine1, matEngine1);
-	engine1.position.set(6,-3,80);
-	engine1.rotation.z = .1;
-	geomEngine1.vertices[2].x -= 2
-	geomEngine1.vertices[3].x -= 2
-	geomEngine1.vertices[4].x += 3
-	geomEngine1.vertices[5].x += 3
-	geomEngine1.vertices[6].x += 1
-	geomEngine1.vertices[7].x += 1
-	engine1.castShadow = true;
-	engine1.receiveShadow = true;
-	this.mesh.add(engine1);
-
-	var geomEngine2 = new THREE.BoxGeometry(46,25,40,1,1,1);
-	var matEngine2 = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading})
+		var wheelAxisGeom = new THREE.BoxGeometry(4,7,20);
+		var wheelAxisMat = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
+		var wheelAxis = new THREE.Mesh(wheelAxisGeom,wheelAxisMat);
+		wheelTireR.add(wheelAxis);
+		this.mesh.add(wheelTireR);
+		
+		var wheelProtecL = wheelProtecR.clone();
+		wheelProtecL.position.set(wheelProtecR.position.x,wheelProtecR.position.y,-wheelProtecR.position.z);
+		this.mesh.add(wheelProtecL);
 	
-	var engine2 = new THREE.Mesh(geomEngine2, matEngine2);
-	engine2.position.set(engine1.position.x,engine1.position.y, -engine1.position.z);
-	engine2.rotation.z = .1;
-	geomEngine2.vertices[2].x -= 2
-	geomEngine2.vertices[3].x -= 2
-	geomEngine2.vertices[4].x += 3
-	geomEngine2.vertices[5].x += 3
-	geomEngine2.vertices[6].x += 1
-	geomEngine2.vertices[7].x += 1
-	engine2.castShadow = true;
-	engine2.receiveShadow = true;
-	this.mesh.add(engine2);
+		var wheelTireL = wheelTireR.clone();
+		wheelTireL.position.set(wheelTireR.position.x,wheelTireR.position.y,-wheelTireR.position.z);
+		this.mesh.add(wheelTireL);
 
-	// propellers
-	var geomPropeller1 = new THREE.BoxGeometry(20,10,10,1,1,1);
-	var matPropeller1 = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
-	this.propeller1 = new THREE.Mesh(geomPropeller1, matPropeller1);
-	this.propeller1.castShadow = true;
-	this.propeller1.receiveShadow = true;
+		var wheelProtecB = wheelProtecR.clone();
+		wheelProtecB.scale.set(.7,.7,.7);
+		wheelProtecB.position.set(-55,-5,0);
+		this.mesh.add(wheelProtecB);
+	
+		var wheelTireB = wheelTireR.clone();
+		wheelTireB.scale.set(.8,.8,.8);
+		wheelTireB.position.set(-55,-15,0);
+		this.mesh.add(wheelTireB);
+		// create the engines
+		var geomEngine1 = new THREE.BoxGeometry(47,25,40,1,1,1);
+		var matEngine1 = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading})
+		
+		var engine1 = new THREE.Mesh(geomEngine1, matEngine1);
+		engine1.position.set(6,-3,80);
+		engine1.rotation.z = .1;
+		geomEngine1.vertices[2].x -= 2
+		geomEngine1.vertices[3].x -= 2
+		geomEngine1.vertices[4].x += 3
+		geomEngine1.vertices[5].x += 3
+		geomEngine1.vertices[6].x += 1
+		geomEngine1.vertices[7].x += 1
+		engine1.castShadow = true;
+		engine1.receiveShadow = true;
+		this.mesh.add(engine1);
 
-	var geomPropeller2 = new THREE.BoxGeometry(20,10,10,1,1,1);
-	var matPropeller2 = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
-	this.propeller2 = new THREE.Mesh(geomPropeller2, matPropeller2);
-	this.propeller2.castShadow = true;
-	this.propeller2.receiveShadow = true;
-	
-	// blades
-	var geomBlade = new THREE.BoxGeometry(1,80,15,1,1,1);
-	var matBlade = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
-	
-	var blade = new THREE.Mesh(geomBlade, matBlade);
-	blade.position.set(8,0,0);
-	blade.castShadow = true;
-	blade.receiveShadow = true;
-	this.propeller1.add(blade);
-	this.propeller1.position.set(25,0,80);
-	this.mesh.add(this.propeller1);
+		var geomEngine2 = new THREE.BoxGeometry(46,25,40,1,1,1);
+		var matEngine2 = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading})
+		
+		var engine2 = new THREE.Mesh(geomEngine2, matEngine2);
+		engine2.position.set(engine1.position.x,engine1.position.y, -engine1.position.z);
+		engine2.rotation.z = .1;
+		geomEngine2.vertices[2].x -= 2
+		geomEngine2.vertices[3].x -= 2
+		geomEngine2.vertices[4].x += 3
+		geomEngine2.vertices[5].x += 3
+		geomEngine2.vertices[6].x += 1
+		geomEngine2.vertices[7].x += 1
+		engine2.castShadow = true;
+		engine2.receiveShadow = true;
+		this.mesh.add(engine2);
 
-	var geomBlade2 = new THREE.BoxGeometry(1,80,15,1,1,1);
-	var matBlade2 = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
+		// propellers
+		var geomPropeller1 = new THREE.BoxGeometry(20,10,10,1,1,1);
+		var matPropeller1 = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
+		this.propeller1 = new THREE.Mesh(geomPropeller1, matPropeller1);
+		this.propeller1.castShadow = true;
+		this.propeller1.receiveShadow = true;
+
+		var geomPropeller2 = new THREE.BoxGeometry(20,10,10,1,1,1);
+		var matPropeller2 = new THREE.MeshPhongMaterial({color:Colors.brown, shading:THREE.FlatShading});
+		this.propeller2 = new THREE.Mesh(geomPropeller2, matPropeller2);
+		this.propeller2.castShadow = true;
+		this.propeller2.receiveShadow = true;
+		
+		// blades
+		var geomBlade = new THREE.BoxGeometry(1,80,15,1,1,1);
+		var matBlade = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
+		
+		var blade = new THREE.Mesh(geomBlade, matBlade);
+		blade.position.set(8,0,0);
+		blade.castShadow = true;
+		blade.receiveShadow = true;
+		this.propeller1.add(blade);
+		this.propeller1.position.set(25,0,80);
+		this.mesh.add(this.propeller1);
+
+		var geomBlade2 = new THREE.BoxGeometry(1,80,15,1,1,1);
+		var matBlade2 = new THREE.MeshPhongMaterial({color:Colors.brownDark, shading:THREE.FlatShading});
+		
+		var blade2 = new THREE.Mesh(geomBlade2, matBlade2);
+		blade2.position.set(8,0,0);
+		blade2.castShadow = true;
+		blade2.receiveShadow = true;	
+		this.propeller2.add(blade2);
+		this.propeller2.position.set(25,0,-80);
+		this.mesh.add(this.propeller2);
+	}
 	
-	var blade2 = new THREE.Mesh(geomBlade2, matBlade2);
-	blade2.position.set(8,0,0);
-	blade2.castShadow = true;
-	blade2.receiveShadow = true;	
-	this.propeller2.add(blade2);
-	this.propeller2.position.set(25,0,-80);
-	this.mesh.add(this.propeller2);
 };
 //airplane
 function createPlane(){ 
@@ -1706,6 +1768,7 @@ function spawnAnimals(n){
 	class Condor {
 		constructor() {
 			this.alive = true;
+			this.movingUpWings = true;
 
 			this.mesh = new THREE.Object3D();
 			// Create the body
@@ -1780,7 +1843,7 @@ function spawnAnimals(n){
 			this.condorRightWing.rotation.set(0, 0, 0);
 			this.condorRightWing.castShadow = true;
 			this.condorRightWing.receiveShadow = true;
-			this.condorRightWing.scale.set(0.5, 0.3, 0.3);
+			this.condorRightWing.scale.set(0.5, 0.3, 0.2);
 			this.mesh.add(this.condorRightWing);
 			// Create the L lower wing
 			geomCondorLeftWing = new THREE.ExtrudeGeometry(shape, extrudeSettings);
@@ -1790,7 +1853,7 @@ function spawnAnimals(n){
 			this.condorLeftWing.rotation.set(59.7, 0, 0);
 			this.condorLeftWing.castShadow = true;
 			this.condorLeftWing.receiveShadow = true;
-			this.condorLeftWing.scale.set(0.5, 0.3, 0.3);
+			this.condorLeftWing.scale.set(0.5, 0.3, 0.2);
 			this.mesh.add(this.condorLeftWing);
 			//create eyes
 			var geomCondorEye1 = new THREE.BoxGeometry(4, 3, 3, 1, 1, 1);
@@ -2018,27 +2081,39 @@ function spawnAnimals(n){
 	//game.animalMesh = new THREE.Object3D();
 	var animal;
 	// create nAnimals and pushes in animalsArray
-	for(var i=0; i < game.nAnimals; i++){
-		if(game.scenario == 0){
-			animal = new Condor();
-			animal.mesh.scale.set(0.35,0.35,0.35);
-		}
-		else if(game.scenario == 1){
-			animal = new Duck();
-			animal.mesh.scale.set(0.25,0.25,0.25);
-		}
-		else {
-			animal = new Ship();
-			animal.mesh.scale.set(0.9,0.75,0.9);
-		}
+	for(var i=0; i < game.nAnimals;){
+		for(var j=0; j<game.spawnPerStep; j++){
+			if(game.scenario == 0){
+				animal = new Condor();
+				animal.mesh.scale.set(0.35,0.35,0.35);
+			}
+			else if(game.scenario == 1){
+				animal = new Duck();
+				animal.mesh.scale.set(0.25,0.25,0.25);
+			}
+			else {
+				animal = new Ship();
+				animal.mesh.scale.set(0.9,0.75,0.9);
+			}
+			animal.name = "animal" + i;
 
-		animal.name = "animal" + i;
-		animal.mesh.position.y = 60 + Math.random()*140;
-		animal.mesh.position.x = 300; // handle with spawn speed
-		animal.mesh.rotation.z = Math.PI;	
-		//animal.mesh.scale.set(0.35,0.35,0.35);
-		//game.animalMesh.mesh.add(animal.mesh);
-		game.animalsArray.push(animal);
+
+			// position on Y
+			var redline = 50 + 150 / game.spawnPerStep * (j+1);
+			var yellowline = redline/2 + 25 * (j+1);
+			animal.mesh.position.y = yellowline + 50 * Math.random() - 25;
+
+			//animal.mesh.position.y = 50 + (150 / game.spawnPerStep) * j ;
+			animal.mesh.position.x = 300; // handle with spawn speed
+			animal.mesh.rotation.z = Math.PI;	
+			//animal.mesh.scale.set(0.35,0.35,0.35);
+			//game.animalMesh.mesh.add(animal.mesh);
+			game.animalsArray.push(animal);
+		}
+		i += game.spawnPerStep
+
+
+		
 	}
 
 	// exact position from right to left
@@ -2080,18 +2155,29 @@ function handleAnimalsOnScene(){
 	for(var i=0; i<game.nAnimals; i++){
 		if(game.animalsArray[i].mesh.position.x < -300){
 			
+			game.animalsRemoved++;
 			scene.remove(game.animalsArray[i].mesh);
+
+			// x position
 			var rand = Math.random();
 			game.animalsArray[i].mesh.position.x += game.step * game.stepLength 
 														- (game.stepLength * rand * 0.8) 
 														+ (game.stepLength * (1 - rand) * 0.2);
 
-			game.animalsArray[i].mesh.position.y = 60 + Math.random()*140;
+			// y position
+			// game.animalsArray[i].mesh.position.y = 60 + Math.random()*140;
+
+			var j = game.animalsRemoved % game.spawnPerStep;
+			var redline = 50 + 150 / game.spawnPerStep * (j +1);
+			var yellowline = redline/2 + 25 * (j+1);
+			game.animalsArray[i].mesh.position.y = yellowline + 50 * Math.random() - 25;
+
 			game.animalsArray[i].alive = true;
 			scene.add(game.animalsArray[i].mesh);
 		}	
 	}
 }
+
 
 function backgroundMovement(){
 	if(game.airplaneXpos >= 0){
@@ -2116,10 +2202,10 @@ function updateLevel(){
 	fieldLevel.innerHTML = game.level;
 	if(game.distance / 500 > game.level){
 		game.level++;
-		game.stepLength -= game.stepLength/10;
-		game.animalsSpeed += game.animalsSpeed/10;
-		game.bonusLifeSpeed += game.bonusLifeSpeed/20;
-		if(game.level % 3 == 0) game.spawnPerStep++;
+		if(game.stepLength > 90) game.stepLength -= game.stepLength/10;
+		if(game.animalsSpeed < 2.5) game.animalsSpeed += game.animalsSpeed/10;
+		if(game.bonusLifeSpeed < 2.5 ) game.bonusLifeSpeed += game.bonusLifeSpeed/20;
+		if(game.level % 3 == 0 && game.spawnPerStep < 4) game.spawnPerStep++;
 		initDeltaSpeed();
 		game.bonusLife.resetAvailability();
 	}
@@ -2133,36 +2219,65 @@ function updateDistance(){
 	fieldDistance.innerHTML = Math.floor(game.distance);
 }
 
-function calcDistance(x1,y1,x2,y2){
-	var xdiff = x1-x2;
-	var ydiff = y1-y2;
-	var dist = Math.sqrt(Math.pow(xdiff,2) + Math.pow(ydiff,2));
-	return dist;
-}
-
 function detectCollision(){
 	var n = game.nAnimals;
 	var animals = game.animalsArray;
-	var xAirplane = game.airplaneXpos;
-	var yAirPlane = game.airplaneYpos;
-	var xAnimal, yAnimal;
 
-	var xBonusLife = game.bonusLife.mesh.position.x;
-	var yBonusLife = game.bonusLife.mesh.position.y;
-	var bonusLifeDist = calcDistance(xAirplane, yAirPlane, xBonusLife, yBonusLife);
+	var airplaneBox = new THREE.Box3().setFromObject(airplane.mesh);
+	// var xAirplane = game.airplaneXpos;
+	// var yAirPlane = game.airplaneYpos;
+	// var xAnimal, yAnimal;
+
+	// var xBonusLife = game.bonusLife.mesh.position.x;
+	// var yBonusLife = game.bonusLife.mesh.position.y;
+	// var bonusLifeDist = calcDistance(xAirplane, yAirPlane, xBonusLife, yBonusLife);
+	var bonusLifeBox = new THREE.Box3().setFromObject(game.bonusLife.mesh);
+	var bonusLifeCollision = airplaneBox.intersectsBox(bonusLifeBox);
 
 	for(var i=0; i<n; i++){
-		xAnimal = animals[i].mesh.position.x;
-		yAnimal = animals[i].mesh.position.y;
-		var animalDist = calcDistance(xAirplane, yAirPlane, xAnimal, yAnimal);
+		// xAnimal = animals[i].mesh.position.x;
+		// yAnimal = animals[i].mesh.position.y;
+
+		// var animalDist = calcDistance(xAirplane, yAirPlane, xAnimal, yAnimal);
 		
 
-		if(animalDist <= game.collisionDistanceMalus && animals[i].alive == true){
+		// if(animalDist <= game.collisionDistanceMalus && animals[i].alive == true){
+		// 	animals[i].alive = false;
+		// 	scene.remove(animals[i].mesh); // explosion animation to add
+		// 	getMalus();
+		// }
+		// else if(bonusLifeDist <= game.collisionDistanceBonus  && game.bonusLife.available == true){
+		// 	game.bonusLife.available = false;
+		// 	scene.remove(game.bonusLife.mesh); // explosion animation to add
+		// 	game.bonusLife.resetPosition();
+		// 	getBonus();
+		// }
+
+		var animalBox = new THREE.Box3().setFromObject(animals[i].mesh);
+		var animalCollision = airplaneBox.intersectsBox(animalBox);
+
+		if(animalCollision && animals[i].alive){
+
 			animals[i].alive = false;
 			scene.remove(animals[i].mesh); // explosion animation to add
 			getMalus();
+
+			if(game.started && game.audioOn) {
+				// audio effects
+				if(game.scenario == 2){
+					document.getElementById("shipCollAudio").play();
+				}
+				else {
+					document.getElementById("animalCollAudio").play();
+				}	
+			}
+			
 		}
-		else if(bonusLifeDist <= game.collisionDistanceBonus  && game.bonusLife.available == true){
+		else if(bonusLifeCollision && game.bonusLife.available){
+			if(game.audioOn){
+				// audio effects
+				document.getElementById("bonusLifeAudio").play();
+			}
 			game.bonusLife.available = false;
 			scene.remove(game.bonusLife.mesh); // explosion animation to add
 			game.bonusLife.resetPosition();
@@ -2187,11 +2302,38 @@ function getMalus(){
 
 function gameOver(){
 
-	// Missing GAMEOVER, SCORE, LEVEL TEXT (Daniele add them please)
+	if(game.audioOn){
+		// audio effects
+		document.getElementById("gameOverAudio").play();
+	}
+	
+
 	document.getElementById("gameOver").style.display = "block";
 	document.getElementById("dist").style.display = "none";
 	document.getElementById("health").style.display = "none";
 	document.getElementById("level").style.display = "none";
+
+	var dista = document.getElementById("dist");
+	dista.style.display = "block";
+	dista.style.top = "29%";
+	dista.style.left = "44.8%";
+	//dista.style.color = "black";
+	//dista.style.fontSize = "1000px";f
+
+	if(game.maxScore < parseInt(fieldDistance.innerHTML)){
+		document.getElementById("recordValue").innerHTML = fieldDistance.innerHTML;
+		game.maxScore = parseInt(fieldDistance.innerHTML);
+	}
+
+	var level = document.getElementById("level");
+	level.style.display = "block";
+	level.style.top = "29%";
+	level.style.left = "51.8%";
+
+	var record = document.getElementById("record");
+	record.style.display = "block";
+	record.style.top = "29%";
+	record.style.left = "58.8%";
 
 	game.started = false;
 	clearScene();
@@ -2204,6 +2346,11 @@ function clearScene(){
 		}
 	}
 	scene.remove(airplane.mesh);
+	scene.remove(game.bonusLife);
+
+	//scene.remove.apply(scene, scene.children);
+	game.bonusLife.resetPosition();
+	game.bonusLife.available = false;
 }
 
 function backGame() {
@@ -2217,11 +2364,26 @@ function backGame() {
 	document.getElementById("health").style.display = "none";
 	document.getElementById("level").style.display = "none";
 	
+	var dista = document.getElementById("dist")
+	dista.style.top = "";
+	dista.style.left = "";
+	//dista.style.color = "black";
+	//dista.style.fontSize = "1000px";
+
+	var level = document.getElementById("level")
+	level.style.top = "";
+	level.style.left = "";
+	
+
+	document.getElementById("record").style.display = "none";
+
 	document.getElementById("h1").style.display = "";
 	document.getElementById("h2").style.display = "";
 	document.getElementById("h3").style.display = "";
 	
 	renderer.domElement.focus();  //airplane starts moving immediately
+
+	
 }
 
 function resetGame(){
@@ -2233,21 +2395,26 @@ function resetGame(){
 
 	// game
 	game.lives = 3;
-	game.collisionDistanceMalus = 10;
+	//game.collisionDistanceMalus = 15;
 	game.level = 1;
 	game.distance = 0;
 	game.nAnimals = 50;
-	game.stepLength = 130; // step interval between one spawn and another (decreases with levels)
+	game.stepLength = 150; // step interval between one spawn and another (decreases with levels)
 	game.animalsSpeed = 1.4; // x Axis birds speed (increases with levels)
-	game.animalsArray = [], // total animals in a level
+	game.animalsArray = []; // total animals in a level
 	game.spawnPerStep = 2; // depends on level
 	game.step = 1;
 	game.deltaSpeed = []; // depends on level
 	game.airplaneXpos = 0;
 	game.airplaneYpos = 120;
+	game.bonusLifeSpeed = 1.6;
+	game.animalsRemoved = 0;
 	
 	airplane.mesh.position.x = game.airplaneXpos;
 	airplane.mesh.position.y = game.airplaneYpos;
+
+	game.bonusLife.resetPosition();
+	game.bonusLife.available = false;
 
 	spawnAnimals(game.nAnimals);
 	initDeltaSpeed();
@@ -2260,6 +2427,21 @@ function resetGame(){
 	document.getElementById("health").style.display = "block";
 	document.getElementById("level").style.display = "block";
 	
+	var dista = document.getElementById("dist")
+	dista.style.top = "";
+	dista.style.left = "";
+	//dista.style.color = "black";
+	//dista.style.fontSize = "1000px";
+
+	var level = document.getElementById("level")
+	level.style.top = "";
+	level.style.left = "";
+
+	document.getElementById("record").style.display = "none";
+	// record.style.top = "";
+	// record.style.left = "";
+
+
 	document.getElementById("h1").style.display = "";
 	document.getElementById("h2").style.display = "";
 	document.getElementById("h3").style.display = "";
@@ -2273,6 +2455,9 @@ function resetGame(){
 function initUI(){
 	fieldDistance = document.getElementById("distValue");
 	fieldLevel = document.getElementById("levelValue");
+	fieldRecord = document.getElementById("recordValue");
+
+	fieldAudio = document.getElementById("audioImg");
 }
 
 

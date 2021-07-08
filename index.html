@@ -64,7 +64,7 @@
                     <div>
                         <img class = "imgscen" id="scenario2" src="img/scenario/moon.png" alt="">
                     </div>
-                    <h4 id="backssp" style="text-align: right;">GO BACK</h4>
+                    <h4 id="backssp" style="text-align: center;">GO BACK</h4>
                 </div>
 
                 <div id="howtoplay-div" class="howtoplay-divc">
@@ -74,9 +74,9 @@
                             <img style="width: 40px; height: 40px; margin-left: 0.5%;" src="img/keyboard/a.png" alt="A"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-left.png" alt="A"> to move left the plane<br>
                             <img style="width: 40px; height: 40px; margin-left: 4%;" src="img/keyboard/s.png" alt="S"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-down.png" alt="A"> to move down the plane<br>
                             <img style="width: 40px; height: 40px; margin-left: 2.5%;"  src="img/keyboard/d.png" alt="D"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-right.png" alt="A"> to move right the plane<br>
-                            <img style="width: 40px; height: 40px; margin-left: -5%;" src="img/keyboard/q.png" alt="Q"> to flip left</tr><br>
-                            <img style="width: 40px; height: 40px; margin-left: -3%;" src="img/keyboard/e.png" alt="E"> to flip right</tr>
-                        <h4 id="backhtp" style="text-align: right;">GO BACK</h4>
+                            <img style="width: 40px; height: 40px; margin-left: 5%;" src="img/keyboard/p.png" alt="P"> to paused and resumed the game</tr><br>
+                            <!--<img style="width: 40px; height: 40px; margin-left: -13.1%;" src="img/keyboard/m.png" alt="M"> to return to the menu</tr>-->
+                        <h4 id="backhtp" style="text-align: center;">GO BACK</h4>
                     </div>
                 </div>
 
@@ -88,15 +88,33 @@
                         Ilaria Ponzianelli <br> 
                         Gianmarco Salvi
                     </p>
-                    <h4 id="backcdt" style="text-align: right;">GO BACK</h4>
+                    <h4 id="backcdt" style="text-align: center;">GO BACK</h4>
                 </div>
-                <!--
+                
                 <br>
-                    <audio autoplay loop>
-                        <source src="audio/theme_song.m4a" type="audio/mp3">
+                <div>
+                    <audio id="bonusLifeAudio">
+                        <source src="audio/bonus_life.mp3" type="audio/mp3">
+                    </audio>
+                    <audio id="theme_song"> 
+                        <source src="audio/theme_song.mp3" type="audio/mp3">
                         Your browser does not support the audio element.
                     </audio>
-                -->
+                    <audio id="animalCollAudio">
+                        <source src="audio/animal_collision.wav" type="audio/wav">
+                    </audio>
+
+                    <audio id="shipCollAudio">
+                        <source src="audio/ship_collision.wav" type="audio/wav">
+                    </audio>
+
+                    <audio id="gameOverAudio">
+                        <source src="audio/game_over.wav">
+                    </audio>
+                
+
+
+                </div>
 
                 <!--PAUSED-->
                 </div>
@@ -137,9 +155,9 @@
                 <div id="gameOver" style= "display: none; text-align: center;">
                     <div class="frame1">
                         <img class = "imgzone2" src="img/game over.png">
-                    </div> 
+                    </div>
                     <div class="frame">
-                        <div class="buttonzone"> 
+                        <div class="buttonzone2"> 
                             
                             <span><e id="restartGameOver"></e></span>
                             <br>
@@ -150,13 +168,15 @@
 
                         </div>
                     </div>
-
                 </div>
+
+                
 
             </div>
         </div>
         
         </div>
+
         <div id="dist" style = "display: none;">
             <div class="label">Score</div>
             <div id="distValue">000</div>
@@ -179,6 +199,16 @@
             <div class="label">Level</div>
             <div id="levelValue"></div>
         </div>
+
+        <div id="record" style= "display: none;"> 
+            <div class="label">Record</div>
+            <div id="recordValue"></div>
+        </div>
+
+        <div id="audioButton">
+            <img id="audioImg" src="/img/sound_on.png" class="audioButton"> 
+        </div>
+
 
     </body>
 </html>
