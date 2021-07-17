@@ -75,17 +75,47 @@ var nBlocs2; //clouds gropu 2
 var Cloud;
 
 
+//supp materials
+var blackMat = new THREE.MeshPhongMaterial({
+	color: 0x100707,
+	shading:THREE.FlatShading,
+  });
+var greenMat = new THREE.MeshPhongMaterial({
+	color: 0x7abf8e,
+	shininess:0,
+	shading:THREE.FlatShading,
+  });
+var witheMat = new THREE.MeshPhongMaterial({
+	color: 0xd8d0d1,
+	shininess:0,
+	shading:THREE.FlatShading,
+});
+var sienaMat = new THREE.MeshPhongMaterial({
+	color: 0xa0522d,
+	shininess:0,
+	shading:THREE.FlatShading,
+});
+var orangeMat = new THREE.MeshPhongMaterial({
+	color: 0xffa500,
+	shininess:0,
+	shading:THREE.FlatShading,
+});
+var columbiaMat = new THREE.MeshPhongMaterial({
+	color: 0xB3E5FF,
+	shininess:0,
+	shading:THREE.FlatShading,
+});
+
 
 var desertsky;
 var DesertSky;
-//var AirPlane;
 var airplane;
 var CountrySky;
 var countrysky;
 var CountrySide;
 var countryside;
 
-
+//scenario 1
 var geomCondorRightWing;
 var matCondorRightWing;
 var condorRightWing;
@@ -108,9 +138,9 @@ var moon;
 var Rock;
 var Hole;
 
-
 //animation support variables
 var posHor = 0, posVert = 0; //register the arrowkey position
+var tweenPlane, lifeParticles;
 //animation Array
 var updateFcts	= [];
 //listener "on load" of page
@@ -126,12 +156,10 @@ function init() {
 	initDeltaSpeed();
 	backtrackHandler();
 
-
 	//createBonusLife();
-
 	currentSky = desertsky;
 	currentscenario = desert;
-	//console.log(scene.children);
+
 	// animation function used for updating objects position
 	var keyboard	= new THREEx.KeyboardState(renderer.domElement);
 	renderer.domElement.setAttribute("tabIndex", "0");
@@ -143,7 +171,7 @@ function init() {
 				airplane.mesh.position.x += (Math.max(-200,  airplane.mesh.position.x - 120) - airplane.mesh.position.x)*delta;
 				game.airplaneXpos = airplane.mesh.position.x;
 
-				TweenMax.pauseAll()
+				pausePlanAnimation()
 				if(airplane.mesh.rotation.x > -0.3) airplane.mesh.rotation.x =  airplane.mesh.rotation.x - 2 * delta ;
 
 			}else if( keyboard.pressed('right') || keyboard.pressed('d')){
@@ -151,7 +179,7 @@ function init() {
 				airplane.mesh.position.x += (Math.min(200,  airplane.mesh.position.x + 120)- airplane.mesh.position.x)*delta;
 				game.airplaneXpos = airplane.mesh.position.x;
 
-				TweenMax.pauseAll()
+				pausePlanAnimation()
 				if(airplane.mesh.rotation.x < 0.5) airplane.mesh.rotation.x =  airplane.mesh.rotation.x + 2 * delta ;
 			}
 			if(keyboard.pressed('up')  || keyboard.pressed('w') ){
@@ -225,7 +253,6 @@ function init() {
 	renderer.render( scene, camera );
 }
 
-
 /************************* SCENE CREATION ********************************************************************************/
 function createScene() {
 	// Get the width and the height of the screen,
@@ -271,6 +298,7 @@ function createScene() {
 	window.addEventListener('click', handleClick, false); //handle click event	
 	window.addEventListener('resize', handleWindowResize, false); //handle resize event
 }
+
 /*************************** WINDOW RESIZE HANDLER ***********************************************************************/
 
 function handleWindowResize() {  // update height and width of the renderer and the camera
@@ -295,7 +323,7 @@ function hanldeUpKeyboard(event) {
 		case 39:
 		case 68: // D
 			if(!game.paused)
-				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});;
+				TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
 			break;
 	}
 }
@@ -334,11 +362,14 @@ function handleClick(e) {
             document.getElementById("dist").style.display = "block";
             document.getElementById("health").style.display = "block";
             document.getElementById("level").style.display = "block";
-
+			createLifeParticles();
+			createAnimalParticles();
             game.paused = false;
             //spawnAnimals(game.nAnimals);
 			createBonusLife();
             createPlane();
+			
+			// tweenPlane = TweenMax.to(airplane.mesh, 0.5, {x: 0})
             resetGame();
             break;
 			
@@ -476,71 +507,10 @@ function backtrackHandler(){
 }
 
 function animationAnimals(){
-	if(game.scenario == 0){
-		for (var i=0; i<game.nAnimals; i++){
-			var con = game.animalsArray[i];
+	for (var i=0; i<game.nAnimals; i++){
+		TweenMax.delayedCall(Math.random(), moveWing, [game.animalsArray[i]]);
+	}	
 
-			// console.log(con.condorLeftWing.rotation.x);
-
-			// if(con.movingUpWings == false){
-			// 	if(con.condorLeftWing.rotation.x > 59.4){
-			// 		con.movingUpWings = true;
-			// 	}
-			// 	else{
-			// 		con.condorLeftWing.rotation.x += 0.9;
-			// 		con.condorRightWing.rotation.x -= 0.9;
-			// 	}	
-			// }
-			// else {
-			// 	if(con.condorLeftWing.rotation.x < 54){
-			// 		con.movingUpWings = false;
-			// 	}
-			// 	else {
-			// 		con.condorLeftWing.rotation.x -= 0.02;
-			// 		con.condorRightWing.rotation.x += 0.02;
-			// 	}
-			// }
-
-			if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){ // pushing down wing
-				con.condorLeftWing.rotation.x += 0.9;
-			}
-			if(con.condorLeftWing.rotation.x <= 54 || con.condorLeftWing.rotation.x >= 59.4){ // rising up
-				con.condorLeftWing.rotation.x -= 0.02;
-			}
-			if(con.condorRightWing.rotation.x <= -5|| con.condorRightWing.rotation.x >= 0.3){ 
-				con.condorRightWing.rotation.x -= 0.9;
-			}
-			if(con.condorRightWing.rotation.x > -5 && con.condorRightWing.rotation.x < 0.3){
-				con.condorRightWing.rotation.x += 0.02;
-			}
-		}	
-	}
-	else if(game.scenario == 1){
-		for (var i=0; i<game.nAnimals; i++){
-			
-			var duc = game.animalsArray[i];
-		
-			if(duc.duckLeftWing.rotation.x > 54 && duc.duckLeftWing.rotation.x < 59.4){
-				duc.duckLeftWing.rotation.x += 0.7;
-			}
-			if(duc.duckLeftWing.rotation.x <= 54 || duc.duckLeftWing.rotation.x >= 59){
-				duc.duckLeftWing.rotation.x -= 0.02;
-			}
-			if(duc.duckRightWing.rotation.x <= -5|| duc.duckRightWing.rotation.x >= 0.3){
-				duc.duckRightWing.rotation.x -= 0.7;
-			}
-			if(duc.duckRightWing.rotation.x > -5 && duc.duckRightWing.rotation.x < 0.3){
-				duc.duckRightWing.rotation.x += 0.02;
-			}
-		}
-	}
-
-	else{
-		for (var i=0; i<game.nAnimals; i++){
-			var shi = game.animalsArray[i];
-			shi.mesh.rotation.y += Math.random()*.1;
-		}
-	}
 }
 
 function initDeltaSpeed(){
@@ -554,7 +524,6 @@ function moveAnimals(){
 		if(game.animalsArray[i].alive == true) game.animalsArray[i].mesh.position.x -= game.animalsSpeed + game.deltaSpeed[i];
 	}
 }
-
 
 /******************* LOOP HANDLER ****************************************************************************************/
 function loop(){
@@ -815,6 +784,7 @@ class AirPlane {
 	}
 	
 };
+
 //airplane
 function createPlane(){ 
 	airplane = new AirPlane();
@@ -823,7 +793,6 @@ function createPlane(){
 	//airplane.mesh.rotation.z = -.1;
 	scene.add(airplane.mesh);
 }
-
 
 function createBackgroundScenario(){
 	if(game.scenario == 0) createScenario0();
@@ -1483,8 +1452,6 @@ function createScenario1(){
 	currentscenario = countryside;
 }
 
-
-
 /******************************** SPACE game.scenario ************************************************************************/
 function createShip(){
 	ship = new Ship();
@@ -1760,7 +1727,6 @@ function createScenario2(){
 	currentSky = spacesky;
 	currentscenario = moon;
 }
-
 
 // spawna n animals (means put n animals on the screen, from right to left)
 function spawnAnimals(n){
@@ -2150,7 +2116,6 @@ function spawnAnimals(n){
 	for(var i=0; i<n; i++) scene.add(game.animalsArray[i].mesh);
 }
 
-
 function handleAnimalsOnScene(){
 
 	for(var i=0; i<game.nAnimals; i++){
@@ -2180,7 +2145,6 @@ function handleAnimalsOnScene(){
 		}	
 	}
 }
-
 
 function backgroundMovement(){
 	if(game.airplaneXpos >= 0){
@@ -2222,6 +2186,7 @@ function updateDistance(){
 	fieldDistance.innerHTML = Math.floor(game.distance);
 }
 
+/********************************** DETECT COLLISION ************************************************************/
 function detectCollision(){
 	var n = game.nAnimals;
 	var animals = game.animalsArray;
@@ -2262,27 +2227,32 @@ function detectCollision(){
 		if(animalCollision && animals[i].alive){
 
 			animals[i].alive = false;
-			scene.remove(animals[i].mesh); // explosion animation to add
-			getMalus();
+			getMalus(animals[i]);
 
 			if(game.started && game.audioOn) {
+
 				// audio effects
 				if(game.scenario == 2){
-					document.getElementById("shipCollAudio").play();
+					var audioShipDeath = new Audio(document.getElementById("shipCollAudio").children[0].src);
+					audioShipDeath.play()
+					// document.getElementById("shipCollAudio").play();
 				}
 				else {
-					document.getElementById("animalCollAudio").play();
+					var audioAnimalDeath = new Audio(document.getElementById("animalCollAudio").children[0].src);
+					audioAnimalDeath.play()
+					// document.getElementById("animalCollAudio").play();
 				}	
 			}
 			
 		}
 		else if(bonusLifeCollision && game.bonusLife.available){
+			getLife(game.bonusLife);
 			if(game.audioOn){
 				// audio effects
 				document.getElementById("bonusLifeAudio").play();
 			}
 			game.bonusLife.available = false;
-			scene.remove(game.bonusLife.mesh); // explosion animation to add
+			//scene.remove(game.bonusLife.mesh); // explosion animation to add
 			game.bonusLife.resetPosition();
 			scene.add(game.bonusLife.mesh);
 			getBonus();
@@ -2298,7 +2268,13 @@ function getBonus(){
 }
 
 
-function getMalus(){
+function getMalus(anim){
+
+	animalParticles.mesh.position.copy(anim.mesh.position);
+	animalParticles.mesh.visible = true;
+	animalParticles.explose();
+	scene.remove(anim.mesh)
+
 	document.getElementById("h"+game.lives).style.display = "none";
 	game.lives--;
 	if(game.lives <= 0) gameOver();
@@ -2549,6 +2525,183 @@ function createBonusLife(){
 	game.bonusLife.mesh.name = "bonusLife";
 	game.bonusLife.mesh.position.y = 60 + Math.random()*140;
 	game.bonusLife.mesh.position.x = 300;
-
     scene.add(game.bonusLife.mesh);
+}
+
+/************************************************ PARTICLE ESPLOSION ************************************************************/
+
+LifeParticles = function(){
+	this.mesh = new THREE.Group();
+	var particleGeom = new THREE.CubeGeometry(5,5,5,1);
+	this.parts = [];
+
+	for (var i=0; i<10; i++){
+		var partGreen = new THREE.Mesh(particleGeom, greenMat);
+		partGreen.scale.set(.5,.5,.5);
+		this.parts.push(partGreen);
+		this.mesh.add(partGreen);
+	}
+}
+  
+LifeParticles.prototype.explose = function(){
+	var explosionSpeed = .5;
+	for(var i=0; i<this.parts.length; i++){
+		var tx = -50 + Math.random()*100;
+		var ty = -50 + Math.random()*100;
+		var tz = -50 + Math.random()*100;
+		var p = this.parts[i];
+		p.position.set(0,0,0);
+		p.scale.set(1,1,1);
+		p.visible = true;
+		var s = explosionSpeed + Math.random()*.5;
+		TweenMax.to(p.position, s,{x:tx, y:ty, z:tz, ease:Power4.easeOut});
+		TweenMax.to(p.scale, s,{x:.01, y:.01, z:.01, ease:Power4.easeOut, onComplete:removeParticle, onCompleteParams:[p]});
+	}
+}
+
+function removeParticle(p){
+	p.visible = false;
+}
+
+function createLifeParticles(){
+  lifeParticles = new LifeParticles();
+  lifeParticles.mesh.visible = false;
+  scene.add(lifeParticles.mesh);  
+}
+
+function getLife(life){
+	lifeParticles.mesh.position.copy(life.mesh.position);
+	lifeParticles.mesh.visible = true;
+	lifeParticles.explose();
+	scene.remove(life.mesh)
+  }
+
+AnimalParticles = function(){
+	this.mesh = new THREE.Group();
+	var bigParticleGeom = new THREE.CubeGeometry(8,8,8,1);
+	var mediumParticleGeom = new THREE.CubeGeometry(8,8,8,1);
+	var smallParticleGeom = new THREE.CubeGeometry(5,5,5,1);
+	this.parts = [];
+	for (var i=0; i<15; i++){
+		var part1, part2, part3;
+		var scen = game.scenario;
+		console.log(scen)
+		switch(game.scenario){
+			case 0:
+				part1 = new THREE.Mesh(bigParticleGeom, blackMat);
+				part2 = new THREE.Mesh(mediumParticleGeom, witheMat);
+				part3 = new THREE.Mesh(smallParticleGeom, orangeMat);
+				part2.scale.set(.3,.3,.3);
+				part3.scale.set(.1,.1,.1);
+				this.parts.push(part1);
+				this.parts.push(part2);
+				this.parts.push(part3);
+				this.mesh.add(part1);
+				this.mesh.add(part2);
+				this.mesh.add(part3);
+				break;
+			case 1:
+				part1 = new THREE.Mesh(bigParticleGeom, sienaMat);
+				part2 = new THREE.Mesh(mediumParticleGeom, witheMat);
+				part3 = new THREE.Mesh(smallParticleGeom, orangeMat);
+				part2.scale.set(.3,.3,.3);
+				part3.scale.set(.1,.1,.1);
+				this.parts.push(part1);
+				this.parts.push(part2);
+				this.parts.push(part3);
+				this.mesh.add(part1);
+				this.mesh.add(part2);
+				this.mesh.add(part3);
+				break;
+			case 2:
+				part1 = new THREE.Mesh(bigParticleGeom, columbiaMat);
+				part2 = new THREE.Mesh(mediumParticleGeom, witheMat);
+				part3 = new THREE.Mesh(smallParticleGeom, orangeMat);
+				part2.scale.set(.2,.2,.2);
+				part3.scale.set(.1,.1,.1);
+				this.parts.push(part1);
+				this.parts.push(part2);
+				this.parts.push(part3);
+				this.mesh.add(part1);
+				this.mesh.add(part2);
+				this.mesh.add(part3);
+				break;
+			default:
+				break;
+		}
+	}
+}
+  
+AnimalParticles.prototype.explose = function(){
+	var explosionSpeed = .5;
+	for(var i=0; i<this.parts.length; i++){
+		var tx = -50 + Math.random()*100;
+		var ty = -50 + Math.random()*100;
+		var tz = -50 + Math.random()*100;
+		var p = this.parts[i];
+		p.position.set(0,0,0);
+		p.scale.set(1,1,1);
+		p.visible = true;
+		var s = explosionSpeed + Math.random()*.5;
+		TweenMax.to(p.position, s,{x:tx, y:ty, z:tz, ease:Power4.easeOut});
+		TweenMax.to(p.scale, s,{x:.01, y:.01, z:.01, ease:Power4.easeOut, onComplete:removeParticle, onCompleteParams:[p]});
+	}
+}
+
+function removeParticle(p){
+	p.visible = false;
+}
+
+function createAnimalParticles(){
+  animalParticles = new AnimalParticles();
+  animalParticles.mesh.visible = false;
+  scene.add(animalParticles.mesh);  
+}
+
+/*********************************************************	SUPPORT FUNCTION ****************************************************/
+function moveWing(an){
+
+	if(game.scenario == 0){
+		var con = an;
+		if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){ // pushing down wing
+			con.condorLeftWing.rotation.x += 0.9;
+		}
+		if(con.condorLeftWing.rotation.x <= 54 || con.condorLeftWing.rotation.x >= 59.4){ // rising up
+			con.condorLeftWing.rotation.x -= 0.02;
+		}
+		if(con.condorRightWing.rotation.x <= -5|| con.condorRightWing.rotation.x >= 0.3){ 
+			con.condorRightWing.rotation.x -= 0.9;
+		}
+		if(con.condorRightWing.rotation.x > -5 && con.condorRightWing.rotation.x < 0.3){
+			con.condorRightWing.rotation.x += 0.02;
+		}
+	}else if(game.scenario == 1){
+		var duc = an;
+		
+		if(duc.duckLeftWing.rotation.x > 54 && duc.duckLeftWing.rotation.x < 59.4){
+			duc.duckLeftWing.rotation.x += 0.7 ;
+		}
+		if(duc.duckLeftWing.rotation.x <= 54 || duc.duckLeftWing.rotation.x >= 59){
+			duc.duckLeftWing.rotation.x -= 0.02;
+		}
+		if(duc.duckRightWing.rotation.x <= -5|| duc.duckRightWing.rotation.x >= 0.3){
+			duc.duckRightWing.rotation.x -= 0.7;
+		}
+		if(duc.duckRightWing.rotation.x > -5 && duc.duckRightWing.rotation.x < 0.3){
+			duc.duckRightWing.rotation.x += 0.02;
+		}
+
+	}else {
+		var shi = an;
+		shi.mesh.rotation.y += Math.random()*.1 ;
+	}
+}
+
+function pausePlanAnimation(){
+	var allTween = TweenMax.getTweensOf(airplane.mesh);
+	console.log(allTween);
+
+	for(var i = 0; i<allTween.length; i++){
+		allTween[i].pause();
+	}
 }
