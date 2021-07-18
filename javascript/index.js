@@ -145,7 +145,7 @@ var Hole;
 
 //animation support variables
 var posHor = 0, posVert = 0; //register the arrowkey position
-var tweenPlane, lifeParticles, animalParticles;
+var tweenPlane, lifeParticles, animalParticles, invincible = false;
 //animation Array
 var updateFcts	= [];
 //scenario supp
@@ -2096,15 +2096,7 @@ function updateDistance(){
 function detectCollision(){
 	var n = game.nAnimals;
 	var animals = game.animalsArray;
-
 	var airplaneBox = new THREE.Box3().setFromObject(airplane.mesh);
-	// var xAirplane = game.airplaneXpos;
-	// var yAirPlane = game.airplaneYpos;
-	// var xAnimal, yAnimal;
-
-	// var xBonusLife = game.bonusLife.mesh.position.x;
-	// var yBonusLife = game.bonusLife.mesh.position.y;
-	// var bonusLifeDist = calcDistance(xAirplane, yAirPlane, xBonusLife, yBonusLife);
 	var bonusLifeBox = new THREE.Box3().setFromObject(game.bonusLife.mesh);
 	var bonusLifeCollision = airplaneBox.intersectsBox(bonusLifeBox);
 
@@ -2155,15 +2147,60 @@ function getMalus(anim){
 	animalParticles.mesh.position.copy(anim.mesh.position);
 	animalParticles.mesh.visible = true;
 	animalParticles.explose()
-	scene.remove(anim.mesh)
-	document.getElementById("h"+game.lives).style.display = "none";
-	game.lives--;
-	if(game.lives <= 0) gameOver();
+	scene.remove(anim.mesh)	
+	if(!invincible){
+		invincible = true;
+		document.getElementById("h"+game.lives).style.display = "none";
+		game.lives--;
+		if(game.lives <= 0){
+			gameOver();
+			return;
+		} 
+		setTimeout(swapInv, 3000)
+		airplane.mesh.visible = false;
+		setTimeout(swapVisibilityAp, 100);
+		setTimeout(swapVisibilityAp, 200);
+		setTimeout(swapVisibilityAp, 300);
+		setTimeout(swapVisibilityAp, 400);
+		setTimeout(swapVisibilityAp, 500);
+		setTimeout(swapVisibilityAp, 600);
+		setTimeout(swapVisibilityAp, 700);
+		setTimeout(swapVisibilityAp, 800);
+		setTimeout(swapVisibilityAp, 900);
+		setTimeout(swapVisibilityAp, 1000);
+		setTimeout(swapVisibilityAp, 1100);
+		setTimeout(swapVisibilityAp, 1200);
+		setTimeout(swapVisibilityAp, 1300);
+		setTimeout(swapVisibilityAp, 1400);
+		setTimeout(swapVisibilityAp, 1500);
+		setTimeout(swapVisibilityAp, 1600);
+		setTimeout(swapVisibilityAp, 1700);
+		setTimeout(swapVisibilityAp, 1800);
+		setTimeout(swapVisibilityAp, 1900);
+		setTimeout(swapVisibilityAp, 2000);
+		setTimeout(swapVisibilityAp, 2100);
+		setTimeout(swapVisibilityAp, 2200);
+		setTimeout(swapVisibilityAp, 2300);
+		setTimeout(swapVisibilityAp, 2400);
+		setTimeout(swapVisibilityAp, 2500);
+		setTimeout(swapVisibilityAp, 2600);
+		setTimeout(swapVisibilityAp, 2700);
+		setTimeout(swapVisibilityAp, 2800);
+		setTimeout(swapVisibilityAp, 2900);
+		setTimeout(swapVisibilityAp, 3000);
+		setTimeout(swapVisibilityAp, 3001);
+	}
+}
+function swapInv(){
+	invincible = !invincible;
+}
+
+function swapVisibilityAp(){
+	airplane.mesh.visible = !airplane.mesh.visible;
 }
 
 function gameOver(){
 	if(game.audioOn){
-		// audio effects
 		document.getElementById("gameOverAudio").play();
 	}
 
@@ -2192,6 +2229,7 @@ function gameOver(){
 	record.style.top = "29%";
 	record.style.left = "58.8%";
 
+	invincible = false;
 	game.started = false;
 	clearScene();
 }
@@ -2585,7 +2623,6 @@ function moveWing(an){
 
 function pausePlanAnimation(){
 	var allTween = TweenMax.getTweensOf(airplane.mesh);
-	console.log(allTween);
 
 	for(var i = 0; i<allTween.length; i++){
 		allTween[i].pause();
