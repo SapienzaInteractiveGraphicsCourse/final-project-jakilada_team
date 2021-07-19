@@ -304,7 +304,6 @@ function hanldeDownKeyboard(event) {
 				for(var i = 0; i< tweenExplosion.length; i++){
 					tweenExplosion[i].play();
 				}
-				tweenExplosion = []
 				game.started = true;
 				game.paused = false;
 				renderer.domElement.focus();  //airplane starts moving immediately
@@ -397,6 +396,9 @@ function handleClick(e) {
 			game.started = true;
 			document.getElementById("pausedspan").style.display = "none";
 			game.paused = false;
+			for(var i = 0; i< tweenExplosion.length; i++){
+				tweenExplosion[i].play();
+			}
 			renderer.domElement.focus();  //airplane starts moving immediately
 			break;
 		
@@ -2234,6 +2236,8 @@ function gameOver(){
 	record.style.top = "29%";
 	record.style.left = "58.8%";
 
+	tweenPlane = null;
+	tweenExplosion = [];
 	invincible = false;
 	game.started = false;
 	clearScene();
@@ -2276,16 +2280,14 @@ function backGame() {
 	level.style.top = "";
 	level.style.left = "";
 	
-
+	scene.remove(animalParticles.mesh)
 	document.getElementById("record").style.display = "none";
 
 	document.getElementById("h1").style.display = "";
 	document.getElementById("h2").style.display = "";
 	document.getElementById("h3").style.display = "";
 	
-	renderer.domElement.focus();  //airplane starts moving immediately
-
-	
+	renderer.domElement.focus();  //airplane starts moving immediately	
 }
 
 function resetGame(){
@@ -2349,7 +2351,8 @@ function resetGame(){
 	document.getElementById("h3").style.display = "";
 	
 	renderer.domElement.focus();  //airplane starts moving immediately
-	
+	if(animalParticles)
+		scene.remove(animalParticles.mesh)
 	scene.add(airplane.mesh);
 	
 }
