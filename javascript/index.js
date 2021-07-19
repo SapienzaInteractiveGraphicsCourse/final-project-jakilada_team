@@ -145,7 +145,7 @@ var Hole;
 
 //animation support variables
 var posHor = 0, posVert = 0; //register the arrowkey position
-var tweenPlane, tweenExplosion = [], lifeParticles, animalParticles, invincible = false;
+var tweenPlane, lifeParticles, animalParticles, invincible = false;
 //animation Array
 var updateFcts	= [];
 //scenario supp
