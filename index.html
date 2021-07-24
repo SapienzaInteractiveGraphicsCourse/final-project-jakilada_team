@@ -63,19 +63,25 @@
                     <div>
                         <img class = "imgscen" id="scenario2" src="img/scenario/moon.png" alt="">
                     </div>
-                    <h4 id="backssp" style="text-align: center;">GO BACK</h4>
+                    <br>
+                        <span><i id="backssp"></i></span>
+                    <br>
                 </div>
 
                 <div id="howtoplay-div" class="howtoplay-divc">
                     <div class="inner">
-                        <h4>In order to get the airplane flying you can use the "W-A-S-D" or Arrow configuration. In particular, the controls are:</h4>
+                        <h4>Airplane controls and useful instructions</h4>
                             <img style="width: 40px; height: 40px" src="img/keyboard/w.png" alt="W"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-up.png" alt="A"> to move up the plane<br>
                             <img style="width: 40px; height: 40px; margin-left: 0.5%;" src="img/keyboard/a.png" alt="A"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-left.png" alt="A"> to move left the plane<br>
                             <img style="width: 40px; height: 40px; margin-left: 4%;" src="img/keyboard/s.png" alt="S"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-down.png" alt="A"> to move down the plane<br>
                             <img style="width: 40px; height: 40px; margin-left: 2.5%;"  src="img/keyboard/d.png" alt="D"> or <img style="width: 40px; height: 40px" src="img/keyboard/cursor-right.png" alt="A"> to move right the plane<br>
                             <img style="width: 40px; height: 40px; margin-left: 5%;" src="img/keyboard/p.png" alt="P"> to paused and resumed the game</tr><br>
+                            <p>Invincibility (3 secs) after a collision</p>
+                            <p>Hit a green plus to restore one life</p>
                             <!--<img style="width: 40px; height: 40px; margin-left: -13.1%;" src="img/keyboard/m.png" alt="M"> to return to the menu</tr>-->
-                        <h4 id="backhtp" style="text-align: center;">GO BACK</h4>
+                        <br>
+                            <span><i id="backhtp"></i></span>
+                        <br>
                     </div>
                 </div>
 
@@ -87,7 +93,9 @@
                         Ilaria Ponzianelli <br> 
                         Gianmarco Salvi
                     </p>
-                    <h4 id="backcdt" style="text-align: center;">GO BACK</h4>
+                    <br>
+                        <span><i id="backcdt"></i></span>
+                    <br>
                 </div>
                 
                 <br>
@@ -119,9 +127,9 @@
                 </div>
                 <div class="world" id="world"></div>
 
-                <div id="pausedspan" style= "display: none;">
+                <div id="pausedspan" style= "display: none; position: absolute; left: 42.5%; top: 20%">
                     <div class="frame1">
-                        <img class = "imgzone" src="img/paused.png">
+                        <img style= "left: -17%" class = "imgzone" src="img/paused.png">
                     </div> 
                     <div class="frame">
                         <div class="buttonzone"> 
@@ -142,9 +150,9 @@
                 </div>
 
                 <!--GAME OVER-->
-                <div id="gameOver" style= "display: none; text-align: center;">
+                <div id="gameOver" style= "display: none; position: absolute; left: 42.5%; top: 20%">
                     <div class="frame1">
-                        <img class = "imgzone2" src="img/game over.png" >
+                        <img style= "left: -50%; top: -10%" class = "imgzone2" src="img/game over.png" >
                     </div>
                     <div class="frame">
                         <div class="buttonzone2"> 
