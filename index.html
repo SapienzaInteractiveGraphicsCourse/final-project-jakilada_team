@@ -11,8 +11,7 @@
         <script type = "text/javascript" src="javascript/index.js"></script>
 
         <link rel="shortcut icon" href="#">
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r83/three.js"></script>
+        
         <link rel="Stylesheet" type="text/css" href="./style/index.css">
         <link href="https://fonts.googleapis.com/css?family=Abril+Fatface|Luckiest+Guy|Orbitron|Russo+One|Shadows+Into+Light|Teko&display=swap" rel="stylesheet"> 
     </head>
@@ -122,7 +121,7 @@
                 </div>
                 <div class="world" id="world"></div>
 
-                <div id="pausedspan" style= "display: none; text-align: center;">
+                <div id="pausedspan" style= "display: none;">
                     <div class="frame1">
                         <img class = "imgzone" src="img/paused.png">
                     </div> 
@@ -144,19 +143,11 @@
                     </div>
 
                 </div>
-                
-                <!--           
-                    <div class="world" id="world"></div>
-                    <div id="pausedspan" class="pausedspan">
-                    <p><h1>PAUSED</h1></p>
-                    <p><h6>press "m" or "p" to unpause!</h6></p>
-                    </div>
-                -->
 
                 <!--GAME OVER-->
                 <div id="gameOver" style= "display: none; text-align: center;">
                     <div class="frame1">
-                        <img class = "imgzone2" src="img/game over.png">
+                        <img class = "imgzone2" src="img/game over.png" >
                     </div>
                     <div class="frame">
                         <div class="buttonzone2"> 
@@ -172,45 +163,40 @@
                     </div>
                 </div>
 
+                <div id="dist" style = "display: none;">
+                    <div class="label">Score</div>
+                    <div id="distValue">000</div>
+                </div>
+        
                 
+                <div id="health" style= "display: none;">
+                    <div class="label_health">Health</div>
+        
+                    <div id="h1" class="heart">
+                    </div>
+                    <div id="h2" class="heart">
+                    </div>
+                    <div id="h3" class="heart">
+                    </div>
+                    
+                </div>
+        
+                <div id="level" style= "display: none;"> 
+                    <div class="label">Level</div>
+                    <div id="levelValue"></div>
+                </div>
+        
+                <div id="record" style= "display: none;"> 
+                    <div class="label">Record</div>
+                    <div id="recordValue"></div>
+                </div>
 
             </div>
         </div>
         
-        </div>
-
-        <div id="dist" style = "display: none;">
-            <div class="label">Score</div>
-            <div id="distValue">000</div>
-        </div>
-
-        
-        <div id="health" style= "display: none;">
-            <div class="label_health">Health</div>
-
-            <div id="h1" class="heart">
-            </div>
-            <div id="h2" class="heart">
-            </div>
-            <div id="h3" class="heart">
-            </div>
-            
-        </div>
-
-        <div id="level" style= "display: none;"> 
-            <div class="label">Level</div>
-            <div id="levelValue"></div>
-        </div>
-
-        <div id="record" style= "display: none;"> 
-            <div class="label">Record</div>
-            <div id="recordValue"></div>
-        </div>
-
         <div id="audioButton">
             <img id="audioImg" src="img/sound_off.png" class="audioButton"> 
         </div>
-
 
     </body>
 </html>

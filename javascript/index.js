@@ -73,7 +73,8 @@ var cactus;
 var nBlocs;  //clouds group 1
 var nBlocs2; //clouds gropu 2
 var Cloud;
-
+// var Clock; //clock object for handling pause-invincibility
+var timer;
 
 //supp materials
 var blackMat = new THREE.MeshPhongMaterial({
@@ -144,6 +145,7 @@ var Rock;
 var Hole;
 
 //animation support variables
+var Timer, timerVis, visStep = 100;
 var posHor = 0, posVert = 0; //register the arrowkey position
 var tweenPlane, tweenExplosion = [], lifeParticles, animalParticles, invincible = false;
 //animation Array
@@ -271,6 +273,7 @@ function handleWindowResize() {  // update height and width of the renderer and 
 	renderer.setSize(WIDTH, HEIGHT);
 	camera.aspect = WIDTH / HEIGHT;
 	camera.updateProjectionMatrix();
+
 }
 
 /*************************** KEYBOARD UP HANDLER *************************************************************************/
@@ -300,10 +303,17 @@ function hanldeDownKeyboard(event) {
 		case 80: //P
 			if(document.getElementById("pausedspan").style.display == "block"){
 				document.getElementById("pausedspan").style.display = "none";
-				tweenPlane.play()
+				if(tweenPlane)
+					tweenPlane.play()
 				for(var i = 0; i< tweenExplosion.length; i++){
 					tweenExplosion[i].play();
 				}
+				if(timerInv)
+					timer.resume();
+				if(timerVis)
+					timerVis.resume();
+				if(airplane.mesh)
+					airplane.mesh.visible = false;
 				game.started = true;
 				game.paused = false;
 				renderer.domElement.focus();  //airplane starts moving immediately
@@ -311,6 +321,12 @@ function hanldeDownKeyboard(event) {
 			else if(document.getElementById("pausedspan").style.display == "none" && game.started == true) {
 				document.getElementById("pausedspan").style.display = "block";
 				TweenMax.pauseAll();
+				if(timerInv)
+					timerInv.pause();
+				if(timerVis)
+					timerVis.pause()
+				if(airplane.mesh)
+					airplane.mesh.visible = true;
 				game.started = true;
 				game.paused = true;
 			}
@@ -494,7 +510,6 @@ function loop(){
 	requestAnimationFrame(loop); // call the loop function again
 }
 
-
 //********************* LIGHT CREATIONS **********************************************************************************/
 function createLights() {
 	// A hemisphere light is a gradient colored light; 
@@ -579,38 +594,7 @@ class AirPlane {
 		sideWing.castShadow = true;
 		sideWing.receiveShadow = true;
 		this.mesh.add(sideWing);
-		//create guns
-		var geomGun1= new THREE.BoxGeometry(10,10,10,1,1,1);
-		var matGun1 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
-		var gun1 = new THREE.Mesh(geomGun1, matGun1);
-		gun1.position.set(50,-17,15);
-		gun1.castShadow = true;
-		gun1.receiveShadow = true;
-		this.mesh.add(gun1);
-
-		var geomGun2= new THREE.BoxGeometry(10,10,10,1,1,1);
-		var matGun2 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
-		var gun2 = new THREE.Mesh(geomGun2, matGun2);
-		gun2.position.set(gun1.position.x,gun1.position.y,-gun1.position.z);
-		gun2.castShadow = true;
-		gun2.receiveShadow = true;
-		this.mesh.add(gun2);
-
-		var geomMgun1= new THREE.BoxGeometry(5,5,5,1,1,1);
-		var mutMgun1 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
-		var mgun1 = new THREE.Mesh(geomMgun1, mutMgun1);
-		mgun1.position.set(55,-15,15);
-		mgun1.castShadow = true;
-		mgun1.receiveShadow = true;
-		this.mesh.add(mgun1);
-
-		var geomMgun2= new THREE.BoxGeometry(5,5,5,1,1,1);
-		var mutMgun2 = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading})
-		var mgun2 = new THREE.Mesh(geomMgun2, mutMgun2);
-		mgun2.position.set(55,-15,-15);
-		mgun2.castShadow = true;
-		mgun2.receiveShadow = true;
-		this.mesh.add(mgun2);
+		
 		//create glass cabin
 		var geomWindshield = new THREE.BoxGeometry(50,20,20,1,1,1);
 		var matWindshield = new THREE.MeshPhongMaterial({color:Colors.lightgrey, transparent:true, opacity:.8, shading:THREE.FlatShading});;
@@ -1015,7 +999,7 @@ function createScenario0(){
 		cactRightBranch2.receiveShadow = true;
 		cactRightBranch2.scale.set(0.08,0.08,0.02);
 		this.mesh.add(cactRightBranch2);
-	//Rock
+	    //Rock
 		var geomRock = new THREE.BoxGeometry(60,50,50,1,1,1);
 		var matRock= new THREE.MeshPhongMaterial({color:Colors.sand, shading:THREE.FlatShading});
 		var rock = new THREE.Mesh(geomRock, matRock);
@@ -1026,12 +1010,6 @@ function createScenario0(){
 		rock.scale.set(0.2,0.2,0.4);
 		this.mesh.add(rock);
 	}
-
-	// function createCactus(){
-	// 	cactus = new Cactus();
-	// 	cactus.mesh.position.y = -game.cylinderRadius;
-	// 	scene.add(cactus.mesh);
-	// }
 
 	createDesertSky();
 	createDesert();
@@ -1253,11 +1231,7 @@ function createScenario1(){
 		treeFrontLeaf.scale.set(0.3,0.2,0.3);
 		this.mesh.add(treeFrontLeaf);
 	}
-	// function createTree(){
-	// 	tree = new Tree();
-	// 	tree.mesh.position.y = -game.cylinderRadius;
-	// 	scene.add(tree.mesh);
-	// }
+
 	/****************************** TREE2 CLASS ******************************************************************************/
 	Tree2 = function(){
 		this.mesh = new THREE.Object3D();
@@ -1350,12 +1324,6 @@ function createScenario1(){
 		this.mesh.add(treeFrontLeaf);
 	}
 
-	// function createTree2(){
-	// 	tree2 = new Tree2();
-	// 	tree2.mesh.position.y = -game.cylinderRadius;
-	// 	scene.add(tree2.mesh);
-	// }
-
 	/******************* BUSH CLASS ******************************************************************************************/
 	Bush = function(){
 		this.mesh = new THREE.Object3D();
@@ -1380,26 +1348,12 @@ function createScenario1(){
 		} 
 	}
 
-	// function createBush(){
-	// 	bush = new Bush();
-	// 	bush.mesh.position.y = -game.cylinderRadius;
-	// 	scene.add(bush.mesh);
-	// }
-
 	createCountrySky();
 	createCountryside();
 }
 
 /******************************** SPACE game.scenario ************************************************************************/
-// function createShip(){
-// 	ship = new Ship();
-// 	ship.mesh.position.y = -game.cylinderRadius;
-// 	//ship.mesh.rotation.z = Math.PI;	
-// 	scene.add(ship.mesh);
-// }
-
 function createScenario2(){
-
 	Star = function(){
 		// Create an empty container that will hold the different parts of the star
 		this.mesh = new THREE.Object3D();	
@@ -1443,11 +1397,7 @@ function createScenario2(){
 			// set the size of the cube randomly
 			var s = .1 + Math.random()*.9;
 			m2.scale.set(s,s,s);
-			
-			// allow each cube to cast and to receive shadows
-			//m2.castShadow = true;
-			//m2.receiveShadow = true;
-			
+
 			// add the cube to the container we first created
 			this.mesh.add(m2);
 		}
@@ -1467,23 +1417,17 @@ function createScenario2(){
 			// for that we use a bit of trigonometry
 			var a = stepAngle*i; // this is the final angle of the cloud
 			var h = 500 + Math.random()*250; // this is the distance between the center of the axis and the cloud itself
-			// Trigonometry!!! I hope you remember what you've learned in Math :)
-			// in case you don't: 
-			// we are simply converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
+			// we are converting polar coordinates (angle, distance) into Cartesian coordinates (x, y)
 			c.mesh.position.y = Math.sin(a)*h;
 			c.mesh.position.x = Math.cos(a)*h;
-
 			// rotate the cloud according to its position
 			c.mesh.rotation.z = a + Math.PI/2;
-
 			// for a better result, we position the clouds 
 			// at random depths inside of the scene
-			c.mesh.position.z = -200 - Math.random()*400;
-			
+			c.mesh.position.z = -200 - Math.random()*400;			
 			// we also set a random scale for each cloud
 			var s = 1 + Math.random()*2;
 			c.mesh.scale.set(s,s,s);
-
 			// do not forget to add the mesh of each cloud in the scene
 			this.mesh.add(c.mesh);  
 		}  
@@ -1540,12 +1484,9 @@ function createScenario2(){
 		this.mesh = new THREE.Object3D();
 	    var geomHole = new THREE.CircleGeometry(60,50);
 		var matHole = new THREE.MeshPhongMaterial({color:Colors.grey, shading:THREE.FlatShading});
-		//hole.rotation.set(1.5, 0.5, 0);
-		//hole.scale.set(0.2,0.2,0.4);
 		var hole = new THREE.Mesh(geomHole, matHole);	
 		hole.rotation.set(1.5, 0, 0);
 		hole.scale.set(0.2,0.2,0.4);
-		//hole.position.set(110, 33, 10);
 		hole.castShadow = true;
 		hole.receiveShadow = true;	
 		this.mesh = new THREE.Object3D();
@@ -1563,7 +1504,6 @@ function createScenario2(){
 	
 	Moon = function(){
 		this.mesh = new THREE.Object3D();
-		// create the geometry (shape) of the cylinder;
 		// the parameters are: 
 		// radius top, radius bottom, height, number of segments on the radius, number of segments vertically
 		geom = new THREE.CylinderGeometry(game.cylinderRadius,game.cylinderRadius,game.cylinderHeight,40,10);  //FORSE DA CAMBIARE
@@ -1640,7 +1580,6 @@ function createScenario2(){
 	createSpaceSky();
 	createSpace();
 }
-
 // spawna n animals (means put n animals on the screen, from right to left)
 function spawnAnimals(n){
 
@@ -2003,7 +1942,6 @@ function spawnAnimals(n){
 	var aux = 0;
 	var howManyAnimalsPerStep = Math.round(game.spawnPerStep * Math.random() + 1);
 	for(var i=0; i<n;){ // deve ciclare su tutto l'animalsArray
-		//console.log("Step number: " + step + " , howMany: " + howManyAnimalsPerStep);
 		if(howManyAnimalsPerStep + i > n){
 			for(var k=aux; k<n; k++){
 				game.animalsArray[k].mesh.position.x += game.step * game.stepLength 
@@ -2013,7 +1951,6 @@ function spawnAnimals(n){
 			break;
 		} 
 		for(var j=i; j < howManyAnimalsPerStep + i; j++){
-			//console.log("i:" + i + "    j:" + j);
 			var rand = Math.random();
 			game.animalsArray[j].mesh.position.x += game.step * game.stepLength 
 													- (game.stepLength * rand * 0.8) 
@@ -2148,7 +2085,6 @@ function getBonus(){
 	}
 }
 
-
 function getMalus(anim){
 	createAnimalParticles();
 	animalParticles.mesh.position.copy(anim.mesh.position);
@@ -2162,48 +2098,26 @@ function getMalus(anim){
 		if(game.lives <= 0){
 			gameOver();
 			return;
-		} 
-		setTimeout(swapInv, 3000)
+		}
 		airplane.mesh.visible = false;
-		setTimeout(swapVisibilityAp, 100);
-		setTimeout(swapVisibilityAp, 200);
-		setTimeout(swapVisibilityAp, 300);
-		setTimeout(swapVisibilityAp, 400);
-		setTimeout(swapVisibilityAp, 500);
-		setTimeout(swapVisibilityAp, 600);
-		setTimeout(swapVisibilityAp, 700);
-		setTimeout(swapVisibilityAp, 800);
-		setTimeout(swapVisibilityAp, 900);
-		setTimeout(swapVisibilityAp, 1000);
-		setTimeout(swapVisibilityAp, 1100);
-		setTimeout(swapVisibilityAp, 1200);
-		setTimeout(swapVisibilityAp, 1300);
-		setTimeout(swapVisibilityAp, 1400);
-		setTimeout(swapVisibilityAp, 1500);
-		setTimeout(swapVisibilityAp, 1600);
-		setTimeout(swapVisibilityAp, 1700);
-		setTimeout(swapVisibilityAp, 1800);
-		setTimeout(swapVisibilityAp, 1900);
-		setTimeout(swapVisibilityAp, 2000);
-		setTimeout(swapVisibilityAp, 2100);
-		setTimeout(swapVisibilityAp, 2200);
-		setTimeout(swapVisibilityAp, 2300);
-		setTimeout(swapVisibilityAp, 2400);
-		setTimeout(swapVisibilityAp, 2500);
-		setTimeout(swapVisibilityAp, 2600);
-		setTimeout(swapVisibilityAp, 2700);
-		setTimeout(swapVisibilityAp, 2800);
-		setTimeout(swapVisibilityAp, 2900);
-		setTimeout(swapVisibilityAp, 3000);
-		setTimeout(swapVisibilityAp, 3001);
+		invincible = true;
+		timerInv  = Timer(swapInv, 3000);
+		timerVis = Timer(swapVisibilityAp, 100);
 	}
 }
 //swap functions for handling "lazy" change of attributes: invincible and visible
 function swapInv(){
 	invincible = !invincible;
+	timerInv = null;
 }
 function swapVisibilityAp(){
 	airplane.mesh.visible = !airplane.mesh.visible;
+	if(invincible)
+		timerVis = new Timer(swapVisibilityAp, visStep)
+	else{
+		timerVis = null;
+		airplane.mesh.visible = true;
+	}
 }
 
 function gameOver(){
@@ -2220,6 +2134,7 @@ function gameOver(){
 	dista.style.display = "block";
 	dista.style.top = "29%";
 	dista.style.left = "44.8%";
+	dista.style.width = WIDTH;
 
 	if(game.maxScore < parseInt(fieldDistance.innerHTML)){
 		document.getElementById("recordValue").innerHTML = fieldDistance.innerHTML;
@@ -2230,11 +2145,15 @@ function gameOver(){
 	level.style.display = "block";
 	level.style.top = "29%";
 	level.style.left = "51.8%";
+	level.style.width = WIDTH;
+
 
 	var record = document.getElementById("record");
 	record.style.display = "block";
 	record.style.top = "29%";
 	record.style.left = "58.8%";
+	record.style.width = WIDTH;
+
 
 	tweenPlane = null;
 	tweenExplosion = [];
@@ -2254,7 +2173,6 @@ function clearScene(){
 	scene.remove(airplane.mesh);
 	scene.remove(game.bonusLife);
 
-	//scene.remove.apply(scene, scene.children);
 	game.bonusLife.resetPosition();
 	game.bonusLife.available = false;
 }
@@ -2273,14 +2191,13 @@ function backGame() {
 	var dista = document.getElementById("dist")
 	dista.style.top = "";
 	dista.style.left = "";
-	//dista.style.color = "black";
-	//dista.style.fontSize = "1000px";
 
 	var level = document.getElementById("level")
 	level.style.top = "";
 	level.style.left = "";
-	
-	scene.remove(animalParticles.mesh)
+
+	if(animalParticles)
+		scene.remove(animalParticles.mesh)
 	document.getElementById("record").style.display = "none";
 
 	document.getElementById("h1").style.display = "";
@@ -2365,7 +2282,6 @@ function initUI(){
 	fieldAudio = document.getElementById("audioImg");
 }
 
-
 class BonusLife {
 
 	constructor(){
@@ -2403,9 +2319,7 @@ class BonusLife {
 	}
 
 	resetAvailability = function(){
-		//if(scene.getObjectByName("bonusLife") == undefined) scene.add(this.mesh);
 		this.available = true;
-		//console.log("Reset Availability. Position now is: " + game.bonusLife.mesh.position);
 	}
 
 	resetPosition = function(){
@@ -2436,7 +2350,6 @@ class BonusLife {
 			else {
 				this.available = false;
 				this.resetPosition();
-				//console.log("Position reset at:" + this.mesh.position);
 				return;
 			}
 		}
@@ -2454,7 +2367,6 @@ function createBonusLife(){
 }
 
 /************************************************ PARTICLE ESPLOSION ************************************************************/
-
 LifeParticles = function(){
 	this.mesh = new THREE.Group();
 	var particleGeom = new THREE.CubeGeometry(5,5,5,1);
@@ -2499,7 +2411,7 @@ function getLife(life){
 	lifeParticles.mesh.visible = true;
 	lifeParticles.explose();
 	scene.remove(life.mesh)
-  }
+}
 
 AnimalParticles = function(){
 	this.mesh = new THREE.Group();
@@ -2590,7 +2502,27 @@ function createAnimalParticles(){
   scene.add(animalParticles.mesh);  
 }
 
+/*********************************************************** CLOCK OBJECT *******************************************************/
+//it is implemented in order to handle plane flashy effect during invincibility
+Timer = function(callback, delay) {
+    var timerId, start, remaining = delay;
+
+    this.pause = function() {
+        window.clearTimeout(timerId);
+        remaining -= Date.now() - start;
+    };
+
+    this.resume = function() {
+        start = Date.now();
+        window.clearTimeout(timerId);
+        timerId = window.setTimeout(callback, remaining);
+    };
+
+    this.resume();
+};
+
 /*********************************************************	SUPPORT FUNCTION ****************************************************/
+
 function moveWing(an){
 
 	if(game.scenario == 0){
@@ -2601,6 +2533,7 @@ function moveWing(an){
 		}
 		if(con.condorLeftWing.rotation.x <= 54 || con.condorLeftWing.rotation.x >= 59.4){ // rising up
 			con.condorLeftWing.rotation.x -= 0.02;
+
 		}
 		if(con.condorRightWing.rotation.x <= -5|| con.condorRightWing.rotation.x >= 0.3){ 
 			con.condorRightWing.rotation.x -= 0.9;
@@ -2640,5 +2573,4 @@ function oscillationObjects(){
 			else
 				TweenMax.to(an.mesh.position, .5, {y:lowBound})
 		}
-
 }

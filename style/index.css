@@ -22,9 +22,6 @@
 	position: absolute;
 	top: 20%;
 	left: 40%;
-	/*
-	background-color: rgb(255, 201, 140);
-	*/
 	z-index: 1002;
 	overflow: auto;
 	width: 700px;
@@ -547,7 +544,7 @@ img {
 	margin: auto;
 }
 .frame1 {
-	text-align: center;
+	text-align: match-parent;
 	margin: auto;
 	z-index: 10;
 	margin-top: 120px;
@@ -596,6 +593,7 @@ img {
 	mask-repeat:no-repeat;
 	background:linear-gradient(rgb(255, 0, 0),rgb(80, 8, 8));
 }
+
 .heart::before {
 	content:"";
 	display:block;
@@ -608,7 +606,7 @@ img {
 	width: 300px; 
 	height: 70px; 
 	top: 15%; 
-	left: 42%;
+	left: 44.2%;
 }
 
 .imgzone2 {
@@ -616,15 +614,17 @@ img {
     width: 450px; 
     height: 70px; 
     top: 15%; 
-    left: 36.7%;
+    left: 40%;
 }
 
 .buttonzone {
+	text-align: center;
 	margin-top: 16.25%;
 	margin-left: 3.5%;
 }
 
 .buttonzone2 {
+	text-align: inherit;
 	margin-top: 20.25%;  /*16.25%*/
 	margin-left: 3.5%;
 }
@@ -641,4 +641,9 @@ img {
     outline: none;
 	display: block;
     /* visibility: hidden; */
+  }
+
+  body > div{
+	width: 90%;
+    height: 100%;
   }
