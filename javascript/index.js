@@ -50,9 +50,7 @@ var game = {
 	bonusLifeSpeed: 1.6,
 	animalsRemoved: 0,
 	audioOn: false,
-
 	maxScore: 0,
-
 	// logic
 	started: false,
 	paused: false,
@@ -75,7 +73,7 @@ var nBlocs2; //clouds gropu 2
 var Cloud;
 // var Clock; //clock object for handling pause-invincibility
 var timer;
-
+var textureRS, textureWS;
 //supp materials
 var blackMat = new THREE.MeshPhongMaterial({
 	color: 0x100707,
@@ -538,10 +536,14 @@ function createLights() {
 class AirPlane {
 	constructor(){
 		this.mesh = new THREE.Object3D();
-		// Create the cabin
+		// Load a texture
+		textureRS = new THREE.TextureLoader().load( "img/textureAirplane.png" );
+		textureWS = new THREE.TextureLoader().load( "img/whiteTexturePlane.png" );
+
+		// Create the cabine
 		// Cockpit
 		var geomCockpit = new THREE.BoxGeometry(100,60,50,1,1,1);
-		var matCockpit = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+		var matCockpit = new THREE.MeshPhongMaterial({map: textureRS});
 		// we can access a specific vertex of a shape through 
 		// the vertices array, and then move its x, y and z property:
 		geomCockpit.vertices[4].y-=10;
@@ -559,7 +561,7 @@ class AirPlane {
 		this.mesh.add(cockpit);
 		// Create the front cabine
 		var geomEngine = new THREE.BoxGeometry(20,60,50,1,1,1);
-		var matEngine = new THREE.MeshPhongMaterial({color:Colors.white, shading:THREE.FlatShading});
+		var matEngine = new THREE.MeshPhongMaterial({map: textureWS});
 		var engine = new THREE.Mesh(geomEngine, matEngine);
 		engine.position.x = 40;
 		engine.castShadow = true;
@@ -567,7 +569,7 @@ class AirPlane {
 		this.mesh.add(engine);	
 		// Create the tail
 		var geomTailPlane = new THREE.BoxGeometry(15,20,5,1,1,1);
-		var matTailPlane = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+		var matTailPlane = new THREE.MeshPhongMaterial({map: textureRS});
 		var tailPlane = new THREE.Mesh(geomTailPlane, matTailPlane);
 		tailPlane.position.set(-62.7,27,0);
 		tailPlane.castShadow = true;
@@ -575,7 +577,7 @@ class AirPlane {
 		this.mesh.add(tailPlane);	
 		// Create the wing
 		var geomSideWing = new THREE.BoxGeometry(45,15,250,1,1,1);
-		var matSideWing = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading});
+		var matSideWing = new THREE.MeshPhongMaterial({map: textureRS});
 		var sideWing = new THREE.Mesh(geomSideWing, matSideWing);
 		sideWing.position.set(6,4,0);
 		sideWing.rotation.z = .1;
@@ -602,7 +604,7 @@ class AirPlane {
 		this.mesh.add(windshield);
 		//create wheels
 		var wheelProtecGeom = new THREE.BoxGeometry(15,20,20,1,1,1);
-		var wheelProtecMat = new THREE.MeshPhongMaterial({color:Colors.red,shading:THREE.FlatShading});
+		var wheelProtecMat = new THREE.MeshPhongMaterial({map: textureRS});
 		var wheelProtecR = new THREE.Mesh(wheelProtecGeom,wheelProtecMat);
 		wheelProtecR.position.set(22,-25,20);
 		this.mesh.add(wheelProtecR);
@@ -637,7 +639,7 @@ class AirPlane {
 		this.mesh.add(wheelTireB);
 		// create the engines
 		var geomEngine1 = new THREE.BoxGeometry(47,25,40,1,1,1);
-		var matEngine1 = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading})
+		var matEngine1 = new THREE.MeshPhongMaterial({map: textureRS})
 		
 		var engine1 = new THREE.Mesh(geomEngine1, matEngine1);
 		engine1.position.set(6,-3,80);
@@ -653,7 +655,7 @@ class AirPlane {
 		this.mesh.add(engine1);
 
 		var geomEngine2 = new THREE.BoxGeometry(46,25,40,1,1,1);
-		var matEngine2 = new THREE.MeshPhongMaterial({color:Colors.red, shading:THREE.FlatShading})
+		var matEngine2 = new THREE.MeshPhongMaterial({map: textureRS})
 		
 		var engine2 = new THREE.Mesh(geomEngine2, matEngine2);
 		engine2.position.set(engine1.position.x,engine1.position.y, -engine1.position.z);
