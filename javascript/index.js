@@ -471,7 +471,7 @@ function backtrackHandler(){
 
 function animationAnimals(){
 	for (var i=0; i<game.nAnimals; i++){
-		TweenMax.delayedCall(Math.random(), moveWing, [game.animalsArray[i]]);
+		TweenMax.delayedCall(Math.random()*3, moveWing, [game.animalsArray[i]]);
 	}
 }
 
@@ -1587,7 +1587,8 @@ function spawnAnimals(n){
 		constructor() {
 			this.alive = true;
 			this.movingUpWings = true;
-
+			this.upperBound = 0;
+			this.lowerBound = 0;
 			this.mesh = new THREE.Object3D();
 			// Create the body
 			//number of points on the curve, default 12
@@ -1715,7 +1716,8 @@ function spawnAnimals(n){
 	class Duck {
 		constructor() {
 			this.alive = true;
-
+			this.upperBound = 0;
+			this.lowerBound = 0;
 			this.mesh = new THREE.Object3D();
 			// Create the body
 			//number of points on the curve, default 12
@@ -1895,8 +1897,6 @@ function spawnAnimals(n){
 			this.mesh.add(body);
 		}
 	}
-
-	//game.animalMesh = new THREE.Object3D();
 	var animal;
 	// create nAnimals and pushes in animalsArray
 	for(var i=0; i < game.nAnimals;){
@@ -1921,12 +1921,11 @@ function spawnAnimals(n){
 			var redline = baseLine + 180 / game.spawnPerStep * (j+1);
 			var yellowline = redline - 180/(2*game.spawnPerStep);
 			animal.mesh.position.y = yellowline + (180/game.spawnPerStep) * (Math.random() - 0.5);
+			animal.upperBound = animal.mesh.position.y + 15;
+			animal.lowerBound = animal.mesh.position.y - 15;
 
-			//animal.mesh.position.y = 50 + (150 / game.spawnPerStep) * j ;
 			animal.mesh.position.x = 300; // handle with spawn speed
 			animal.mesh.rotation.z = Math.PI;
-			//animal.mesh.scale.set(0.35,0.35,0.35);
-			//game.animalMesh.mesh.add(animal.mesh);
 			game.animalsArray.push(animal);
 		}
 		i += game.spawnPerStep
@@ -1934,10 +1933,6 @@ function spawnAnimals(n){
 
 		
 	}
-
-	// exact position from right to left
-	// xMax = 300 xMin = -300
-	// yMax = 200 yMin = 60
 
 	var aux = 0;
 	var howManyAnimalsPerStep = Math.round(game.spawnPerStep * Math.random() + 1);
@@ -2520,20 +2515,23 @@ Timer = function(callback, delay) {
 
     this.resume();
 };
-
 /*********************************************************	SUPPORT FUNCTION ****************************************************/
-
 function moveWing(an){
-
+	var lb = an.lowerBound;
+	var ub = an.upperBound;
 	if(game.scenario == 0){
 		var con = an;
-
+		var lb = con.lowerBound;
+		var ub = con.upperBound;
 		if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){ // pushing down wing
 			con.condorLeftWing.rotation.x += 0.9;
+			if(con.mesh.position.y < ub)
+				con.mesh.position.y += 2.7
 		}
 		if(con.condorLeftWing.rotation.x <= 54 || con.condorLeftWing.rotation.x >= 59.4){ // rising up
 			con.condorLeftWing.rotation.x -= 0.02;
-
+			if(con.mesh.position.y > lb)
+				con.mesh.position.y -= 0.1
 		}
 		if(con.condorRightWing.rotation.x <= -5|| con.condorRightWing.rotation.x >= 0.3){ 
 			con.condorRightWing.rotation.x -= 0.9;
@@ -2546,9 +2544,13 @@ function moveWing(an){
 		
 		if(duc.duckLeftWing.rotation.x > 54 && duc.duckLeftWing.rotation.x < 59.4){
 			duc.duckLeftWing.rotation.x += 0.7 ;
+			if(duc.mesh.position.y < ub)
+				duc.mesh.position.y += 2
 		}
 		if(duc.duckLeftWing.rotation.x <= 54 || duc.duckLeftWing.rotation.x >= 59){
 			duc.duckLeftWing.rotation.x -= 0.02;
+			if(duc.mesh.position.y > lb)
+				duc.mesh.position.y -= 0.08
 		}
 		if(duc.duckRightWing.rotation.x <= -5|| duc.duckRightWing.rotation.x >= 0.3){
 			duc.duckRightWing.rotation.x -= 0.7;
@@ -2556,21 +2558,9 @@ function moveWing(an){
 		if(duc.duckRightWing.rotation.x > -5 && duc.duckRightWing.rotation.x < 0.3){
 			duc.duckRightWing.rotation.x += 0.02;
 		}
-
 	}else {
 		var shi = an;
 		shi.mesh.rotation.y += Math.random()*.1 ;
 	}
 }
 
-function oscillationObjects(){
-		for(var i = 0; i < game.animalsArray.length; i++){
-			var an = game.animalsArray[i]
-			var upBound = an.mesh.position.y + 2
-			var lowBound = an.mesh.position.y - 2
-			if(an.mesh.position.y <upBound)
-				TweenMax.to(an.mesh.position, 1, {y:upBound})
-			else
-				TweenMax.to(an.mesh.position, .5, {y:lowBound})
-		}
-}
