@@ -2517,10 +2517,13 @@ Timer = function(callback, delay) {
 };
 /*********************************************************	SUPPORT FUNCTION ****************************************************/
 function moveWing(an){
+
+	var lb = an.lowerBound;
+	var ub = an.upperBound;
+
 	if(game.scenario == 0){
 		var con = an;
-		var lb = con.lowerBound;
-		var ub = con.upperBound;
+		
 		if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){ // pushing down wing
 			con.condorLeftWing.rotation.x += 0.9;
 			if(con.mesh.position.y < ub)
@@ -2542,9 +2545,13 @@ function moveWing(an){
 		
 		if(duc.duckLeftWing.rotation.x > 54 && duc.duckLeftWing.rotation.x < 59.4){
 			duc.duckLeftWing.rotation.x += 0.7 ;
+			if(duc.mesh.position.y < ub)
+				duc.mesh.position.y += 3
 		}
 		if(duc.duckLeftWing.rotation.x <= 54 || duc.duckLeftWing.rotation.x >= 59){
 			duc.duckLeftWing.rotation.x -= 0.02;
+			if(duc.mesh.position.y > lb)
+				duc.mesh.position.y -= 0.1
 		}
 		if(duc.duckRightWing.rotation.x <= -5|| duc.duckRightWing.rotation.x >= 0.3){
 			duc.duckRightWing.rotation.x -= 0.7;
