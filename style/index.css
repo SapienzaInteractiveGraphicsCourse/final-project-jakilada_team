@@ -21,7 +21,7 @@
 .menu {
 	position: absolute;
 	top: 20%;
-	left: 40%;
+	left: 38.5%;
 	z-index: 1002;
 	overflow: auto;
 	width: 700px;
@@ -100,8 +100,6 @@ body{
 .pausedspan{
 	font-family: 'Avenir Next', Avenir, 'Helvetica Neue', Helvetica, Arial, sans-serif;
 	font-size: 4.5vh;
-	bottom: 40%;
-	left: 25%;
 	position: absolute;
 	display: none;
 	text-align: center;
@@ -465,7 +463,6 @@ span f:hover{
 	transform: translateZ(-25px) rotateX(-90deg);
 }
 
-
 span g{
 	font-size: 19px;
 	letter-spacing: 1px;
@@ -501,6 +498,40 @@ span g:hover{
 	transform: translateZ(-25px) rotateX(-90deg);
 }
 
+span i{
+	font-size: 19px;
+	letter-spacing: 1px;
+	transform-style: preserve-3d;
+	transform: translateZ(-25px);
+	transition: transform .25s;
+	font-family: 'Montserrat', sans-serif;
+}
+span i:before,
+span i:after{
+	background-color: #FBFBF9;
+	position: absolute;
+	content: "GO BACK";
+	height: 55px;
+	width: 180px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	border: 3.5px solid black;
+	box-sizing: border-box;
+	border-radius: 5px;
+}
+span i:before{
+	color: #fff;
+	background: #000;
+	transform: rotateY(0deg) translateZ(25px);
+}
+span i:after{
+	color: #000;
+	transform: rotateX(90deg) translateZ(25px);
+}
+span i:hover{
+	transform: translateZ(-25px) rotateX(-90deg);
+}
 
 span h{
 	font-size: 19px;
@@ -547,7 +578,7 @@ img {
 	text-align: match-parent;
 	margin: auto;
 	z-index: 10;
-	margin-top: 120px;
+	margin-top: 150px;
 }
 
 .box-wrap{
@@ -605,16 +636,14 @@ img {
 	position: absolute; 
 	width: 300px; 
 	height: 70px; 
-	top: 15%; 
-	left: 44.2%;
+	top: 10%; 
 }
 
 .imgzone2 {
     position: absolute; 
     width: 450px; 
     height: 70px; 
-    top: 15%; 
-    left: 40%;
+    top: 1%; 
 }
 
 .buttonzone {
@@ -624,16 +653,16 @@ img {
 }
 
 .buttonzone2 {
-	text-align: inherit;
-	margin-top: 20.25%;  /*16.25%*/
+	text-align: center;
+	margin-top: 25.25%;  /*16.25%*/
 	margin-left: 3.5%;
 }
 
 .audioButton {
     /* background: url("/img/sound_on.png") no-repeat; */
     background-size: cover;
-    height: 60px;
-    width: 60px;
+    height: 65px;
+    width: 65px;
     position: absolute;
     bottom: 6%;
     left: 4%;
