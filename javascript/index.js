@@ -145,7 +145,7 @@ var Rock;
 var Hole;
 
 //animation support variables
-var Timer, timerVis, visStep = 100;
+var Timer, timerVis, timerInv, visStep = 100;
 var posHor = 0, posVert = 0; //register the arrowkey position
 var tweenPlane, tweenExplosion = [], lifeParticles, animalParticles, invincible = false;
 //animation Array
@@ -312,7 +312,7 @@ function hanldeDownKeyboard(event) {
 					timer.resume();
 				if(timerVis)
 					timerVis.resume();
-				if(airplane.mesh)
+				if(airplane.mesh && timerVis)
 					airplane.mesh.visible = false;
 				game.started = true;
 				game.paused = false;
