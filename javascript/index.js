@@ -145,7 +145,7 @@ var Rock;
 var Hole;
 
 //animation support variables
-var Timer, timerVis, timerInv, visStep = 100;
+var Timer, timerVis, timerInv, timeoutsWings = [], tWings, visStep = 100;
 var posHor = 0, posVert = 0; //register the arrowkey position
 var tweenPlane, tweenExplosion = [], lifeParticles, animalParticles, invincible = false;
 //animation Array
@@ -303,17 +303,11 @@ function hanldeDownKeyboard(event) {
 		case 80: //P
 			if(document.getElementById("pausedspan").style.display == "block"){
 				document.getElementById("pausedspan").style.display = "none";
-				if(tweenPlane)
-					tweenPlane.play()
-				for(var i = 0; i< tweenExplosion.length; i++){
-					tweenExplosion[i].play();
-				}
+				TweenMax.resumeAll()
 				if(timerInv)
 					timer.resume();
 				if(timerVis)
 					timerVis.resume();
-				if(airplane.mesh && timerVis)
-					airplane.mesh.visible = false;
 				game.started = true;
 				game.paused = false;
 				renderer.domElement.focus();  //airplane starts moving immediately
@@ -471,7 +465,8 @@ function backtrackHandler(){
 
 function animationAnimals(){
 	for (var i=0; i<game.nAnimals; i++){
-		TweenMax.delayedCall(Math.random()*3, moveWing, [game.animalsArray[i]]);
+		timeoutsWings.push(TweenMax.delayedCall(Math.random()*3, moveWing, [game.animalsArray[i]]));
+		// timeoutsWings.push(new Timer(moveWing.bind(this,game.animalsArray[i]), Math.random()*2000));
 	}
 }
 
@@ -490,19 +485,16 @@ function moveAnimals(){
 /******************* LOOP HANDLER ****************************************************************************************/
 function loop(){
 	if(game.started && !game.paused){
-
 		if(game.animalsArray.length != 0) {
 			animationAnimals();
 			moveAnimals();
 			handleAnimalsOnScene();
-		}
-		
+		}		
 		handleAirplaneMovement();
 		updateDistance();
 		updateLevel();
 		detectCollision();
 		game.bonusLife.handleOnScene();
-		// oscillationObjects();
 	}
 	if(!game.paused && !game.started) backgroundMovement();
 	
@@ -1913,9 +1905,7 @@ function spawnAnimals(n){
 				animal = new Ship();
 				animal.mesh.scale.set(0.9,0.75,0.9);
 			}
-			animal.name = "animal" + i;
-
-	
+			animal.name = "animal" + i;	
 			// position on Y
 			var baseLine = 30;
 			var redline = baseLine + 180 / game.spawnPerStep * (j+1);
@@ -1923,7 +1913,6 @@ function spawnAnimals(n){
 			animal.mesh.position.y = yellowline + (180/game.spawnPerStep) * (Math.random() - 0.5);
 			animal.upperBound = animal.mesh.position.y + 15;
 			animal.lowerBound = animal.mesh.position.y - 15;
-
 			animal.mesh.position.x = 300; // handle with spawn speed
 			animal.mesh.rotation.z = Math.PI;
 			game.animalsArray.push(animal);
@@ -2096,13 +2085,14 @@ function getMalus(anim){
 		}
 		airplane.mesh.visible = false;
 		invincible = true;
-		timerInv  = Timer(swapInv, 3000);
+		timerInv  = Timer(invFalse, 3000);
 		timerVis = Timer(swapVisibilityAp, 100);
 	}
 }
 //swap functions for handling "lazy" change of attributes: invincible and visible
-function swapInv(){
-	invincible = !invincible;
+function invFalse(){
+	invincible = false;
+	airplane.mesh.visible = true;
 	timerInv = null;
 }
 function swapVisibilityAp(){
@@ -2526,7 +2516,7 @@ function moveWing(an){
 		if(con.condorLeftWing.rotation.x > 54 && con.condorLeftWing.rotation.x < 59.4){ // pushing down wing
 			con.condorLeftWing.rotation.x += 0.9;
 			if(con.mesh.position.y < ub)
-				con.mesh.position.y += 2.7
+				con.mesh.position.y += 2.4
 		}
 		if(con.condorLeftWing.rotation.x <= 54 || con.condorLeftWing.rotation.x >= 59.4){ // rising up
 			con.condorLeftWing.rotation.x -= 0.02;
@@ -2562,5 +2552,6 @@ function moveWing(an){
 		var shi = an;
 		shi.mesh.rotation.y += Math.random()*.1 ;
 	}
+	timeoutsWings.pop();
 }
 
