@@ -117,10 +117,7 @@
 
                     <audio id="gameOverAudio">
                         <source src="audio/game_over.wav">
-                    </audio>
-                
-
-
+                    </audio> 
                 </div>
 
                 <!--PAUSED-->
@@ -154,6 +151,20 @@
                     <div class="frame1">
                         <img style= "left: -50%; top: -10%" class = "imgzone2" src="img/game over.png" >
                     </div>
+                    <div>
+                        <div id="levelGO" style= "display: none;" class="levelGO"> 
+                            <div class="label">Level</div>
+                            <div id="levelValueGO" class="levelValueGO"></div>
+                        </div>                
+                        <div id="recordGO" style= "display: none;" class="recordGO"> 
+                            <div class="label">Record</div>
+                            <div id="recordValueGO" class="recordValueGO"></div>
+                        </div>
+                        <div id="distGO" style = "display: none;" class="distGO">
+                            <div class="label">Score</div>
+                            <div id="distValueGO" class="distValueGO">000</div>
+                        </div>
+                    </div>
                     <div class="frame">
                         <div class="buttonzone2"> 
                             
@@ -168,9 +179,9 @@
                     </div>
                 </div>
 
-                <div id="dist" style = "display: none;">
+                <div id="dist" style = "display: none;" class="dist">
                     <div class="label">Score</div>
-                    <div id="distValue">000</div>
+                    <div id="distValue" class="distValue">000</div>
                 </div>
         
                 
@@ -186,14 +197,14 @@
                     
                 </div>
         
-                <div id="level" style= "display: none;"> 
+                <div id="level" style= "display: none;" class="level"> 
                     <div class="label">Level</div>
-                    <div id="levelValue"></div>
+                    <div id="levelValue" class="levelValue"></div>
                 </div>
         
-                <div id="record" style= "display: none;"> 
+                <div id="record" style= "display: none;" class="record"> 
                     <div class="label">Record</div>
-                    <div id="recordValue"></div>
+                    <div id="recordValue" class="recordValue"></div>
                 </div>
 
             </div>

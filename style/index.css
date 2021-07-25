@@ -114,9 +114,19 @@ img {
 }
 
 /*score distance*/
-#dist{
+.dist{
 	position:absolute;
 	left: 5%;
+	top: 5%;
+	transform:translate(-50%,0%);
+	user-select: none;  
+}
+
+.distGO{
+	position:absolute;
+	text-align: center;
+	margin-top: 25%;
+	left: 51%;
 	top: 5%;
 	transform:translate(-50%,0%);
 	user-select: none;  
@@ -134,7 +144,16 @@ img {
 }
   
   
-#distValue{
+.distValue{
+	position:relative;
+	text-transform:uppercase;
+	color:#dc5f45;
+	font-size:26px;
+	font-family:'Voltaire';
+	text-align:center;
+}
+
+.distValueGO{
 	position:relative;
 	text-transform:uppercase;
 	color:#dc5f45;
@@ -144,14 +163,31 @@ img {
 }
 
 /*record*/
-#record{
+.record{
 	position:absolute;
 	left: 5%;
 	top: 5%;
 	transform:translate(-50%,0%);
 	user-select: none;  
 }
-#recordValue{
+.recordGO{
+	position:absolute;
+	text-align: center;
+	margin-top: 25%;
+	left: 105%;
+	top: 5%;
+	transform:translate(-50%,0%);
+	user-select: none;  
+}
+.recordValue{
+	position:relative;
+	text-transform:uppercase;
+	color:#dc5f45;
+	font-size:26px;
+	font-family:'Voltaire';
+	text-align:center;
+}
+.recordValueGO{
 	position:relative;
 	text-transform:uppercase;
 	color:#dc5f45;
@@ -161,16 +197,35 @@ img {
 }
 
 /*Level*/
-#level{
+.level{
 	position:absolute;
 	left: 19%;
 	top: 5%;
 	transform:translate(-50%,0%);
 	user-select: none;  
 }
+
+.levelGO{
+	position:absolute;
+	text-align: center;
+	margin-top: 25%;
+	left: 3%;
+	top: 5%;
+	transform:translate(-50%,0%);
+	user-select: none;  
+}
   
   
-#levelValue{
+.levelValue{
+	position:relative;
+	text-transform:uppercase;
+	color:#dc5f45;
+	font-size:26px;
+	font-family:'Voltaire';
+	text-align:center;
+}
+
+.levelValueGO{
 	position:relative;
 	text-transform:uppercase;
 	color:#dc5f45;

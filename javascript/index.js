@@ -73,7 +73,7 @@ var nBlocs2; //clouds gropu 2
 var Cloud;
 // var Clock; //clock object for handling pause-invincibility
 var timer;
-var textureRS, textureWS;
+var textureRS, textureWS, textureShip, textureShipBody;
 //supp materials
 var blackMat = new THREE.MeshPhongMaterial({
 	color: 0x100707,
@@ -306,6 +306,9 @@ function hanldeDownKeyboard(event) {
 					timer.resume();
 				if(timerVis)
 					timerVis.resume();
+				// for(i in timeoutsWings)
+				// 	if(timeoutsWings[i])
+				// 		timeoutsWings[i].resume()
 				game.started = true;
 				game.paused = false;
 				renderer.domElement.focus();  //airplane starts moving immediately
@@ -319,6 +322,9 @@ function hanldeDownKeyboard(event) {
 					timerVis.pause()
 				if(airplane.mesh)
 					airplane.mesh.visible = true;
+				// for(i in timeoutsWings)
+				// 	if(timeoutsWings[i])
+				// 		timeoutsWings[i].pause()
 				game.started = true;
 				game.paused = true;
 			}
@@ -463,8 +469,10 @@ function backtrackHandler(){
 
 function animationAnimals(){
 	for (var i=0; i<game.nAnimals; i++){
-		timeoutsWings.push(TweenMax.delayedCall(Math.random()*3, moveWing, [game.animalsArray[i]]));
-		// timeoutsWings.push(new Timer(moveWing.bind(this,game.animalsArray[i]), Math.random()*2000));
+		if(game.lives > 0)
+			// moveWing(game.animalsArray[i]);
+			timeoutsWings.push(TweenMax.delayedCall(Math.random()*3, moveWing, [game.animalsArray[i]]));
+			// timeoutsWings.push(new Timer(moveWing.bind(this,game.animalsArray[i]), Math.random()*2000));
 	}
 }
 
@@ -1849,14 +1857,17 @@ function spawnAnimals(n){
 	class Ship {
 		constructor() {
 			this.alive= true;
-			this.mesh = new THREE.Object3D();	
+			this.mesh = new THREE.Object3D();
+			
+			textureShip = new THREE.TextureLoader().load( "img/shipTexture.png" );	
+			textureShipBody = new THREE.TextureLoader().load( "img/glassShip.png" );	
 			//top
 			var pointsTop = [];
 			for ( let i = 0; i < 20; i ++ ) {
 				pointsTop.push( new THREE.Vector2( Math.sin( i * 0.2 ) * 10 + 5, ( i - 5 ) * 2 ) );
 			}
 			var geometryTop = new THREE.LatheGeometry(pointsTop);
-			var materialTop = new THREE.MeshBasicMaterial( { color: 0xB3E5FF, transparent:true, opacity:.99, shading:THREE.FlatShading } );
+			var materialTop = new THREE.MeshBasicMaterial( { map: textureShipBody } );
 			var latheTop = new THREE.Mesh( geometryTop, materialTop );
 			latheTop.position.set(0, 6, 0);
 			latheTop.rotation.set(0, 1, 0);
@@ -1880,7 +1891,7 @@ function spawnAnimals(n){
 		
 			//body
 			var geometryBody = new THREE.TorusGeometry( 10, 4, 16, 100 );
-			var materialBody = new THREE.MeshBasicMaterial( { color: 0x8C8C8C, transparent:false, opacity:.8, shading:THREE.FlatShading } );
+			var materialBody = new THREE.MeshBasicMaterial( { map: textureShip } );
 			var body = new THREE.Mesh(geometryBody, materialBody);
 			body.position.set(0, 4, 0);
 			body.rotation.set(1.5, 0, 0);
@@ -2117,31 +2128,34 @@ function gameOver(){
 	document.getElementById("health").style.display = "none";
 	document.getElementById("level").style.display = "none";
 
-	var dista = document.getElementById("dist");
-	dista.style.display = "block";
-	dista.style.top = "29%";
-	dista.style.left = "44.8%";
-	dista.style.width = WIDTH;
+	var distaGO = document.getElementById("distGO");
+	distaGO.style.display = "block";
+	document.getElementById("distValueGO").innerHTML =  Math.floor(game.distance);
+	// dista.style.top = "25%";
+	// dista.style.left = "30%";
+	distaGO.style.width = WIDTH;
 
 	if(game.maxScore < parseInt(fieldDistance.innerHTML)){
-		document.getElementById("recordValue").innerHTML = fieldDistance.innerHTML;
+		document.getElementById("recordValueGO").innerHTML = fieldDistance.innerHTML;
 		game.maxScore = parseInt(fieldDistance.innerHTML);
 	}
 
-	var level = document.getElementById("level");
-	level.style.display = "block";
-	level.style.top = "29%";
-	level.style.left = "51.8%";
-	level.style.width = WIDTH;
+	var levelGO = document.getElementById("levelGO");
+	levelGO.style.display = "block";
+	document.getElementById("levelValueGO").innerHTML = game.level;
+	// level.style.top = "25%";
+	// level.style.marginLeft = "10%";
+	levelGO.style.width = WIDTH;
 
 
-	var record = document.getElementById("record");
-	record.style.display = "block";
-	record.style.top = "29%";
-	record.style.left = "58.8%";
+	var recordGO = document.getElementById("recordGO");
+	recordGO.style.display = "block";
+	// record.style.top = "25%";
+	// record.style.marginLeft = "10%";
 	record.style.width = WIDTH;
 
-
+	TweenMax.killAll();
+	timeoutsWings = [];
 	tweenPlane = null;
 	tweenExplosion = [];
 	invincible = false;
