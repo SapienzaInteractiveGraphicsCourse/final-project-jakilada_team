@@ -457,9 +457,7 @@ function backtrackHandler(){
 function animationAnimals(){
 	for (var i=0; i<game.nAnimals; i++){
 		if(game.lives > 0)
-			// moveWing(game.animalsArray[i]);
 			timeoutsWings.push(TweenMax.delayedCall(Math.random()*3, moveWing, [game.animalsArray[i]]));
-			// timeoutsWings.push(new Timer(moveWing.bind(this,game.animalsArray[i]), Math.random()*2000));
 	}
 }
 function initDeltaSpeed(){
@@ -531,7 +529,7 @@ class AirPlane {
 		// Load a texture
 		textureRS = new THREE.TextureLoader().load( "img/textureAirplane.png" );
 		textureWS = new THREE.TextureLoader().load( "img/whiteTexturePlane.png" );
-		textureGL = new THREE.TextureLoader().load( "img/glassShip.png" );
+		textureGL = new THREE.TextureLoader().load( "img/glassCabin.png" );
 
 		// Create the cabine
 		// Cockpit
@@ -893,7 +891,6 @@ function createScenario0(){
 		desert = new Desert();
 		desert.mesh.position.y = -game.cylinderRadius;
 		desert.mesh.name = "terrain";
-		// scene.add(desert.mesh);
 	}
 	/********************************** CACTUS CLASS **************************************************************************/
 	Cactus= function(){
@@ -996,7 +993,6 @@ function createScenario0(){
 		rock.scale.set(0.2,0.2,0.4);
 		this.mesh.add(rock);
 	}
-
 	createDesertSky();
 	createDesert();
 }
@@ -1128,14 +1124,12 @@ function createScenario1(){
 			this.mesh.add(c.mesh); 
 		}
 	}
-
 	// Instantiate the countryside and add it to the scene
 	function createCountryside(){
 		countryside = new Countryside();
 		countryside.mesh.position.y = -game.cylinderRadius;
 		countryside.mesh.name = "terrain";
 	}
-
 	/********************************** TREE CLASS****************************************************************************/
 	Tree = function(){
 		this.mesh = new THREE.Object3D();
@@ -1309,7 +1303,6 @@ function createScenario1(){
 		treeFrontLeaf.scale.set(0.3,0.2,0.3);
 		this.mesh.add(treeFrontLeaf);
 	}
-
 	/******************* BUSH CLASS ******************************************************************************************/
 	Bush = function(){
 		this.mesh = new THREE.Object3D();
@@ -1333,7 +1326,6 @@ function createScenario1(){
 			this.mesh.add(m);
 		} 
 	}
-
 	createCountrySky();
 	createCountryside();
 }
@@ -1349,7 +1341,6 @@ function createScenario2(){
 		mat = new THREE.MeshPhongMaterial({color:Colors.white, }); // create a material; a simple white material will do the trick	
 		// duplicate the geometry a random number of times
 		nBlocks = 50 + Math.floor(Math.random()*4);	
-		//var nBlocs = 3;
 		for (var i=0; i<nBlocks; i++ ){		
 			// create the mesh by cloning the geometry
 			var m = new THREE.Mesh(geom, mat); 		
@@ -1362,9 +1353,6 @@ function createScenario2(){
 			// set the size of the cube randomly
 			var s = .1 + Math.random()*.9;
 			m.scale.set(s,s,s);		
-			// allow each cube to cast and to receive shadows
-			//m.castShadow = true;
-			//m.receiveShadow = true;		
 			// add the cube to the container we first created
 			this.mesh.add(m);
 		} 
@@ -1530,7 +1518,6 @@ function createScenario2(){
 			// do not forget to add the mesh of each cloud in the scene
 			this.mesh.add(r.mesh); 
 		}
-
 
 		this.nHoles= 15;
 		// To distribute the cactus consistently, we need to place them according to a uniform angle
@@ -1959,9 +1946,6 @@ function handleAnimalsOnScene(){
 														- (game.stepLength * rand * 0.8) 
 														+ (game.stepLength * (1 - rand) * 0.2);
 
-			// y position
-			// game.animalsArray[i].mesh.position.y = 60 + Math.random()*140;
-
 			var j = game.animalsRemoved % game.spawnPerStep;
 			// position on Y
 			var baseLine = 30;
@@ -2049,7 +2033,6 @@ function detectCollision(){
 				document.getElementById("bonusLifeAudio").play();
 			}
 			game.bonusLife.available = false;
-			//scene.remove(game.bonusLife.mesh); // explosion animation to add
 			game.bonusLife.resetPosition();
 			scene.add(game.bonusLife.mesh);
 			getBonus();
@@ -2113,8 +2096,6 @@ function gameOver(){
 	var distaGO = document.getElementById("distGO");
 	distaGO.style.display = "block";
 	document.getElementById("distValueGO").innerHTML =  Math.floor(game.distance);
-	// dista.style.top = "25%";
-	// dista.style.left = "30%";
 	distaGO.style.width = WIDTH;
 
 	if(game.maxScore < parseInt(fieldDistance.innerHTML)){
@@ -2125,15 +2106,11 @@ function gameOver(){
 	var levelGO = document.getElementById("levelGO");
 	levelGO.style.display = "block";
 	document.getElementById("levelValueGO").innerHTML = game.level;
-	// level.style.top = "25%";
-	// level.style.marginLeft = "10%";
 	levelGO.style.width = WIDTH;
 
 
 	var recordGO = document.getElementById("recordGO");
 	recordGO.style.display = "block";
-	// record.style.top = "25%";
-	// record.style.marginLeft = "10%";
 	record.style.width = WIDTH;
 
 	TweenMax.killAll();
@@ -2155,7 +2132,6 @@ function clearScene(){
 		scene.remove(animalParticles.mesh);
 	scene.remove(airplane.mesh);
 	scene.remove(game.bonusLife);
-
 	game.bonusLife.resetPosition();
 	game.bonusLife.available = false;
 }
@@ -2191,7 +2167,6 @@ function backGame() {
 }
 
 function resetGame(){
-
 	clearScene();
 	// geometry
 	game.cylinderRadius = 600;
@@ -2199,7 +2174,6 @@ function resetGame(){
 
 	// game
 	game.lives = 3;
-	//game.collisionDistanceMalus = 15;
 	game.level = 1;
 	game.distance = 0;
 	game.nAnimals = 50;
@@ -2212,8 +2186,8 @@ function resetGame(){
 	game.airplaneXpos = 0;
 	game.airplaneYpos = 120;
 	game.bonusLifeSpeed = 1.6;
-	game.animalsRemoved = 0;
-	
+	game.animalsRemoved = 0;	
+
 	airplane.mesh.position.x = game.airplaneXpos;
 	airplane.mesh.position.y = game.airplaneYpos;
 
@@ -2234,17 +2208,12 @@ function resetGame(){
 	var dista = document.getElementById("dist")
 	dista.style.top = "";
 	dista.style.left = "";
-	//dista.style.color = "black";
-	//dista.style.fontSize = "1000px";
 
 	var level = document.getElementById("level")
 	level.style.top = "";
 	level.style.left = "";
 
 	document.getElementById("record").style.display = "none";
-	// record.style.top = "";
-	// record.style.left = "";
-
 
 	document.getElementById("h1").style.display = "";
 	document.getElementById("h2").style.display = "";
@@ -2253,15 +2222,13 @@ function resetGame(){
 	renderer.domElement.focus();  //airplane starts moving immediately
 	if(animalParticles)
 		scene.remove(animalParticles.mesh)
-	scene.add(airplane.mesh);
-	
+	scene.add(airplane.mesh);	
 }
 
 function initUI(){
 	fieldDistance = document.getElementById("distValue");
 	fieldLevel = document.getElementById("levelValue");
 	fieldRecord = document.getElementById("recordValue");
-
 	fieldAudio = document.getElementById("audioImg");
 }
 
