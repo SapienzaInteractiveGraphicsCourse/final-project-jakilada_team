@@ -2568,6 +2568,6 @@ function moveWing(an){
 		var shi = an;
 		shi.mesh.rotation.y += Math.random()*.1 ;
 	}
-	timeoutsWings.pop();
+	timeoutsWings.pop().kill();
 }
 
