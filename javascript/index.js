@@ -19,7 +19,7 @@ var Colors = {
 	sand: 0xf2d16b,
 	gray: 0xE9E5DC,
 	moon: 0xC0C0C0,
-	neongreen: 0x7bff62,
+	neongreen: 0x7bff62
 };
 //variables for the camera
 var scene, camera, fieldOfView, aspectRatio, nearPlane, 
@@ -71,9 +71,8 @@ var cactus;
 var nBlocs;  //clouds group 1
 var nBlocs2; //clouds gropu 2
 var Cloud;
-// var Clock; //clock object for handling pause-invincibility
 var timer;
-var textureRS, textureWS, textureShip, textureShipBody;
+var textureRS, textureWS, textureGL;
 //supp materials
 var blackMat = new THREE.MeshPhongMaterial({
 	color: 0x100707,
@@ -173,7 +172,6 @@ function init() {
 	renderer.domElement.focus();
 	updateFcts.push(function(delta){
 		if(game.started && !game.paused){
-			//alert(tween.isActive());
 			if(keyboard.pressed('left') || keyboard.pressed('a')){
 				airplane.mesh.position.x += (Math.max(-200,  airplane.mesh.position.x - 120) - airplane.mesh.position.x)*delta;
 				game.airplaneXpos = airplane.mesh.position.x;
@@ -242,8 +240,8 @@ function createScene() {
 	scene.fog = new THREE.Fog(0xf7d9aa, 100, 950);
 	// Set the position of the camera
 	camera.position.x = 0;
-	camera.position.z = 250; // 250
-	camera.position.y = 100; // 100
+	camera.position.z = 250
+	camera.position.y = 100;
 	camera.rotation.z = 0;
 	// Create the renderer
 	renderer = new THREE.WebGLRenderer({ 
@@ -264,16 +262,13 @@ function createScene() {
 }
 
 /*************************** WINDOW RESIZE HANDLER ***********************************************************************/
-
 function handleWindowResize() {  // update height and width of the renderer and the camera
 	HEIGHT = window.innerHeight;
 	WIDTH = window.innerWidth;
 	renderer.setSize(WIDTH, HEIGHT);
 	camera.aspect = WIDTH / HEIGHT;
 	camera.updateProjectionMatrix();
-
 }
-
 /*************************** KEYBOARD UP HANDLER *************************************************************************/
 function hanldeUpKeyboard(event) {
 	event.preventDefault();
@@ -284,7 +279,6 @@ function hanldeUpKeyboard(event) {
 			if(!game.paused)
 				tweenPlane = TweenMax.to( airplane.mesh.rotation, .5, {x: 0});
 			break;
-
 		case 39:
 		case 68: // D
 			if(!game.paused)
@@ -292,7 +286,6 @@ function hanldeUpKeyboard(event) {
 			break;
 	}
 }
-
 /*************************** KEYBOARD DOWN HANDLER ***********************************************************************/
 function hanldeDownKeyboard(event) {
 	event.preventDefault();
@@ -306,9 +299,6 @@ function hanldeDownKeyboard(event) {
 					timer.resume();
 				if(timerVis)
 					timerVis.resume();
-				// for(i in timeoutsWings)
-				// 	if(timeoutsWings[i])
-				// 		timeoutsWings[i].resume()
 				game.started = true;
 				game.paused = false;
 				renderer.domElement.focus();  //airplane starts moving immediately
@@ -322,9 +312,6 @@ function hanldeDownKeyboard(event) {
 					timerVis.pause()
 				if(airplane.mesh)
 					airplane.mesh.visible = true;
-				// for(i in timeoutsWings)
-				// 	if(timeoutsWings[i])
-				// 		timeoutsWings[i].pause()
 				game.started = true;
 				game.paused = true;
 			}
@@ -475,19 +462,16 @@ function animationAnimals(){
 			// timeoutsWings.push(new Timer(moveWing.bind(this,game.animalsArray[i]), Math.random()*2000));
 	}
 }
-
 function initDeltaSpeed(){
 	for(var i=0; i<game.nAnimals; i++){
 		game.deltaSpeed.push(-game.animalsSpeed * Math.random() + game.animalsSpeed);
 	}
 }
-
 function moveAnimals(){
 	for(var i=0; i<game.nAnimals; i++){
 		if(game.animalsArray[i].alive == true) game.animalsArray[i].mesh.position.x -= game.animalsSpeed + game.deltaSpeed[i];
 	}
 }
-
 /******************* LOOP HANDLER ****************************************************************************************/
 function loop(){
 	if(game.started && !game.paused){
@@ -547,6 +531,7 @@ class AirPlane {
 		// Load a texture
 		textureRS = new THREE.TextureLoader().load( "img/textureAirplane.png" );
 		textureWS = new THREE.TextureLoader().load( "img/whiteTexturePlane.png" );
+		textureGL = new THREE.TextureLoader().load( "img/glassShip.png" );
 
 		// Create the cabine
 		// Cockpit
@@ -599,7 +584,7 @@ class AirPlane {
 		
 		//create glass cabin
 		var geomWindshield = new THREE.BoxGeometry(50,20,20,1,1,1);
-		var matWindshield = new THREE.MeshPhongMaterial({color:Colors.lightgrey, transparent:true, opacity:.8, shading:THREE.FlatShading});;
+		var matWindshield = new THREE.MeshPhongMaterial({map: textureGL, transparent: true, opacity: .8});;
 		var windshield = new THREE.Mesh(geomWindshield, matWindshield);
 		windshield.position.set(2,36,0);
 		windshield.rotation.z += 0.1;
@@ -722,7 +707,6 @@ function createPlane(){
 	airplane = new AirPlane();
 	airplane.mesh.scale.set(.3,.125,.125);
 	airplane.mesh.position.y = game.airplaneYpos;
-	//airplane.mesh.rotation.z = -.1;
 	scene.add(airplane.mesh);
 }
 
@@ -1858,16 +1842,13 @@ function spawnAnimals(n){
 		constructor() {
 			this.alive= true;
 			this.mesh = new THREE.Object3D();
-			
-			textureShip = new THREE.TextureLoader().load( "img/shipTexture.png" );	
-			textureShipBody = new THREE.TextureLoader().load( "img/glassShip.png" );	
 			//top
 			var pointsTop = [];
 			for ( let i = 0; i < 20; i ++ ) {
 				pointsTop.push( new THREE.Vector2( Math.sin( i * 0.2 ) * 10 + 5, ( i - 5 ) * 2 ) );
 			}
 			var geometryTop = new THREE.LatheGeometry(pointsTop);
-			var materialTop = new THREE.MeshBasicMaterial( { map: textureShipBody } );
+			var materialTop = new THREE.MeshBasicMaterial( {color: 0xB3E5FF, transparent:true, opacity:.99, shading:THREE.FlatShading  } );
 			var latheTop = new THREE.Mesh( geometryTop, materialTop );
 			latheTop.position.set(0, 6, 0);
 			latheTop.rotation.set(0, 1, 0);
@@ -1891,7 +1872,7 @@ function spawnAnimals(n){
 		
 			//body
 			var geometryBody = new THREE.TorusGeometry( 10, 4, 16, 100 );
-			var materialBody = new THREE.MeshBasicMaterial( { map: textureShip } );
+			var materialBody = new THREE.MeshBasicMaterial( { color: 0x8C8C8C, transparent:false, opacity:.8, shading:THREE.FlatShading } );
 			var body = new THREE.Mesh(geometryBody, materialBody);
 			body.position.set(0, 4, 0);
 			body.rotation.set(1.5, 0, 0);
@@ -1969,6 +1950,7 @@ function handleAnimalsOnScene(){
 		if(game.animalsArray[i].mesh.position.x < -300){
 			
 			game.animalsRemoved++;
+			TweenMax.killTweensOf(game.animalsArray[i].mesh)
 			scene.remove(game.animalsArray[i].mesh);
 
 			// x position
