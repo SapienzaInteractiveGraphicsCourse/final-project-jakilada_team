@@ -142,7 +142,7 @@ var Rock;
 var Hole;
 
 //animation support variables
-var Timer, timerVis, timerInv, timeoutsWings = [], tWings, visStep = 100;
+var Timer, timerVis, timerInv, tWings, visStep = 100;
 var posHor = 0, posVert = 0; //register the arrowkey position
 var tweenPlane, tweenExplosion = [], lifeParticles, animalParticles, invincible = false;
 //animation Array
@@ -457,7 +457,7 @@ function backtrackHandler(){
 function animationAnimals(){
 	for (var i=0; i<game.nAnimals; i++){
 		if(game.lives > 0)
-			timeoutsWings.push(TweenMax.delayedCall(Math.random()*3, moveWing, [game.animalsArray[i]]));
+			moveWing(game.animalsArray[i]);
 	}
 }
 function initDeltaSpeed(){
@@ -2517,6 +2517,5 @@ function moveWing(an){
 		var shi = an;
 		shi.mesh.rotation.y += Math.random()*.1 ;
 	}
-	timeoutsWings.pop();
 }
 
